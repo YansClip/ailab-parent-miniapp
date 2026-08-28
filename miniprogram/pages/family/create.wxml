@@ -1,0 +1,19 @@
+<view class="page page-has-footer">
+  <nav-bar title="创建家庭" />
+  <view class="pad">
+    <text class="h1">为孩子建立一个可信家庭</text>
+    <text class="sub mt-12">创建后你将成为主管理员，可邀请其他监护人，并绑定 mini 设备。</text>
+    <view class="field mt-24">
+      <text class="label">家庭名称</text>
+      <input class="input mt-8" value="{{name}}" bindinput="onName" placeholder="例如：林小满的家庭" />
+    </view>
+    <view class="field mt-16">
+      <text class="label">你的称谓</text>
+      <input class="input mt-8" value="{{relation}}" bindinput="onRel" placeholder="妈妈 / 爸爸 / 监护人" />
+    </view>
+  </view>
+  <view class="page-fixed-footer">
+    <button class="btn btn-primary" loading="{{loading}}" hover-class="pressed" bindtap="onCreate">创建并成为主管理员</button>
+    <view class="alt" hover-class="pressed" bindtap="goBind">我有绑定码，加入已有家庭</view>
+  </view>
+</view>

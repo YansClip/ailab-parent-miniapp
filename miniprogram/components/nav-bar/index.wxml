@@ -1,0 +1,13 @@
+<view class="nav" style="padding-top: {{statusBarHeight}}px;">
+  <view class="inner">
+    <view class="side" hover-class="pressed" bindtap="onBack" wx:if="{{back}}">
+      <text class="chev">‹</text>
+    </view>
+    <view class="side" wx:else></view>
+    <text class="title">{{title}}</text>
+    <view class="side right" hover-class="pressed" bindtap="onAction">
+      <text class="action" wx:if="{{action}}">{{action}}</text>
+    </view>
+  </view>
+</view>
+<view style="height: {{navHeight}}px;"></view>

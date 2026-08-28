@@ -1,0 +1,23 @@
+<view class="page">
+  <nav-bar title="兴趣足迹" action="{{followed ? '已关注' : '关注'}}" bind:action="toggle" />
+  <view class="pad">
+    <view class="pill pill-lavender">{{item.type}}</view>
+    <text class="h1 mt-16">{{item.title}}</text>
+    <text class="sub mt-8">{{item.date}} · {{item.scene}}</text>
+    <view class="card card-p mt-20">
+      <text class="h3">事件摘要</text>
+      <text class="sub mt-8">{{item.summary}}</text>
+    </view>
+    <view class="card card-p mt-16">
+      <text class="h3">关联概念</text>
+      <view class="row mt-12 concepts">
+        <view class="pill pill-mint concept" wx:for="{{item.concepts}}" wx:for-item="tag" wx:key="*this">{{tag}}</view>
+      </view>
+    </view>
+    <view class="card card-p mt-16">
+      <text class="h3">后续探索</text>
+      <text class="sub mt-8">{{item.follow}}</text>
+    </view>
+    <text class="sub mt-16">来源：{{item.source}}。足迹仅家庭可见，关注不会形成公开点赞或排名。</text>
+  </view>
+</view>

@@ -1,0 +1,14 @@
+.me { min-height: 100vh; }
+.profile { display: flex; align-items: center; padding-top: 16rpx; padding-bottom: 32rpx; }
+.avatar { width: 112rpx; height: 112rpx; border-radius: 40rpx; background: #f0ebff; margin-right: 24rpx; }
+.meta { display: flex; flex-direction: column; }
+.meta .sub { margin-top: 8rpx; }
+.menu { background: #fff; border-radius: 40rpx; overflow: hidden; box-shadow: 0 8rpx 24rpx rgba(16,42,67,0.06); margin-bottom: calc(168rpx + env(safe-area-inset-bottom)); }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 28rpx 32rpx; border-bottom: 1rpx solid #f4eef6; }
+.row:last-child { border-bottom: none; }
+.left { display: flex; align-items: center; }
+.dot { width: 44rpx; height: 44rpx; border-radius: 14rpx; margin-right: 20rpx; }
+.left view { display: flex; flex-direction: column; }
+.left view .sub { margin-top: 4rpx; }
+.name { font-size: 30rpx; font-weight: 600; color: #102a43; }
+.chev { color: #829ab1; font-size: 36rpx; }

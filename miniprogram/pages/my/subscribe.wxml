@@ -1,0 +1,10 @@
+<view class="page">
+  <nav-bar title="微信订阅消息" />
+  <view class="pad">
+    <text class="h1">由你主动授权</text>
+    <text class="sub mt-12">拒绝或发送失败时，站内消息仍完整保留。不承诺永久订阅。</text>
+    <view class="item mt-20 between"><text>设备离线提醒</text><text class="status">未授权</text></view>
+    <view class="item between"><text>成长报告完成</text><text class="status">未授权</text></view>
+    <button class="btn btn-primary mt-24" bindtap="ask">申请订阅</button>
+  </view>
+</view>

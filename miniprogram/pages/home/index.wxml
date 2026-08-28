@@ -1,0 +1,155 @@
+<view class="page page-tab home" style="padding-top: {{statusBarHeight}}px;">
+  <view wx:if="{{loading}}" class="pad loading">加载中，正在切换当前孩子的数据…</view>
+
+  <view wx:elif="{{error && !home.child.id}}" class="pad loading">
+    <text>{{error}}</text>
+    <view class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</view>
+  </view>
+
+  <block wx:elif="{{home.empty}}">
+    <view class="pad head">
+      <view class="greet">
+        <text class="h1">{{home.greeting}}，{{parent.name}}</text>
+        <text class="sub">还没有陪伴动态</text>
+      </view>
+      <view class="pill pill-lavender" hover-class="pressed" bindtap="openSwitcher">{{home.child.shortName}} · {{home.child.deviceName}}</view>
+    </view>
+    <empty-state title="今天还没有新的陪伴动态" desc="兴趣足迹来自正式互动事件。没有数据时不会生成虚构内容。" action="查看玩机指南" bind:action="goGuide" />
+    <view class="pb"></view>
+  </block>
+
+  <scroll-view wx:else scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
+    <view class="pad head">
+      <view class="greet">
+        <text class="h1">{{home.greeting}}，{{parent.name}}</text>
+        <text class="sub">陪伴{{home.child.name}}的第 {{home.child.days}} 天</text>
+      </view>
+      <view class="pill pill-lavender" hover-class="pressed" bindtap="openSwitcher">{{home.child.shortName}} · {{home.child.deviceName}}</view>
+    </view>
+
+    <view class="pad">
+      <view class="hero">
+        <image class="hero-img" src="{{home.hero.image}}" mode="aspectFill" />
+        <view class="hero-mask"></view>
+        <view class="hero-copy">
+          <text class="hero-title">{{home.hero.title}}</text>
+          <text class="hero-sub">{{home.hero.subtitle}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="pad mt-16">
+      <view class="card summary">
+        <view class="between">
+          <text class="h3">今日陪伴摘要</text>
+          <view class="pill {{home.summary.deviceOnline ? 'pill-mint' : 'pill-coral'}}">{{home.summary.deviceOnline ? '设备在线' : '设备离线'}}</view>
+        </view>
+        <view class="metrics">
+          <view class="metric">
+            <text class="num lavender">{{home.summary.dynamics}}</text>
+            <text class="sub">新动态</text>
+          </view>
+          <view class="metric">
+            <text class="num green">{{home.summary.onlineMinutes}}m</text>
+            <text class="sub">在线时长</text>
+          </view>
+          <view class="metric">
+            <text class="num butter">{{home.summary.todos}}</text>
+            <text class="sub">待处理</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="pad section-row mt-20">
+      <text class="section-title">今天发生了什么</text>
+          <text class="link" hover-class="pressed" bindtap="goFeed">查看全部</text>
+    </view>
+
+    <view class="pad" wx:if="{{home.photoCard}}">
+      <view class="card-soft photo-card">
+        <view class="row photo-head">
+          <view class="pill pill-lavender">成果照片</view>
+          <text class="photo-title">{{home.photoCard.title}}</text>
+          <text class="sub">{{home.photoCard.time}}</text>
+        </view>
+        <view class="photos">
+          <image wx:for="{{home.photos}}" wx:key="src" class="photo" src="{{item.src}}" mode="aspectFill" />
+        </view>
+        <text class="sub">{{home.photoCard.desc}}</text>
+      </view>
+    </view>
+
+    <view class="pad mt-12">
+      <view class="dyn" wx:for="{{home.dynamics}}" wx:key="id">
+        <image class="dyn-icon" src="{{item.icon}}" mode="aspectFill" />
+        <view class="dyn-copy">
+          <text class="dyn-title">{{item.title}}</text>
+          <text class="sub">{{item.desc}}</text>
+        </view>
+        <text class="dyn-time {{item.tone}}">{{item.time}}</text>
+      </view>
+    </view>
+
+    <view class="pad mt-20">
+      <text class="section-title">互动与项目成果</text>
+      <view class="ach-row mt-12">
+        <view class="ach {{item.tone}}" wx:for="{{home.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch">
+          <view class="pill pill-white">{{item.type}}</view>
+          <text class="ach-title">{{item.title}}</text>
+          <text class="sub">{{item.extra}}</text>
+          <text class="ach-link">查看详情 →</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="pad mt-20">
+      <view class="section-row">
+        <text class="section-title">兴趣足迹</text>
+        <view class="all-btn" hover-class="pressed" bindtap="goFootprint" data-id="fp1">查看全部  ›</view>
+      </view>
+      <text class="sub mt-8">记录孩子主动发问、发现新概念与表达观点的过程，仅供家庭陪伴查看。</text>
+      <view class="fp fp-{{item.tone}}" wx:for="{{home.footprints}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goFootprint">
+        <view class="between">
+          <text class="sub">{{item.date}}</text>
+          <view class="pill pill-white {{item.tagTone}}">{{item.tag}}</view>
+        </view>
+        <text class="fp-title">{{item.title}}</text>
+        <text class="sub">{{item.desc}}   查看详情 ›</text>
+      </view>
+    </view>
+
+    <view class="pad mt-16" wx:if="{{home.suggestion}}">
+      <view class="suggest">
+        <view class="bar"></view>
+        <view class="suggest-copy">
+          <text class="h3">{{home.suggestion.title}}</text>
+          <text class="sub">{{home.suggestion.text}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="pad mt-20">
+      <text class="section-title">待办与提醒</text>
+      <view class="todo-row mt-12">
+        <view class="todo t-{{item.tone}}" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="goUrl">
+          <text class="todo-title">{{item.title}}</text>
+          <text class="sub">{{item.desc}}</text>
+          <text class="todo-link">{{item.action}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="pad mt-16 pb">
+      <view class="guide between" hover-class="pressed" bindtap="goGuide">
+        <view class="col">
+          <text class="h3">玩机指南</text>
+          <text class="sub">3 分钟了解守护与设备工具</text>
+        </view>
+        <view class="pill pill-lavender">开始查看</view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{home.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+</view>

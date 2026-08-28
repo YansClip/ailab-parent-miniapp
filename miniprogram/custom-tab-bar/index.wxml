@@ -1,0 +1,16 @@
+<view class="tabbar">
+  <view
+    class="item"
+    wx:for="{{list}}"
+    wx:key="pagePath"
+    data-index="{{index}}"
+    data-path="{{item.pagePath}}"
+    hover-class="pressed"
+    bindtap="onSwitch"
+  >
+    <view class="icon-wrap {{selected === index ? 'on' : ''}}">
+      <image class="icon" src="{{selected === index ? item.selectedIconPath : item.iconPath}}" mode="aspectFit" />
+    </view>
+    <text class="label {{selected === index ? 'on' : ''}}">{{item.text}}</text>
+  </view>
+</view>

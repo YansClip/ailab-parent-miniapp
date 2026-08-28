@@ -1,0 +1,91 @@
+<view class="page page-tab growth" style="padding-top: {{statusBarHeight}}px;">
+  <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
+    <view class="pad head">
+      <view>
+        <text class="h1">成长观察</text>
+        <text class="sub">基于正式事件，不使用默认分数填充</text>
+      </view>
+      <view class="pill pill-lavender" hover-class="pressed" bindtap="openSwitcher" wx:if="{{data.child.shortName}}">{{data.child.shortName}}</view>
+    </view>
+
+    <view wx:if="{{loading}}" class="pad loading">正在加载当前孩子的成长数据…</view>
+
+    <view wx:elif="{{error && !data.child.id}}" class="pad loading">
+      <text>{{error}}</text>
+      <view class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</view>
+    </view>
+
+    <empty-state wx:elif="{{empty}}" title="本周数据还不够" desc="好奇成长简报需要代表性提问与验证记录。数据不足时不会造数。" />
+
+    <block wx:else>
+      <view class="pad mt-16">
+        <view class="card insight">
+          <view class="between">
+            <text class="h3">本周成长洞察</text>
+            <text class="sub">{{data.insight.range}}</text>
+          </view>
+          <text class="insight-lead mt-12">{{data.insight.change}}</text>
+          <view class="metrics">
+            <view class="m"><text class="n">{{data.insight.achievements}}</text><text class="sub">成果</text></view>
+            <view class="m"><text class="n">{{data.insight.activity}}</text><text class="sub">活跃度</text></view>
+            <view class="m"><text class="n">{{data.insight.questions}}</text><text class="sub">主动追问</text></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="pad mt-16">
+        <view class="brief" hover-class="pressed" bindtap="go" data-url="/pages/growth/curiosity">
+          <view class="pill pill-lavender">好奇成长简报</view>
+          <block wx:if="{{data.brief.status === 'ready'}}">
+            <text class="h3 mt-12">{{data.brief.question}}</text>
+            <text class="sub mt-8">{{data.brief.date}} · 追问 {{data.brief.followups}} 次 · {{data.brief.verified ? '已主动验证' : '待验证'}}</text>
+          </block>
+          <block wx:else>
+            <text class="h3 mt-12">数据不足</text>
+            <text class="sub mt-8">{{data.brief.reason || '缺少代表性事件，不生成虚构结论。'}}</text>
+          </block>
+          <text class="link mt-8">查看详情 →</text>
+        </view>
+      </view>
+
+      <view class="pad mt-16">
+        <view class="card radar" hover-class="pressed" bindtap="go" data-url="/pages/growth/overview">
+          <view class="between">
+            <text class="h3">六维能力</text>
+            <text class="sub">规则 v2.4</text>
+          </view>
+          <view class="dim" wx:for="{{data.dimensions}}" wx:key="key">
+            <text class="dim-name">{{item.name}}</text>
+            <view class="bar"><view class="fill" style="width: {{item.insufficient ? 0 : item.value}}%;"></view></view>
+            <text class="dim-v">{{item.insufficient ? '不足' : item.value}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="pad mt-16" wx:if="{{data.reports.length}}">
+        <text class="section-title">成长报告</text>
+        <view class="rep" wx:for="{{data.reports}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.type}}" hover-class="pressed" bindtap="goReport">
+          <view>
+            <text class="h3">{{item.title}}</text>
+            <text class="sub">{{item.range}} · {{item.version}}</text>
+          </view>
+          <text class="link">查看</text>
+        </view>
+      </view>
+
+      <view class="pad mt-16 pb">
+        <text class="section-title">近期成果</text>
+        <view class="ach" wx:if="{{!data.achievements.length}}">
+          <text class="h3">暂无成果</text>
+          <text class="sub">没有正式事件时不会生成演示成果。</text>
+        </view>
+        <view class="ach" wx:for="{{data.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch">
+          <text class="h3">{{item.title}}</text>
+          <text class="sub">{{item.time}} · {{item.source}}</text>
+        </view>
+      </view>
+    </block>
+  </scroll-view>
+
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{data.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+</view>

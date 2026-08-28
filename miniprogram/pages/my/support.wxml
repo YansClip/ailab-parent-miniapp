@@ -1,0 +1,15 @@
+<view class="page">
+  <nav-bar title="专属支持" />
+  <view class="pad">
+    <view class="item" hover-class="pressed" bindtap="goFb"><text class="h3">意见反馈</text><text class="sub">可关联设备与时间</text></view>
+    <view class="item">
+      <text class="h3">服务单 AIL-20260825-03</text>
+      <text class="sub">处理中 · 已脱敏设备日志</text>
+    </view>
+    <view class="item" wx:for="{{faqs}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="toggle">
+      <text class="h3">{{item.q}}</text>
+      <text class="sub" wx:if="{{item.open}}">{{item.a}}</text>
+      <text class="status">{{item.open ? '收起' : '展开'}}</text>
+    </view>
+  </view>
+</view>

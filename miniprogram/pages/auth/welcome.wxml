@@ -1,0 +1,14 @@
+<view class="page welcome" style="padding-top: {{statusBarHeight}}px;">
+  <view class="hero-space"></view>
+  <view class="copy">
+    <text class="h1">欢迎来到 AILab 家长端</text>
+    <text class="sub mt-12">陪伴动态、实时守护、成长记录与家庭管理。</text>
+  </view>
+  <view class="art">
+    <image class="art-img" src="/assets/images/hero.jpg" mode="aspectFill" />
+  </view>
+  <view class="actions">
+    <button class="btn btn-primary" hover-class="pressed" bindtap="onStart">开始使用</button>
+    <view class="join" hover-class="pressed" bindtap="onJoin">或加入已有家庭</view>
+  </view>
+</view>

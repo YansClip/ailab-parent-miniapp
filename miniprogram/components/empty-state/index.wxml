@@ -1,0 +1,6 @@
+<view class="empty">
+  <view class="dot"></view>
+  <text class="title">{{title}}</text>
+  <text class="desc">{{desc}}</text>
+  <view class="btn" wx:if="{{action}}" hover-class="pressed" bindtap="onTap">{{action}}</view>
+</view>

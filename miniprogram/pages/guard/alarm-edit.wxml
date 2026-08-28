@@ -1,0 +1,16 @@
+<view class="page">
+  <nav-bar title="{{id ? '编辑闹钟' : '新建闹钟'}}" />
+  <view class="pad">
+    <picker mode="time" value="{{time}}" bindchange="onTime">
+      <view class="item between"><text>时间</text><text>{{time}}</text></view>
+    </picker>
+    <input class="input mt-12" value="{{label}}" bindinput="onLabel" placeholder="标签" />
+    <view class="item mt-12 between" bindtap="toggle"><text>启用</text><text>{{enabled ? '开' : '关'}}</text></view>
+    <text class="sub mt-16">提交后显示保存结果和设备同步状态。启停以设备最终状态为准。</text>
+    <text class="status mt-8" wx:if="{{task}}">{{task.message}}</text>
+  </view>
+  <view class="footer">
+    <button class="btn btn-primary" loading="{{busy}}" hover-class="pressed" bindtap="save">保存并同步</button>
+    <button class="btn btn-ghost danger mt-12" wx:if="{{id}}" bindtap="del">删除闹钟</button>
+  </view>
+</view>

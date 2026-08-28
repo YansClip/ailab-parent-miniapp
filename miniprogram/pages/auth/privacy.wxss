@@ -1,0 +1,14 @@
+.body { padding-bottom: calc(280rpx + env(safe-area-inset-bottom)); }
+.block { padding: 32rpx; }
+.links { display: flex; flex-wrap: wrap; align-items: center; }
+.links .link, .links .dot { margin-right: 8rpx; }
+.dot { color: #829ab1; }
+.footer {
+  padding: 16rpx 40rpx calc(24rpx + env(safe-area-inset-bottom));
+}
+.decline {
+  text-align: center;
+  margin-top: 24rpx;
+  color: #61758a;
+  font-size: 26rpx;
+}

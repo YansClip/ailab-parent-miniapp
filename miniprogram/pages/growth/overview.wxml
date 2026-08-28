@@ -1,0 +1,18 @@
+<view class="page">
+  <nav-bar title="成长总览详情" />
+  <view class="pad">
+    <text class="h1">本周成长洞察</text>
+    <text class="sub mt-8">统计周期、规则版本与数据充分性同屏展示。</text>
+    <view class="card card-p mt-20">
+      <text class="h3">数据依据</text>
+      <text class="sub mt-8">仅展示有正式事件支撑的维度。数据不足时不使用默认分数。</text>
+    </view>
+    <view class="item" wx:for="{{dims}}" wx:key="key" data-key="{{item.key}}" hover-class="pressed" bindtap="goDim">
+      <view class="between">
+        <text class="h3">{{item.name}}</text>
+        <text wx:if="{{item.insufficient}}">数据不足</text>
+        <text wx:else>{{item.value}}（{{item.delta > 0 ? '+' : ''}}{{item.delta}}）</text>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,2 @@
+.label { font-size: 24rpx; color: #61758a; }
+.alt { text-align: center; margin-top: 24rpx; color: #8b78e6; font-size: 26rpx; }

@@ -1,0 +1,94 @@
+{
+  "pages": [
+    "pages/auth/welcome",
+    "pages/auth/privacy",
+    "pages/auth/login",
+    "pages/auth/declined",
+    "pages/family/create",
+    "pages/family/bind",
+    "pages/family/waiting",
+    "pages/family/success",
+    "pages/home/index",
+    "pages/home/footprint",
+    "pages/home/feed",
+    "pages/guard/index",
+    "pages/guard/call",
+    "pages/guard/contacts",
+    "pages/guard/contact-edit",
+    "pages/guard/find",
+    "pages/guard/alarm",
+    "pages/guard/alarm-edit",
+    "pages/guard/sos",
+    "pages/growth/index",
+    "pages/growth/overview",
+    "pages/growth/dimension",
+    "pages/growth/curiosity",
+    "pages/growth/weekly",
+    "pages/growth/phase",
+    "pages/growth/share",
+    "pages/growth/achievement",
+    "pages/my/index",
+    "pages/my/family",
+    "pages/my/child",
+    "pages/my/transfer",
+    "pages/my/device",
+    "pages/my/device-detail",
+    "pages/my/guide",
+    "pages/my/message",
+    "pages/my/subscribe",
+    "pages/my/support",
+    "pages/my/account",
+    "pages/my/privacy",
+    "pages/my/withdraw",
+    "pages/my/delete",
+    "pages/my/cancel",
+    "pages/my/about",
+    "pages/my/feedback",
+    "pages/my/policy",
+    "pages/my/debug"
+  ],
+  "window": {
+    "backgroundColor": "#FFF9F1",
+    "backgroundTextStyle": "light",
+    "navigationBarBackgroundColor": "#FFF9F1",
+    "navigationBarTitleText": "AILab 家长端",
+    "navigationBarTextStyle": "black",
+    "navigationStyle": "custom"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#829AB1",
+    "selectedColor": "#40B352",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/tab/home-off.png",
+        "selectedIconPath": "assets/tab/home-on.png"
+      },
+      {
+        "pagePath": "pages/guard/index",
+        "text": "守护",
+        "iconPath": "assets/tab/guard.png",
+        "selectedIconPath": "assets/tab/guard-on.png"
+      },
+      {
+        "pagePath": "pages/growth/index",
+        "text": "成长",
+        "iconPath": "assets/tab/growth-off.png",
+        "selectedIconPath": "assets/tab/growth-on.png"
+      },
+      {
+        "pagePath": "pages/my/index",
+        "text": "我的",
+        "iconPath": "assets/tab/my-off.png",
+        "selectedIconPath": "assets/tab/my-on.png"
+      }
+    ]
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents"
+}

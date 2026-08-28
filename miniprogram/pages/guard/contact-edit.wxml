@@ -1,0 +1,18 @@
+<view class="page">
+  <nav-bar title="{{id ? '编辑联系人' : '新增联系人'}}" />
+  <view class="pad">
+    <input class="input" placeholder="姓名" value="{{name}}" bindinput="setName" />
+    <input class="input mt-12" placeholder="关系" value="{{relation}}" bindinput="setRel" />
+    <input class="input mt-12" placeholder="手机号" value="{{phone}}" bindinput="setPhone" />
+    <view class="item mt-16 between" bindtap="toggle">
+      <text>允许设备通话</text>
+      <text class="status">{{deviceCall ? '开' : '关'}}</text>
+    </view>
+    <text class="sub mt-16">保存后显示后台已受理、设备同步中、同步成功或失败。</text>
+    <text class="status mt-8" wx:if="{{task}}">{{task.message}}（{{task.status}}）</text>
+  </view>
+  <view class="footer">
+    <button class="btn btn-primary" loading="{{busy}}" hover-class="pressed" bindtap="save">保存并同步到设备</button>
+    <button class="btn btn-ghost mt-12" wx:if="{{id}}" bindtap="remove">删除</button>
+  </view>
+</view>

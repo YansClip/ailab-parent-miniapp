@@ -1,0 +1,10 @@
+<view class="page page-has-footer">
+  <nav-bar title="" />
+  <view class="pad">
+    <text class="h1">欢迎使用 AILab 家长端</text>
+    <text class="sub mt-16">登录后可管理家庭、查看陪伴动态与成长，并使用实时守护工具。</text>
+  </view>
+  <view class="page-fixed-footer">
+    <button class="btn btn-primary" loading="{{loading}}" hover-class="pressed" bindtap="onLogin">微信一键登录</button>
+  </view>
+</view>

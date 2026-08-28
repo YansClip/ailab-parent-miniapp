@@ -1,0 +1,9 @@
+{
+  "desc": "AILab 家长端 sitemap",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

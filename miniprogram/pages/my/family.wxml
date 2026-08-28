@@ -1,0 +1,22 @@
+<view class="page">
+  <nav-bar title="家庭管理" />
+  <view class="pad">
+    <text class="h1">{{family.name}}</text>
+    <text class="sub">主管理员 {{family.admin}}</text>
+    <view class="item" wx:for="{{family.members}}" wx:key="id">
+      <view class="between">
+        <view>
+          <text class="h3">{{item.name}}</text>
+          <text class="sub">{{item.role}} · {{item.relation}} · {{item.status}}</text>
+        </view>
+      </view>
+      <view class="invite-actions" wx:if="{{item.pending}}">
+        <button class="btn btn-primary" loading="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="accept">同意</button>
+        <button class="btn btn-secondary mt-12" loading="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="reject">拒绝</button>
+      </view>
+    </view>
+    <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+    <button class="btn btn-secondary mt-20" hover-class="pressed" bindtap="goChild">孩子管理</button>
+    <button class="btn btn-secondary mt-12" hover-class="pressed" bindtap="goTransfer">转移主管理员</button>
+  </view>
+</view>

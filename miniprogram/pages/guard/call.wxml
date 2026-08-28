@@ -1,0 +1,19 @@
+<view class="page">
+  <nav-bar title="语音通话" />
+  <view class="call-stage">
+    <view class="avatar-lg">{{child}}</view>
+    <text class="big mt-16">{{title}}</text>
+    <text class="sub mt-8">{{desc}}</text>
+    <view class="actions" wx:if="{{stage==='connected'}}">
+      <view class="fab {{muted ? 'on' : ''}}" hover-class="pressed" bindtap="toggleMute">静音</view>
+      <view class="fab {{speaker ? 'on' : ''}}" hover-class="pressed" bindtap="toggleSpk">扬声器</view>
+      <view class="fab {{nr ? 'on' : ''}}" hover-class="pressed" bindtap="toggleNr">降噪</view>
+    </view>
+  </view>
+  <view class="page-fixed-footer">
+    <button class="btn btn-primary" wx:if="{{stage==='ready'}}" loading="{{busy}}" hover-class="pressed" bindtap="startCall">呼叫 Mini</button>
+    <button class="btn btn-danger" wx:if="{{stage==='calling' || stage==='connected'}}" hover-class="pressed" bindtap="hang">结束通话</button>
+    <button class="btn btn-secondary" wx:if="{{stage==='failed'}}" hover-class="pressed" bindtap="retry">失败重试</button>
+    <text class="sub mt-12 note">不启用摄像头，不保存通话内容。</text>
+  </view>
+</view>

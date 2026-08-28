@@ -1,0 +1,27 @@
+<view class="page page-has-footer">
+  <nav-bar title="脱敏分享预览" />
+  <view class="pad" wx:if="{{preview.generating}}">
+    <text class="h1">正在生成</text>
+    <text class="sub mt-12">生成完成前不能分享。可稍后回来查看脱敏预览。</text>
+  </view>
+  <view class="pad" wx:else>
+    <view class="card card-p">
+      <text class="h3">{{preview.title || '成长周报（脱敏）'}}</text>
+      <text class="sub mt-8">孩子：{{preview.childAlias}}（已隐藏全名）</text>
+      <text class="sub" wx:if="{{hiddenText}}">已隐藏：{{hiddenText}}</text>
+      <text class="h3 mt-16">本周变化</text>
+      <text class="sub mt-8">{{preview.body}}</text>
+    </view>
+  </view>
+  <view class="page-fixed-footer">
+    <button class="btn btn-primary {{canShare ? '' : 'btn-disabled'}}" disabled="{{!canShare}}" hover-class="pressed" bindtap="openShare">生成长图并分享</button>
+  </view>
+  <view class="share-mask" wx:if="{{sheet}}" bindtap="close">
+    <view class="share-sheet" catchtap="noop">
+      <text class="h3">分享到</text>
+      <view class="item" hover-class="pressed" bindtap="doShare">微信好友 / 收藏</view>
+      <view class="item" hover-class="pressed" bindtap="save">保存到相册</view>
+      <view class="item" hover-class="pressed" bindtap="close">取消</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,13 @@
+<view class="page">
+  <nav-bar title="确认绑定" />
+  <view class="pad">
+    <text class="h1">正在确认绑定关系</text>
+    <text class="sub mt-12">已提交监护关系。等待孩子确认或主管理员确认，确认完成前不会展示儿童敏感信息。</text>
+    <view class="card status mt-24">
+      <text class="h3">{{statusText}}</text>
+      <text class="sub mt-8">任务编号 {{taskId || '—'}}</text>
+    </view>
+    <button class="btn btn-secondary mt-24" wx:if="{{failed}}" hover-class="pressed" bindtap="refresh">失败重试</button>
+    <button class="btn btn-secondary mt-24" wx:elif="{{!polling}}" hover-class="pressed" bindtap="refresh">查询最终状态</button>
+  </view>
+</view>

@@ -1,0 +1,10 @@
+<view class="page">
+  <nav-bar title="演示场景" />
+  <view class="pad">
+    <text class="sub">用于对照原型空/加载/离线/失败状态。不影响正式产品文案。</text>
+    <view class="item" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="pick">
+      <text class="h3">{{item.name}}</text>
+      <text class="status" wx:if="{{item.id === current}}">当前</text>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,23 @@
+<view class="page page-tab me" style="padding-top: {{statusBarHeight}}px;">
+  <view class="pad profile">
+    <image class="avatar" src="{{parent.avatar}}" mode="aspectFill" />
+    <view class="meta">
+      <text class="h1">{{parent.name}}</text>
+      <text class="sub">{{parent.role}} · 当前孩子 {{childName}}</text>
+    </view>
+  </view>
+  <view class="pad">
+    <view class="menu">
+      <view class="row" wx:for="{{menus}}" wx:key="url" data-url="{{item.url}}" hover-class="pressed" bindtap="go">
+        <view class="left">
+          <view class="dot" style="background: {{item.color}}"></view>
+          <view>
+            <text class="name">{{item.title}}</text>
+            <text class="sub">{{item.desc}}</text>
+          </view>
+        </view>
+        <text class="chev">›</text>
+      </view>
+    </view>
+  </view>
+</view>

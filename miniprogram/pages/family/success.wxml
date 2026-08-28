@@ -1,0 +1,6 @@
+<view class="page pad success" style="padding-top: {{padTop}}px;">
+  <view class="mark">✓</view>
+  <text class="h1">家庭已就绪</text>
+  <text class="sub mt-12">已与{{childName}}、{{deviceName}} 建立可信关系。接下来可以查看陪伴动态与实时守护。</text>
+  <button class="btn btn-primary mt-24" hover-class="pressed" bindtap="goHome">进入首页</button>
+</view>

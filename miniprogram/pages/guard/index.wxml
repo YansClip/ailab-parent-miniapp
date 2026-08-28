@@ -1,0 +1,88 @@
+<view class="page page-tab guard" style="padding-top: {{statusBarHeight}}px;">
+  <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
+    <view class="pad head">
+      <view>
+        <text class="h1">安心守护</text>
+        <text class="sub">已连续守护 {{loc.child.days || 126}} 天</text>
+      </view>
+      <view class="pill {{loc.online ? 'pill-mint' : 'pill-coral'}}" hover-class="pressed" bindtap="openSwitcher">
+        {{loc.online ? '在线' : '离线'}} · {{loc.battery}}%
+      </view>
+    </view>
+
+    <view class="pad">
+      <view class="map-wrap" wx:if="{{loc.status === 'valid' && loc.point}}">
+        <map
+          class="map"
+          latitude="{{loc.point.latitude}}"
+          longitude="{{loc.point.longitude}}"
+          scale="16"
+          markers="{{markers}}"
+          enable-scroll="{{false}}"
+          enable-zoom="{{false}}"
+        />
+        <view class="loc-card">
+          <text class="loc-title">{{loc.label}}</text>
+          <text class="sub">定位精度约 {{loc.accuracy}} 米 · 更新于 {{relative}}</text>
+          <text class="loc-hint">仅显示当前实时位置，不保存历史轨迹</text>
+          <view class="refresh" hover-class="pressed" bindtap="onRefresh">{{refreshing ? '刷新中…' : '刷新位置'}}</view>
+        </view>
+      </view>
+      <view class="map-wrap empty-map" wx:else>
+        <empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置失效后已清除坐标。'}}" action="刷新位置" bind:action="onRefresh" />
+      </view>
+    </view>
+
+    <view class="pad tool-head">
+      <text class="section-title">设备工具</text>
+      <text class="sub">轻触即可操作</text>
+    </view>
+    <view class="pad tools">
+      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/call">
+        <view class="ticon t-yellow"><image src="/assets/icons/phone.png" /></view>
+        <text>语音通话</text>
+      </view>
+      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/contacts">
+        <view class="ticon t-pink"><image src="/assets/icons/contact.png" /></view>
+        <text>通讯录</text>
+      </view>
+      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/find">
+        <view class="ticon t-green"><image src="/assets/icons/search.png" /></view>
+        <text>查找设备</text>
+      </view>
+      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/alarm">
+        <view class="ticon t-cyan"><image src="/assets/icons/alarm.png" /></view>
+        <text>闹钟</text>
+      </view>
+      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/sos">
+        <view class="ticon t-red"><image src="/assets/icons/sos.png" /></view>
+        <text>紧急联系人</text>
+      </view>
+    </view>
+
+    <view class="pad mt-16 pb">
+      <view class="card safety">
+        <view class="between">
+          <text class="h3">守护状态</text>
+          <view class="pill {{loc.status === 'valid' ? 'pill-mint' : 'pill-butter'}}">{{loc.status === 'valid' ? '全部正常' : loc.label}}</view>
+        </view>
+        <view class="s-row">
+          <view class="s-col">
+            <text class="s-num">{{relative || '—'}}</text>
+            <text class="sub">位置更新</text>
+          </view>
+          <view class="s-col">
+            <text class="s-num">{{loc.sosCount || 0}} 人</text>
+            <text class="sub">紧急联系人</text>
+          </view>
+          <view class="s-col">
+            <text class="s-num">{{loc.nextAlarm || '—'}}</text>
+            <text class="sub">明天早晨</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id}}" bind:close="closeSwitcher" bind:change="reload" />
+</view>

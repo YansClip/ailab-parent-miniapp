@@ -1,0 +1,24 @@
+<view class="page">
+  <nav-bar title="好奇成长简报" />
+  <view class="pad" wx:if="{{brief.status === 'ready'}}">
+    <text class="h1">{{brief.question}}</text>
+    <text class="sub mt-8">{{brief.date}} · 有效追问 {{brief.followups}} 次</text>
+    <view class="card card-p mt-20">
+      <text class="h3">关联概念</text>
+      <text class="sub mt-8">{{brief.concepts}}</text>
+    </view>
+    <view class="card card-p mt-16">
+      <text class="h3">主动验证</text>
+      <text class="sub mt-8">{{brief.verified ? '孩子用积木模拟了喷气方向改变运动方向。' : '今日尚未记录主动验证。'}}</text>
+    </view>
+    <view class="card card-p mt-16">
+      <text class="h3">家庭陪伴提示</text>
+      <text class="sub mt-8">{{brief.tip}}</text>
+    </view>
+    <text class="sub mt-16">简报不使用位置、出行或单一分数形成评价。</text>
+  </view>
+  <view class="pad" wx:else>
+    <text class="h1">今日数据不足</text>
+    <text class="sub mt-12">{{brief.reason || '缺少代表性提问或验证事件，不生成虚构结论。'}}</text>
+  </view>
+</view>

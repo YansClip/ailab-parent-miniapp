@@ -1,0 +1,24 @@
+.call-stage { text-align: center; padding: 80rpx 40rpx calc(220rpx + env(safe-area-inset-bottom)); }
+.big { font-size: 40rpx; font-weight: 700; display: block; }
+.actions { display: flex; justify-content: center; margin-top: 48rpx; }
+.fab {
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 40rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 24rpx;
+  background: #61758a;
+  margin: 0 16rpx;
+}
+.fab:nth-child(2) { background: #1ac7cc; }
+.fab:nth-child(3) { background: #8b78e6; }
+.fab.on { opacity: 0.55; }
+.avatar-lg {
+  width: 160rpx; height: 160rpx; border-radius: 56rpx;
+  background: #f0ebff; color: #8b78e6; font-size: 40rpx; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; margin: 0 auto;
+}
+.note { text-align: center; display: block; }

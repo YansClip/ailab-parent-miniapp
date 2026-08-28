@@ -1,0 +1,59 @@
+.guard {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.scroll { flex: 1; height: 0; }
+.head { display: flex; justify-content: space-between; align-items: flex-start; padding-top: 8rpx; margin-bottom: 16rpx; }
+.head .h1 { font-size: 48rpx; }
+.map-wrap {
+  height: 480rpx;
+  border-radius: 48rpx;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 16rpx 40rpx rgba(16,42,67,0.08);
+  background: #eef3f7;
+}
+.map { width: 100%; height: 100%; }
+.empty-map { display: flex; align-items: center; }
+.loc-card {
+  position: absolute; left: 32rpx; right: 32rpx; bottom: 24rpx;
+  background: rgba(255,255,255,0.96);
+  border-radius: 36rpx;
+  padding: 24rpx 28rpx;
+  box-shadow: 0 12rpx 32rpx rgba(16,42,67,0.12);
+  display: flex; flex-direction: column;
+}
+.loc-title { font-size: 28rpx; font-weight: 700; }
+.loc-card .sub, .loc-hint { margin-top: 8rpx; }
+.loc-hint { font-size: 20rpx; color: #8b78e6; font-weight: 500; }
+.refresh {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  font-weight: 600;
+  color: #40b352;
+}
+.tool-head { display: flex; justify-content: space-between; align-items: center; margin-top: 28rpx; }
+.tools { display: flex; justify-content: space-between; margin-top: 16rpx; }
+.tool { width: 120rpx; display: flex; flex-direction: column; align-items: center; font-size: 24rpx; font-weight: 500; }
+.tool text { margin-top: 16rpx; }
+.ticon {
+  width: 96rpx; height: 96rpx; border-radius: 32rpx;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10rpx 24rpx rgba(16,42,67,0.1);
+}
+.ticon image { width: 46rpx; height: 46rpx; }
+.t-yellow { background: #ffc70d; }
+.t-pink { background: #f757d1; }
+.t-green { background: #40b352; }
+.t-cyan { background: #1ac7cc; }
+.t-red { background: #e85d69; }
+.safety { padding: 30rpx 32rpx; }
+.s-row { display: flex; margin-top: 16rpx; }
+.s-col { flex: 1; display: flex; flex-direction: column; margin-right: 24rpx; }
+.s-col:last-child { margin-right: 0; }
+.s-col .sub { margin-top: 4rpx; }
+.s-num { font-size: 26rpx; font-weight: 700; }
+.pb { padding-bottom: calc(168rpx + env(safe-area-inset-bottom)); }

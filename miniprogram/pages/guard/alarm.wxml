@@ -1,0 +1,14 @@
+<view class="page">
+  <nav-bar title="闹钟" action="新建" bind:action="add" />
+  <view class="pad">
+    <view class="item" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="edit">
+      <view class="between">
+        <view>
+          <text class="h1">{{item.time}}</text>
+          <text class="sub">{{item.label}} · {{item.repeat}}</text>
+        </view>
+        <text class="status">{{item.enabled ? '开启 · 已同步' : '关闭'}}</text>
+      </view>
+    </view>
+  </view>
+</view>

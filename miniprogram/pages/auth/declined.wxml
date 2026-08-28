@@ -1,0 +1,11 @@
+<view class="page">
+  <nav-bar title="" />
+  <view class="pad">
+    <text class="h1">暂无法使用完整服务</text>
+    <text class="sub mt-16">在未同意隐私政策前，我们无法为您提供家庭绑定、陪伴动态、实时守护与设备管理等功能。您可以重新阅读政策，或退出。</text>
+  </view>
+  <view class="footer">
+    <button class="btn btn-primary" bindtap="retry">重新查看隐私政策</button>
+    <button class="btn btn-secondary mt-12" bindtap="exit">退出</button>
+  </view>
+</view>

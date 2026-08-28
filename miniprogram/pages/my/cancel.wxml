@@ -1,0 +1,9 @@
+<view class="page">
+  <nav-bar title="账号注销" />
+  <view class="pad">
+    <text class="h1">注销前请确认</text>
+    <text class="sub mt-12">需处理家庭主管理员责任，提供冷静取消路径，并由服务端通知最终结果。</text>
+    <button class="btn btn-danger mt-24" bindtap="submit">申请注销</button>
+    <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+  </view>
+</view>

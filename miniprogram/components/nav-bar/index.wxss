@@ -1,0 +1,40 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: #fff9f1;
+}
+.inner {
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16rpx;
+}
+.side {
+  width: 120rpx;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+}
+.side.right {
+  justify-content: flex-end;
+}
+.chev {
+  font-size: 56rpx;
+  color: #102a43;
+  padding-left: 12rpx;
+  line-height: 1;
+}
+.title {
+  flex: 1;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #102a43;
+}
+.action {
+  font-size: 26rpx;
+  color: #8b78e6;
+  padding-right: 12rpx;
+}

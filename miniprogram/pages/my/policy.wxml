@@ -1,0 +1,7 @@
+<view class="page">
+  <nav-bar title="{{title}}" />
+  <view class="pad">
+    <text class="sub">版本 2026-08-25 · 生效日期以正文为准</text>
+    <text class="sub mt-16">{{body}}</text>
+  </view>
+</view>

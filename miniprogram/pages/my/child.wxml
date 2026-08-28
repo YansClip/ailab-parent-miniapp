@@ -1,0 +1,11 @@
+<view class="page">
+  <nav-bar title="孩子管理" />
+  <view class="pad">
+    <view class="item" wx:for="{{list}}" wx:key="id">
+      <text class="h3">{{item.name}}</text>
+      <text class="sub">{{item.deviceName}} · 陪伴 {{item.days}} 天</text>
+      <button class="btn btn-danger mt-16" loading="{{busyId === item.id}}" hover-class="pressed" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="unbind">解除孩子关系</button>
+    </view>
+    <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+  </view>
+</view>

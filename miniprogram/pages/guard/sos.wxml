@@ -1,0 +1,16 @@
+<view class="page">
+  <nav-bar title="紧急联系人" action="添加" bind:action="add" />
+  <view class="pad">
+    <text class="sub">至少 1 名、最多 3 名。仅可从已授权联系人中选择。</text>
+    <view class="item" wx:for="{{list}}" wx:key="id">
+      <view class="between">
+        <view>
+          <text class="h3">{{index + 1}}. {{item.name}}</text>
+          <text class="sub">{{item.relation}}</text>
+        </view>
+        <text class="danger" data-id="{{item.id}}" catchtap="remove">移除</text>
+      </view>
+    </view>
+    <text class="status mt-16" wx:if="{{task}}">{{task.message}}</text>
+  </view>
+</view>

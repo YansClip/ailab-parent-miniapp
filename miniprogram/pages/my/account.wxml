@@ -1,0 +1,9 @@
+<view class="page">
+  <nav-bar title="我的账号" />
+  <view class="pad">
+    <view class="item" bindtap="go" data-url="/pages/my/privacy"><text class="h3">儿童信息</text><text class="sub">查看、更正或申请删除</text></view>
+    <view class="item" bindtap="go" data-url="/pages/my/withdraw"><text class="h3">撤回同意</text><text class="sub">停止新的相关数据处理</text></view>
+    <view class="item" bindtap="go" data-url="/pages/my/delete"><text class="h3">申请删除数据</text><text class="sub">服务端闭环并留痕</text></view>
+    <view class="item" bindtap="go" data-url="/pages/my/cancel"><text class="h3">账号注销</text><text class="sub">冷静期与主管理员责任</text></view>
+  </view>
+</view>

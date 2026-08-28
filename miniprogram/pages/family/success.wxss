@@ -1,0 +1,7 @@
+.success { text-align: center; }
+.mark {
+  width: 120rpx; height: 120rpx; border-radius: 40rpx;
+  background: #e9f8f2; color: #40b352; font-size: 56rpx;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 32rpx;
+}
