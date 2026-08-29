@@ -11,7 +11,7 @@ Component({
       {
         pagePath: '/pages/guard/index',
         text: '守护',
-        iconPath: '/assets/tab/guard.png',
+        iconPath: '/assets/tab/guard-off.png',
         selectedIconPath: '/assets/tab/guard-on.png'
       },
       {
