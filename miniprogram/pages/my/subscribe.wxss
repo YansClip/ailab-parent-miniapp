@@ -1,1 +1,2 @@
 @import "../../styles/detail.wxss";
+.subscribe-hero{padding:34rpx;border-radius:40rpx;background:linear-gradient(145deg,#fff4d2,#fffaf0);display:flex;flex-direction:column;align-items:flex-start}.subscribe-hero .h1{margin-top:20rpx}.subscribe-hero .sub{margin-top:10rpx}.reminder-main{display:flex;align-items:center;gap:18rpx}.reminder-main .icon-box{width:66rpx;height:66rpx;border-radius:22rpx}.reminder-main .icon-box image{width:34rpx;height:34rpx}

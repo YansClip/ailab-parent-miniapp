@@ -1,1 +1,2 @@
 .status { padding: 32rpx; }
+.waiting-visual{height:300rpx;position:relative;display:flex;align-items:center;justify-content:center}.waiting-visual image{width:260rpx;height:280rpx;position:relative;z-index:2}.waiting-ring{position:absolute;width:170rpx;height:170rpx;border-radius:50%;background:#f1edff;box-shadow:0 0 0 36rpx rgba(136,116,232,.08),0 0 0 72rpx rgba(136,116,232,.035);animation:breathe 1.8s ease-in-out infinite}@keyframes breathe{50%{transform:scale(1.08);opacity:.72}}

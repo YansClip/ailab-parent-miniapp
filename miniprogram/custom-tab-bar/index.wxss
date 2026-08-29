@@ -3,11 +3,11 @@
   left: 0;
   right: 0;
   bottom: 0;
-  height: calc(144rpx + env(safe-area-inset-bottom));
+  height: calc(140rpx + env(safe-area-inset-bottom));
   padding-bottom: env(safe-area-inset-bottom);
-  background: #fff;
-  border-top: 1rpx solid #d9e2ec;
-  box-shadow: 0 -2rpx 8rpx rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, .97);
+  border-top: 1rpx solid rgba(16, 42, 67, .06);
+  box-shadow: 0 -12rpx 36rpx rgba(16, 42, 67, .08);
   display: flex;
   align-items: flex-start;
   justify-content: space-around;
@@ -19,37 +19,38 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 8rpx;
+  min-height: 116rpx;
+  padding-top: 10rpx;
   margin: 0;
   background: transparent;
   line-height: 1.2;
 }
 
 .icon-wrap {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 20rpx;
+  width: 66rpx;
+  height: 62rpx;
+  border-radius: 22rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8rpx;
+  margin-bottom: 4rpx;
 }
 
 .icon-wrap.on {
-  background: rgba(64, 179, 82, 0.12);
+  background: rgba(64, 179, 82, 0.11);
 }
 
 .icon {
-  width: 48rpx;
-  height: 48rpx;
+  width: 46rpx;
+  height: 46rpx;
 }
 
 .label {
-  font-size: 20rpx;
+  font-size: 22rpx;
   color: #829ab1;
 }
 
 .label.on {
   color: #40b352;
-  font-weight: 500;
+  font-weight: 650;
 }

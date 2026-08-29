@@ -1,7 +1,7 @@
 <view class="nav" style="padding-top: {{statusBarHeight}}px;">
-  <view class="inner" style="height: {{innerHeight}}px;">
+  <view class="inner" style="height: {{innerHeight}}px; padding-right: {{menuReserved}}px;">
     <button class="side" hover-class="pressed" bindtap="onBack" wx:if="{{back}}" aria-label="返回上一页">
-      <text class="chev">‹</text>
+      <image class="back-icon" src="/assets/icons/lucide/chevron.png" mode="aspectFit" />
     </button>
     <view class="side" wx:else></view>
     <text class="title">{{title}}</text>

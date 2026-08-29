@@ -1,11 +1,14 @@
 <view class="page page-has-footer">
   <nav-bar title="绑定孩子" />
   <view class="pad">
+    <view class="bind-hero"><view class="qr-icon"><image src="/assets/icons/lucide/qr.png" mode="aspectFit" /></view><view><text class="h2">与孩子建立安全关联</text><text class="sub">绑定码一次有效，完成后由孩子或主管理员确认</text></view></view>
     <text class="h1">扫描或输入一次性绑定码</text>
     <text class="sub mt-12">绑定码由孩子在 Web 或已激活的 mini 设备上生成，具有有效期，使用一次后失效。</text>
-    <input class="input mt-24" type="number" value="{{code}}" bindinput="onCode" placeholder="输入 6 位绑定码" maxlength="6" />
+    <button class="scan-button mt-24" bindtap="onScan"><image src="/assets/icons/lucide/qr.png" mode="aspectFit" /><view><text class="h3">扫码绑定</text><text class="sub">扫描孩子端显示的二维码</text></view></button>
+    <view class="divider"><view></view><text>或手动输入</text><view></view></view>
+    <input class="input code-input" type="number" value="{{code}}" bindinput="onCode" placeholder="输入 6 位绑定码" maxlength="6" />
     <view class="tips mt-20">
-      <text class="sub">演示可直接点「提交绑定」。覆盖过期、已使用、格式错误等恢复路径。</text>
+      <text class="sub">请输入孩子端生成的一次性绑定码，或使用微信扫码完成关联。</text>
     </view>
     <view class="err" wx:if="{{error}}">{{error}}</view>
   </view>

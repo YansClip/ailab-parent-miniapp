@@ -19,6 +19,7 @@ const CHILDREN = [
     id: 'child-xiaoman',
     name: '林小满',
     shortName: '小满',
+    avatarText: '满',
     days: 126,
     deviceId: 'dev-mini-01',
     deviceName: 'Mini 01',
@@ -30,6 +31,7 @@ const CHILDREN = [
     id: 'child-xinghe',
     name: '陈星河',
     shortName: '星河',
+    avatarText: '河',
     days: 41,
     deviceId: 'dev-mini-02',
     deviceName: 'Mini 02',
@@ -58,11 +60,11 @@ const DEFAULT_ALARMS = [
 ]
 
 function contactsData() {
-  return store.getDemoData('contacts', DEFAULT_CONTACTS).map((item) => Object.assign({}, item))
+  return store.getDemoData('contacts.' + currentChild().id, DEFAULT_CONTACTS).map((item) => Object.assign({}, item))
 }
 
 function alarmsData() {
-  return store.getDemoData('alarms', DEFAULT_ALARMS).map((item) => Object.assign({}, item))
+  return store.getDemoData('alarms.' + currentChild().id, DEFAULT_ALARMS).map((item) => Object.assign({}, item))
 }
 
 function activeChildren() {
@@ -87,10 +89,10 @@ function applyTaskMutation(type, payload) {
     const index = list.findIndex((item) => item.id === next.id)
     if (index >= 0) list[index] = next
     else list.push(next)
-    store.setDemoData('contacts', list)
+    store.setDemoData('contacts.' + currentChild().id, list)
   }
   if (type === 'contact-delete') {
-    store.setDemoData('contacts', contactsData().filter((item) => item.id !== payload.id))
+    store.setDemoData('contacts.' + currentChild().id, contactsData().filter((item) => item.id !== payload.id))
   }
   if (type === 'alarm-save') {
     const list = alarmsData()
@@ -105,10 +107,10 @@ function applyTaskMutation(type, payload) {
     const index = list.findIndex((item) => item.id === next.id)
     if (index >= 0) list[index] = next
     else list.push(next)
-    store.setDemoData('alarms', list)
+    store.setDemoData('alarms.' + currentChild().id, list)
   }
   if (type === 'alarm-delete') {
-    store.setDemoData('alarms', alarmsData().filter((item) => item.id !== payload.id))
+    store.setDemoData('alarms.' + currentChild().id, alarmsData().filter((item) => item.id !== payload.id))
   }
   if (type === 'admin-transfer') {
     store.setSession({ role: '普通成员' })
@@ -128,6 +130,47 @@ function applyTaskMutation(type, payload) {
     if (store.getCurrentChildId() === payload.id && remaining[0]) store.setCurrentChildId(remaining[0].id)
   }
   if (type === 'subscription-update') store.setDemoData('subscriptionEnabled', !!payload.enabled)
+  if (['child-data-request', 'data-delete', 'consent-withdraw', 'account-cancel'].indexOf(type) >= 0) {
+    store.setDemoData('privacyRequests.' + type, {
+      type,
+      status: 'accepted',
+      requestedAt: Date.now(),
+      message: taskMessage(type, 'success')
+    })
+  }
+}
+
+function taskMessage(type, status) {
+  const deviceTypes = ['voice-call', 'find-device', 'find-stop', 'contact-sync', 'contact-delete', 'alarm-save', 'alarm-delete', 'sos-update', 'device-unbind']
+  const success = {
+    'family-create': '家庭已创建',
+    'child-bind': '绑定申请已提交',
+    'admin-transfer': '管理员身份已转移',
+    'invite-accept': '已同意加入家庭',
+    'invite-reject': '已拒绝本次邀请',
+    'child-unbind': '孩子关系已解除',
+    'voice-call': '语音连接已建立',
+    'find-device': '设备已开始响铃',
+    'find-stop': '设备响铃已停止',
+    'contact-sync': '联系人已同步',
+    'contact-delete': '联系人已删除',
+    'alarm-save': '闹钟已同步',
+    'alarm-delete': '闹钟已删除',
+    'sos-update': '紧急联系人已同步',
+    'device-unbind': '设备已解绑',
+    'report-regen': '成长报告已重新生成',
+    'subscription-update': '提醒设置已保存',
+    'feedback': '反馈已提交',
+    'child-data-request': '儿童信息申请已受理',
+    'data-delete': '数据删除申请已受理',
+    'consent-withdraw': '撤回同意申请已受理',
+    'account-cancel': '账号注销申请已受理'
+  }
+  if (status === 'submitted') return '请求已提交'
+  if (status === 'executing') return deviceTypes.indexOf(type) >= 0 ? 'Mini 设备正在处理' : '正在处理申请'
+  if (status === 'failed') return '处理失败，当前信息未发生变化'
+  if (status === 'timeout') return '等待超时，可稍后查询最终结果'
+  return success[type] || '处理已完成'
 }
 
 function currentChild() {
@@ -170,6 +213,11 @@ const mock = {
         child,
         greeting: greeting(),
         empty: true,
+        hero: {
+          image: '/assets/illustrations/home-hero-v2.jpg',
+          title: '陪伴，从今天开始记录',
+          subtitle: '绑定 Mini 设备后即可查看实时状态与成长内容'
+        },
         summary: { dynamics: 0, onlineMinutes: 0, todos: 0, deviceOnline },
         dynamics: [],
         photos: [],
@@ -186,7 +234,7 @@ const mock = {
       greeting: greeting(),
       empty: false,
       hero: {
-        image: '/assets/images/hero.jpg',
+        image: '/assets/illustrations/home-hero-v2.jpg',
         title: '今天，也在好好长大',
         subtitle: !deviceBound ? '尚未绑定设备 · 陪伴记录仍可查看' : isXinghe ? '设备当前离线 · 成长记录仍可查看' : '新增 3 条陪伴动态 · 1 项待处理'
       },
@@ -197,9 +245,9 @@ const mock = {
         deviceOnline
       },
       photos: isXinghe ? [] : [
-        { src: '/assets/photos/photo1.jpg' },
-        { src: '/assets/photos/photo2.jpg' },
-        { src: '/assets/photos/photo3.jpg' }
+        '/assets/illustrations/result-sound-v2.jpg',
+        '/assets/illustrations/result-robot-arm-v2.jpg',
+        '/assets/illustrations/result-rocket-v2.jpg'
       ],
       photoCard: isXinghe ? null : {
         title: '声波实验被 Mini 拍下了',
@@ -208,16 +256,16 @@ const mock = {
       },
       dynamics: !deviceBound
         ? [
-            { id: 'd-unbound', icon: '/assets/icons/dot-coral.png', title: 'Mini 设备已解绑', desc: '守护工具暂不可用，可前往设备中心重新绑定', time: '刚刚', tone: 'coral' }
+            { id: 'd-unbound', icon: '/assets/icons/lucide/device.png', title: 'Mini 设备已解绑', desc: '守护工具暂不可用，可前往设备中心重新绑定', time: '刚刚', tone: 'coral' }
           ]
         : isXinghe
         ? [
-            { id: 'd4', icon: '/assets/icons/dot-coral.png', title: 'Mini 02 已离线', desc: '守护工具暂不可用', time: '12:08', tone: 'coral' }
+            { id: 'd4', icon: '/assets/icons/lucide/device.png', title: 'Mini 02 已离线', desc: '守护工具暂不可用', time: '12:08', tone: 'coral' }
           ]
         : [
-            { id: 'd1', icon: '/assets/icons/dot-lavender.png', title: '完成声音波形挑战', desc: '获得「细心观察」互动成果', time: '17:28', tone: 'lavender' },
-            { id: 'd2', icon: '/assets/icons/dot-mint.png', title: 'Mini 01 已恢复在线', desc: '位置与电量状态已更新', time: '16:55', tone: 'mint' },
-            { id: 'd3', icon: '/assets/icons/dot-coral.png', title: '家庭邀请待处理', desc: '周屿申请成为普通监护人', time: '15:40', tone: 'butter' }
+            { id: 'd1', icon: '/assets/icons/lucide/sparkles.png', title: '完成声音波形挑战', desc: '记录了一次细致观察与主动表达', time: '17:28', tone: 'lavender' },
+            { id: 'd2', icon: '/assets/icons/lucide/online.png', title: 'Mini 01 已恢复在线', desc: '位置与电量状态已更新', time: '16:55', tone: 'mint' },
+            { id: 'd3', icon: '/assets/icons/lucide/invite.png', title: '家庭邀请待处理', desc: '周屿申请成为普通监护人', time: '15:40', tone: 'butter' }
           ],
       footprints: [
         { id: 'fp1', date: '8 月 25 日', tag: '提出一个好问题', tagTone: 'lavender', title: '为什么火箭能在太空中改变方向？', desc: '从推进器演示开始，连续追问了 3 次', tone: 'lavender' },
@@ -225,8 +273,8 @@ const mock = {
         { id: 'fp3', date: '8 月 23 日', tag: '完成一次观点表达', tagTone: 'mint', title: '我认为机器人也需要先观察再行动', desc: '形成了完整的理由与例子', tone: 'mint' }
       ],
       achievements: [
-        { id: 'a1', type: '互动成果', title: '声音波形挑战', extra: '观察稳定性 +8', tone: 'lavender' },
-        { id: 'a2', type: '项目成果', title: '机械臂协作演示', extra: '协作表达 +6', tone: 'mint' }
+        { id: 'a1', type: '互动成果', title: '声音波形挑战', extra: '细心观察并完成波形对照', tone: 'lavender', image: '/assets/illustrations/result-sound-v2.jpg' },
+        { id: 'a2', type: '项目成果', title: '机械臂协作项目', extra: '清楚表达了自己的操作思路', tone: 'mint', image: '/assets/illustrations/result-robot-arm-v2.jpg' }
       ],
       suggestion: {
         title: '今日陪伴建议',
@@ -264,7 +312,7 @@ const mock = {
         summary: '小满从推进器火焰方向开始提问，并连续追问了三次：燃料用完怎么办、没有空气怎么推、转向会不会把自己推偏。',
         concepts: ['反作用力', '矢量', '推进'],
         follow: '随后用积木模拟了“喷气方向改变运动方向”。',
-        source: '互动探索 · 演示事件 #E-0825-03'
+        source: '互动探索 · 记录于 8 月 25 日'
       },
       fp2: {
         id: 'fp2',
@@ -275,18 +323,18 @@ const mock = {
         summary: '小满第一次使用“轨道”这个词，并用“绕着转、不会掉下去”解释自己的理解。',
         concepts: ['轨道', '圆周运动'],
         follow: '把轨道画成一条闭合的线，而不是直线冲出去。',
-        source: '项目实践 · 演示事件 #E-0824-11'
+        source: '项目实践 · 记录于 8 月 24 日'
       },
       fp3: {
         id: 'fp3',
         date: '2026 年 8 月 23 日',
         type: '观点表达',
         title: '我认为机器人也需要先观察再行动',
-        scene: '机械臂协作演示',
+        scene: '机械臂协作项目',
         summary: '小满提出：如果机械臂不先看看周围，就容易撞到积木。她用两次对比实验说明理由。',
         concepts: ['观察', '安全', '计划'],
-        follow: '在演示中加入了“先扫描再抓取”的步骤。',
-        source: '项目成果 · 演示事件 #E-0823-07'
+        follow: '在操作中加入了“先扫描再抓取”的步骤。',
+        source: '项目成果 · 记录于 8 月 23 日'
       }
     }
     const item = map[id] || map.fp1
@@ -473,12 +521,12 @@ const mock = {
         { key: 'persist', name: '坚持', value: 74, delta: +2 }
       ],
       reports: [
-        { id: 'w1', type: 'weekly', title: '成长周报', range: '8/18 – 8/25', status: 'ready', version: '规则 v2.4' },
-        { id: 'p1', type: 'phase', title: '阶段成长报告', range: 'L2 机械与运动', status: 'ready', version: '规则 v2.4' }
+        { id: 'w1', type: 'weekly', title: '成长周报', range: '8/18 – 8/25', status: 'ready' },
+        { id: 'p1', type: 'phase', title: '阶段成长报告', range: '机械与运动主题', status: 'ready' }
       ],
       achievements: [
-        { id: 'a1', title: '声音波形挑战', time: '8 月 25 日', source: '互动实验' },
-        { id: 'a2', title: '机械臂协作演示', time: '8 月 23 日', source: '项目实践' }
+        { id: 'a1', title: '声音波形挑战', time: '8 月 25 日', source: '互动探索', image: '/assets/illustrations/result-sound-v2.jpg' },
+        { id: 'a2', title: '机械臂协作项目', time: '8 月 23 日', source: '项目实践', image: '/assets/illustrations/result-robot-arm-v2.jpg' }
       ],
       timeline: [
         { id: 'tl1', title: '本周：连续追问推进方向', time: '8 月 25 日' },
@@ -491,10 +539,10 @@ const mock = {
     const generating = store.getScenario() === 'generating'
     const failed = store.getScenario() === 'fail'
     if (generating) {
-      return wrap({ id, status: 'generating', title: '正在生成报告', range: '8/18 – 8/25', version: '规则 v2.4' }, 200)
+      return wrap({ id, status: 'generating', title: '正在生成报告', range: '8/18 – 8/25' }, 200)
     }
     if (failed) {
-      return wrap({ id, status: 'failed', title: '生成失败', range: '8/18 – 8/25', message: '数据服务超时，可重试。错误追踪 AIL-9F2C' })
+      return wrap({ id, status: 'failed', title: '生成失败', range: '8/18 – 8/25', message: '暂时没有生成成功，请稍后重试。' })
     }
     const weekly = id !== 'p1'
     return wrap({
@@ -503,16 +551,15 @@ const mock = {
       title: weekly ? '成长周报' : '阶段成长报告',
       range: weekly ? '2026.08.18 – 2026.08.25' : 'L2 机械与运动 · 21 天',
       generatedAt: '2026-08-25 21:16',
-      version: '评估规则 v2.4',
       sufficiency: '数据充分',
       sections: weekly
         ? [
-            { title: '本周变化', body: '观察稳定性与主动追问次数上升。演示结论来自 11 次提问事件与 2 项项目成果。' },
+            { title: '本周变化', body: '观察稳定性与主动追问次数上升，来自 11 次提问记录与 2 项项目成果。' },
             { title: '代表足迹', body: '「为什么火箭能在太空中改变方向？」连续追问 3 次，并完成一次主动验证。' },
             { title: '陪伴建议', body: '请孩子用自己的话复述推进方向，不评价对错，只确认表达是否完整。' }
           ]
         : [
-            { title: '阶段概览', body: '在机械与运动主题中，孩子完成波形挑战与机械臂协作演示。' },
+            { title: '阶段概览', body: '在机械与运动主题中，孩子完成波形挑战与机械臂协作项目。' },
             { title: '能力变化', body: '探究、观察两项相对突出；创造维度证据仍偏少。' },
             { title: '下一阶段', body: '建议继续保留「先观察再行动」的步骤，不额外增加评分类任务。' }
           ]
@@ -567,6 +614,7 @@ const mock = {
   getMessages() {
     if (store.getScenario() === 'empty') return wrap([])
     const child = currentChild()
+    const readIds = store.getReadMessageIds()
     const msgs = [
       { id: 'm1', type: '家庭', title: '周屿申请加入家庭', time: '今天 15:40', unread: store.getInvites().u3 === 'pending', url: '/pages/my/family' }
     ]
@@ -577,7 +625,12 @@ const mock = {
       { id: 'm3', type: '成长', title: '本周成长周报已生成', time: '昨天 21:16', unread: false, url: '/pages/growth/weekly' },
       { id: 'm4', type: '系统', title: '儿童信息处理规则已更新', time: '8 月 20 日', unread: false, url: '/pages/my/policy' }
     )
-    return wrap(msgs)
+    return wrap(msgs.map((item) => Object.assign({}, item, { unread: !!item.unread && readIds.indexOf(item.id) < 0 })))
+  },
+
+  markMessageRead(id) {
+    store.markMessageRead(id)
+    return wrap({ ok: true })
   },
 
   getGuide() {
@@ -596,19 +649,21 @@ const mock = {
       a1: {
         id: 'a1',
         title: '声音波形挑战',
+        image: '/assets/illustrations/result-sound-v2.jpg',
         source: 'Web 互动实验',
         date: '8 月 25 日',
         childAlias: child.shortName,
-        process: '完成波形挑战后形成「细心观察」互动成果。当前为可追溯的演示事件。',
+        process: '完成波形挑战后形成「细心观察」互动成果，过程记录可追溯。',
         evidence: '观察稳定性相关事件 1 条'
       },
       a2: {
         id: 'a2',
-        title: '机械臂协作演示',
+        title: '机械臂协作项目',
+        image: '/assets/illustrations/result-robot-arm-v2.jpg',
         source: '项目实践',
         date: '8 月 23 日',
         childAlias: child.shortName,
-        process: '在协作演示中加入「先扫描再抓取」，形成项目成果。',
+        process: '在协作操作中加入「先扫描再抓取」，形成项目成果。',
         evidence: '协作表达相关事件 1 条'
       }
     }
@@ -624,13 +679,17 @@ const mock = {
       title: '成长周报（脱敏）',
       childAlias: child.shortName,
       range: '本周',
-      body: '观察与表达更稳定。依据演示提问与项目成果，规则 v2.4。',
+      body: '观察与表达更稳定，依据近期提问记录与项目成果整理。',
       hidden: ['全名', '位置', '设备 ID', '精确时刻']
     })
   },
 
   regenerateReport(id) {
     return this.submitTask('report-regen', { id: id || 'w1' })
+  },
+
+  getPrivacyRequest(type) {
+    return wrap(store.getDemoData('privacyRequests.' + type, null), 80)
   },
 
   submitTask(type, payload) {
@@ -642,11 +701,11 @@ const mock = {
       payload: payload || {},
       status: 'submitted',
       createdAt: Date.now(),
-      message: '请求已提交'
+      message: taskMessage(type, 'submitted')
     }
     store.setTask(id, task)
     setTimeout(() => {
-      store.setTask(id, Object.assign({}, task, { status: 'executing', message: '设备执行中' }))
+      store.setTask(id, Object.assign({}, task, { status: 'executing', message: taskMessage(type, 'executing') }))
     }, 500)
     setTimeout(() => {
       const fail = store.getScenario() === 'fail'
@@ -655,7 +714,7 @@ const mock = {
       if (finalStatus === 'success') applyTaskMutation(type, payload || {})
       store.setTask(id, Object.assign({}, task, {
         status: finalStatus,
-        message: fail ? '同步失败，可重试' : timeout ? '等待超时，可查询最终状态' : '演示设备已确认完成',
+        message: taskMessage(type, finalStatus),
         finishedAt: Date.now()
       }))
     }, 1800)

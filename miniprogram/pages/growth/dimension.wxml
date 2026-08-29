@@ -1,21 +1,31 @@
 <view class="page">
   <nav-bar title="维度详情" />
   <view class="pad">
-    <block wx:if="{{dim.insufficient}}">
-      <text class="h1">{{dim.name}} 数据不足</text>
-      <text class="sub mt-8">本周期缺少足够有效事件，不使用默认分数补齐。</text>
-    </block>
-    <block wx:else>
-      <text class="h1">{{dim.name}} {{dim.value}}</text>
-      <text class="sub mt-8">近期变化 {{dim.delta > 0 ? '+' : ''}}{{dim.delta}}。小程序不自行计算分数。</text>
-    </block>
-    <view class="card card-p mt-20">
-      <text class="h3">代表证据</text>
-      <text class="sub mt-8">正式产品由互动事件与项目成果提供；当前页面使用演示数据。</text>
+    <view class="dimension-hero">
+      <view class="between">
+        <view><text class="caption">本周能力观察</text><text class="h1">{{dim.name || '能力'}}维度</text></view>
+        <view class="score" wx:if="{{!dim.insufficient}}"><text>{{dim.value}}</text><text>分</text></view>
+        <view class="pill pill-butter" wx:else>数据积累中</view>
+      </view>
+      <text class="hero-summary">{{detail.summary}}</text>
+      <view class="progress" wx:if="{{!dim.insufficient}}"><view style="width: {{dim.value}}%;"></view></view>
+      <text class="delta" wx:if="{{!dim.insufficient}}">较上周 {{dim.delta > 0 ? '+' : ''}}{{dim.delta}} · 变化来自连续观察记录</text>
+      <text class="delta" wx:else>有效记录不足时暂不呈现分数，避免用单次表现下结论。</text>
     </view>
-    <view class="card card-p mt-16">
-      <text class="h3">陪伴建议</text>
-      <text class="sub mt-8">关注孩子如何说明理由，而不是单一分数高低。</text>
+
+    <view class="section mt-20">
+      <text class="section-title">代表记录</text>
+      <view class="card evidence-card" wx:if="{{detail.evidence.length}}">
+        <view class="evidence-row" wx:for="{{detail.evidence}}" wx:for-item="record" wx:key="*this"><view class="evidence-dot"></view><text>{{record}}</text></view>
+      </view>
+      <view class="card card-p evidence-empty" wx:else>
+        <text class="h3">继续积累观察</text><text class="sub">出现具有代表性的互动或项目记录后，再呈现这一维度的变化。</text>
+      </view>
+    </view>
+
+    <view class="card advice mt-16">
+      <view class="advice-icon"><image src="/assets/icons/lucide/care.png" mode="aspectFit" /></view>
+      <view><text class="h3">今天可以这样陪伴</text><text class="sub">{{detail.suggestion}}</text></view>
     </view>
   </view>
 </view>

@@ -1,2 +1,3 @@
 @import "../../styles/detail.wxss";
-.toggle-row { width: 100%; margin-left: 0; margin-right: 0; line-height: 1.4; }
+.toggle-row { width: 100% !important; margin-left: 0; margin-right: 0; line-height: 1.4; }
+.edit-hero{display:flex;align-items:center;gap:20rpx;margin-bottom:28rpx}.form-label{display:block;font-size:24rpx;color:#61758a;font-weight:600}

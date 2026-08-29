@@ -1,1 +1,2 @@
 @import "../../styles/detail.wxss";
+.alarm-hero{display:flex;align-items:center;gap:20rpx;margin-bottom:24rpx}.alarm-copy{display:flex;flex-direction:column}.alarm-label{font-size:23rpx;color:#8874e8;font-weight:650}.alarm-status{display:flex;align-items:center;gap:9rpx;color:#829ab1;font-size:22rpx}.alarm-status view{width:14rpx;height:14rpx;border-radius:50%;background:#a9b7c4}.alarm-status.on{color:#278c3d}.alarm-status.on view{background:#40b352}

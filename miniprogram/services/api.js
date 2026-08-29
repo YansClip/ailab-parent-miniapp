@@ -5,11 +5,21 @@ const mock = require('./mock')
 const store = require('./store')
 
 function login() {
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     wx.login({
-      complete() {
+      success(result) {
+        if (!result || !result.code) {
+          reject({ code: 'LOGIN_CODE_MISSING', message: '未能取得微信登录凭证，请重试' })
+          return
+        }
         store.setSession({ loggedIn: true, parentName: '陈然', role: '主管理员' })
-        resolve({ ok: true, mock: true })
+        resolve({ ok: true })
+      },
+      fail(error) {
+        reject({
+          code: 'WECHAT_LOGIN_FAILED',
+          message: (error && error.errMsg) ? '微信登录未完成，请检查网络后重试' : '微信登录失败，请重试'
+        })
       }
     })
   })
@@ -54,11 +64,13 @@ module.exports = {
   regenerateReport: (id) => mock.regenerateReport(id),
   getAchievement: (id) => mock.getAchievement(id),
   getSharePreview: (id) => mock.getSharePreview(id),
+  getPrivacyRequest: (type) => mock.getPrivacyRequest(type),
   getFamily: () => mock.getFamily(),
   acceptInvite: (id) => mock.acceptInvite(id),
   rejectInvite: (id) => mock.rejectInvite(id),
   getDevices: () => mock.getDevices(),
   getMessages: () => mock.getMessages(),
+  markMessageRead: (id) => mock.markMessageRead(id),
   getGuide: () => mock.getGuide(),
   submitTask: (type, payload) => mock.submitTask(type, payload),
   getTask: (id) => mock.getTask(id)

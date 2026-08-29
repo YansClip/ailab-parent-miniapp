@@ -18,5 +18,18 @@ Page({
     store.setScenario(e.currentTarget.dataset.id)
     this.setData({ current: e.currentTarget.dataset.id })
     wx.showToast({ title: '已切换场景', icon: 'none' })
+  },
+  reset() {
+    wx.showModal({
+      title: '重置测试数据',
+      content: '仅清除本机交互记录，不影响登录状态。',
+      confirmColor: '#e85d69',
+      success: (result) => {
+        if (!result.confirm) return
+        store.resetDemoData()
+        this.setData({ current: 'default' })
+        wx.showToast({ title: '已恢复默认数据', icon: 'none' })
+      }
+    })
   }
 })

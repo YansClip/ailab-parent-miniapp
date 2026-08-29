@@ -12,7 +12,7 @@
       <text class="h3 mt-16">本周变化</text>
       <text class="sub mt-8">{{preview.body}}</text>
     </view>
-    <view class="demo-note mt-16">演示版只展示脱敏分享流程，不会真实发送消息或写入系统相册。</view>
+    <view class="privacy-tip mt-16"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /><text>分享内容已隐藏孩子全名、设备信息与家庭信息。</text></view>
   </view>
   <view class="page-fixed-footer">
     <button class="btn btn-primary {{canShare ? '' : 'btn-disabled'}}" disabled="{{!canShare}}" hover-class="pressed" bindtap="openShare">生成长图并分享</button>
@@ -20,8 +20,8 @@
   <view class="share-mask" wx:if="{{sheet}}" bindtap="close">
     <view class="share-sheet" catchtap="noop">
       <text class="h3">分享到</text>
-      <button class="item share-option" hover-class="pressed" bindtap="doShare">微信好友 / 收藏（演示）</button>
-      <button class="item share-option" hover-class="pressed" bindtap="save">保存到相册（演示）</button>
+      <button class="item share-option" hover-class="pressed" bindtap="doShare">微信好友 / 收藏</button>
+      <button class="item share-option" hover-class="pressed" bindtap="save">保存到相册</button>
       <button class="item share-option" hover-class="pressed" bindtap="close">取消</button>
     </view>
   </view>

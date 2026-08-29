@@ -1,14 +1,13 @@
 <view class="page">
   <nav-bar title="家庭管理" />
   <view class="pad">
-    <text class="h1">{{family.name}}</text>
-    <text class="sub">主管理员 {{family.admin}}</text>
+    <view class="family-hero"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/family.png" mode="aspectFit" /></view><view><text class="h1">{{family.name}}</text><text class="sub">主管理员 {{family.admin}} · {{family.members.length}} 位成员</text></view></view>
     <view class="item" wx:for="{{family.members}}" wx:key="id">
       <view class="between">
-        <view>
+        <view class="member-main"><view class="member-avatar">{{index + 1}}</view><view>
           <text class="h3">{{item.name}}</text>
           <text class="sub">{{item.role}} · {{item.relation}} · {{item.status}}</text>
-        </view>
+        </view></view>
       </view>
       <view class="invite-actions" wx:if="{{item.pending}}">
         <button class="btn btn-primary" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="accept">同意</button>

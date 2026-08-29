@@ -6,19 +6,25 @@
   display: flex;
   flex-direction: column;
 }
-.hero-space { height: 48rpx; }
+.brand { height: 92rpx; display: flex; align-items: center; gap: 14rpx; font-size: 25rpx; color: #61758a; font-weight: 600; }
+.brand-mark { width: 54rpx; height: 54rpx; border-radius: 18rpx; background: linear-gradient(135deg,#8874e8,#40b352); color:#fff; display:flex; align-items:center; justify-content:center; font-size:21rpx; font-weight:750; }
 .copy { padding-right: 40rpx; }
 .art {
   margin: 48rpx 0 40rpx;
-  height: 420rpx;
+  flex: 1;
+  min-height: 540rpx;
+  max-height: 760rpx;
   border-radius: 40rpx;
   overflow: hidden;
   box-shadow: 0 16rpx 40rpx rgba(16, 42, 67, 0.12);
 }
-.art-img { width: 100%; height: 100%; }
+.art-img { position:absolute; left:0; right:0; top:0; bottom:0; width:100%; height:100%; }
+.art-tag { position:absolute; left:28rpx; right:28rpx; bottom:28rpx; padding:20rpx 24rpx; border-radius:28rpx; background:rgba(255,255,255,.9); box-shadow:0 10rpx 30rpx rgba(16,42,67,.12); display:flex; flex-direction:column; }
+.art-tag text:first-child { font-size:29rpx; font-weight:700; color:#102a43; }.art-tag text:last-child { margin-top:4rpx; font-size:22rpx; color:#61758a; }
+.art { position: relative; }
 .actions { margin-top: auto; }
 .join {
-  width: 100%;
+  width: 100% !important;
   background: transparent;
   line-height: 1.4;
   text-align: center;

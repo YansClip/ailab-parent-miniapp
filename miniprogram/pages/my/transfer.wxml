@@ -1,9 +1,10 @@
 <view class="page">
   <nav-bar title="转移主管理员" />
   <view class="pad">
-    <text class="h1">将主管理权转移给林屿</text>
+    <view class="transfer-hero"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/family.png" mode="aspectFit" /></view><text class="h1">将主管理权转移给林屿</text><text class="sub">转移后，林屿将负责家庭成员、设备与儿童信息的重要操作。</text></view>
     <text class="sub mt-12">转移前核验接收方身份和有效监护关系。成功后双方权限立即更新。</text>
+    <view class="card card-p mt-20"><text class="h3">你的权限将变为</text><text class="sub mt-8">普通家庭成员，可继续查看成长内容和设备状态，但不能解绑孩子、设备或管理其他成员。</text></view>
     <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="go">二次确认并提交</button>
-    <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+    <view class="task-state mt-16 {{task.status==='success' ? 'success' : task.status==='failed' ? 'failed' : ''}}" wx:if="{{task}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">转移进度</text><text class="sub">{{task.message}}</text></view></view>
   </view>
 </view>

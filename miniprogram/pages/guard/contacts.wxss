@@ -1,1 +1,2 @@
 @import "../../styles/detail.wxss";
+.section-intro{display:flex;align-items:center;gap:20rpx;margin-bottom:24rpx}.icon-pink{background:#fff0fb}.contact-main{display:flex;align-items:center;gap:18rpx}.contact-avatar{width:68rpx;height:68rpx;border-radius:22rpx;background:#fff0fb;display:flex;align-items:center;justify-content:center}.contact-avatar image{width:36rpx;height:36rpx}

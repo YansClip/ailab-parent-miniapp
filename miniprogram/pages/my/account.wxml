@@ -1,10 +1,11 @@
 <view class="page">
   <nav-bar title="我的账号" />
   <view class="pad">
-    <button class="item list-button" bindtap="go" data-url="/pages/my/privacy"><text class="h3">儿童信息</text><text class="sub">查看、更正或申请删除</text></button>
-    <button class="item list-button" bindtap="go" data-url="/pages/my/withdraw"><text class="h3">撤回同意</text><text class="sub">停止新的相关数据处理</text></button>
-    <button class="item list-button" bindtap="go" data-url="/pages/my/delete"><text class="h3">申请删除数据</text><text class="sub">服务端闭环并留痕</text></button>
-    <button class="item list-button" bindtap="go" data-url="/pages/my/cancel"><text class="h3">账号注销</text><text class="sub">冷静期与主管理员责任</text></button>
+    <view class="account-hero"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/account.png" mode="aspectFit" /></view><view><text class="h1">账号与隐私</text><text class="sub">管理登录信息、儿童信息与隐私授权</text></view></view>
+    <button class="item list-button icon-row" bindtap="go" data-url="/pages/my/privacy"><view class="icon-box icon-sky"><image src="/assets/icons/lucide/child.png" mode="aspectFit" /></view><view class="row-copy"><text class="h3">儿童信息</text><text class="sub">查看、更正或申请删除</text></view><image class="row-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></button>
+    <button class="item list-button icon-row" bindtap="go" data-url="/pages/my/withdraw"><view class="icon-box icon-butter"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /></view><view class="row-copy"><text class="h3">撤回同意</text><text class="sub">停止新的相关数据处理</text></view><image class="row-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></button>
+    <button class="item list-button icon-row" bindtap="go" data-url="/pages/my/delete"><view class="icon-box icon-coral"><image src="/assets/icons/lucide/trash.png" mode="aspectFit" /></view><view class="row-copy"><text class="h3">申请删除数据</text><text class="sub">查看删除范围与处理进度</text></view><image class="row-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></button>
+    <button class="item list-button icon-row" bindtap="go" data-url="/pages/my/cancel"><view class="icon-box icon-coral"><image src="/assets/icons/lucide/logout.png" mode="aspectFit" /></view><view class="row-copy"><text class="h3">账号注销</text><text class="sub">了解冷静期与家庭责任</text></view><image class="row-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></button>
     <button class="btn btn-secondary mt-24" bindtap="logout">退出登录</button>
   </view>
 </view>

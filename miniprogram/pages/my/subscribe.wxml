@@ -1,11 +1,10 @@
 <view class="page">
   <nav-bar title="微信订阅消息" />
   <view class="pad">
-    <text class="h1">由你主动授权</text>
-    <text class="sub mt-12">拒绝或发送失败时，站内消息仍完整保留。不承诺永久订阅。</text>
-    <view class="item mt-20 between"><text>设备离线提醒</text><text class="status">{{enabled ? '已授权' : '未授权'}}</text></view>
-    <view class="item between"><text>成长报告完成</text><text class="status">{{enabled ? '已授权' : '未授权'}}</text></view>
-    <button class="btn {{enabled ? 'btn-secondary' : 'btn-primary'}} mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="ask">{{enabled ? '关闭演示订阅' : '申请订阅'}}</button>
+    <view class="subscribe-hero"><view class="icon-box icon-butter"><image src="/assets/icons/lucide/notice.png" mode="aspectFit" /></view><text class="h1">重要消息及时知道</text><text class="sub">订阅由你主动授权；未授权时，消息仍会完整保留在消息中心。</text></view>
+    <view class="item mt-20 between"><view class="reminder-main"><view class="icon-box icon-coral"><image src="/assets/icons/lucide/device.png" mode="aspectFit" /></view><view><text class="h3">设备离线提醒</text><text class="sub">设备长时间离线时提醒</text></view></view><text class="status">{{enabled ? '已授权' : '未授权'}}</text></view>
+    <view class="item between"><view class="reminder-main"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/document.png" mode="aspectFit" /></view><view><text class="h3">成长报告完成</text><text class="sub">新报告生成后提醒查看</text></view></view><text class="status">{{enabled ? '已授权' : '未授权'}}</text></view>
+    <button class="btn {{enabled ? 'btn-secondary' : 'btn-primary'}} mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="ask">{{enabled ? '关闭订阅提醒' : '申请订阅'}}</button>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
   </view>
 </view>

@@ -1,8 +1,7 @@
 <view class="page">
   <nav-bar title="关于我们" />
   <view class="pad">
-    <text class="h1">AILab 家长端</text>
-    <text class="sub mt-8" bindlongpress="debug">版本 1.0.0-mock · 基础库 3.17</text>
+    <view class="about-hero" bindlongpress="debug"><view class="about-mark">AI</view><text class="h1">AILab 家长端</text><text class="sub mt-8">陪伴成长，安心守护</text><text class="caption mt-8">版本 1.0.0</text></view>
     <button class="item list-button" hover-class="pressed" bindtap="policy" data-type="user"><text class="h3">用户协议</text></button>
     <button class="item list-button" hover-class="pressed" bindtap="policy" data-type="privacy"><text class="h3">隐私政策</text></button>
     <button class="item list-button" hover-class="pressed" bindtap="policy" data-type="child"><text class="h3">儿童信息处理规则</text></button>

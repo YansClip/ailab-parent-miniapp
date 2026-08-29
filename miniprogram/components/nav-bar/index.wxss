@@ -14,7 +14,8 @@
   padding: 0 16rpx;
 }
 .side {
-  width: 120rpx;
+  width: 120rpx !important;
+  flex: none;
   height: 88rpx;
   display: flex;
   align-items: center;
@@ -27,14 +28,11 @@
 .side.right {
   justify-content: flex-end;
 }
-.chev {
-  font-size: 56rpx;
-  color: #102a43;
-  padding-left: 12rpx;
-  line-height: 1;
-}
+.back-icon { width: 42rpx; height: 42rpx; margin-left: 8rpx; transform: rotate(180deg); opacity: .72; }
 .title {
   flex: 1;
+  min-width: 0;
+  white-space: nowrap;
   text-align: center;
   font-size: 32rpx;
   font-weight: 600;

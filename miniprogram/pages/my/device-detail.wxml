@@ -1,11 +1,12 @@
 <view class="page">
   <nav-bar title="设备详情" />
   <view class="pad">
-    <view class="card card-p">
-      <text class="h3">{{dev.name}}</text>
+    <view class="device-detail-hero"><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /><view><text class="h1">{{dev.name}}</text><text class="pill {{dev.online ? 'pill-mint' : 'pill-coral'}}">{{dev.online ? '设备在线' : '设备离线'}}</text></view></view>
+    <view class="card card-p mt-20">
+      <text class="h3">设备信息</text>
       <text class="sub mt-8">绑定 {{dev.childName}}</text>
       <text class="sub">固件 {{dev.firmware}} · {{dev.locate}}</text>
-      <text class="sub">状态过期时不会把缓存值显示为当前。</text>
+      <text class="sub">电量 {{dev.battery}}% · 更新于 {{dev.updatedAt}}</text>
     </view>
     <button class="btn btn-danger mt-24" hover-class="pressed" bindtap="unbind">解绑设备</button>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>

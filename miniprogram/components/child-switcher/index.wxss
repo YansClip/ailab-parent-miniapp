@@ -36,7 +36,7 @@
   line-height: 1.5;
 }
 .item {
-  width: 100%;
+  width: 100% !important;
   margin: 0;
   background: transparent;
   text-align: left;
@@ -70,7 +70,7 @@
 .dev { font-size: 22rpx; color: #61758a; }
 .check { font-size: 22rpx; color: #40b352; }
 .cancel {
-  width: 100%;
+  width: 100% !important;
   background: transparent;
   text-align: center;
   padding: 28rpx 0 8rpx;

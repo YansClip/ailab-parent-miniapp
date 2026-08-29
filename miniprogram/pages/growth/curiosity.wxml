@@ -1,6 +1,7 @@
 <view class="page">
   <nav-bar title="好奇成长简报" />
   <view class="pad" wx:if="{{brief.status === 'ready'}}">
+    <view class="result-banner curiosity-cover"><image class="result-banner-image" src="/assets/illustrations/growth-insight-v2.jpg" mode="aspectFill" /><view class="result-banner-mask"></view><view class="result-banner-copy"><text class="pill pill-white">{{brief.date}}</text><text class="h2 mt-12">一次提问，打开新的思考</text><text class="sub mt-8">成长启思简报</text></view></view>
     <text class="h1">{{brief.question}}</text>
     <text class="sub mt-8">{{brief.date}} · 有效追问 {{brief.followups}} 次</text>
     <view class="card card-p mt-20">

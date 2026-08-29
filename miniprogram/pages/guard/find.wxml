@@ -1,6 +1,7 @@
 <view class="page">
   <nav-bar title="查找设备" />
   <view class="pad">
+    <view class="find-visual {{stage}}"><view class="find-rings"></view><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view>
     <text class="h1">{{title}}</text>
     <text class="sub mt-12">{{desc}}</text>
     <view class="card card-p mt-24" wx:if="{{stage==='ringing'}}">
@@ -11,7 +12,7 @@
       <text class="h3">{{task.message || '停止请求提交中'}}</text>
       <text class="sub">请不要重复操作，结果以设备最终确认状态为准。</text>
     </view>
-    <view class="demo-note mt-24">高保真演示：通过 Mock 任务模拟设备受理、执行和最终确认。</view>
+    <view class="task-state mt-24 {{stage==='found' ? 'success' : stage==='failed' || stage==='offline' ? 'failed' : ''}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">{{stage==='start' ? '准备就绪' : title}}</text><text class="sub">设备收到请求后会持续响铃，手动停止或最长 60 秒自动结束。</text></view></view>
   </view>
   <view class="footer">
     <button class="btn btn-primary" wx:if="{{stage==='start'}}" hover-class="pressed" bindtap="start">确认响铃查找</button>

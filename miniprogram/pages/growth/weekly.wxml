@@ -13,10 +13,9 @@
     <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="retry">重新生成</button>
   </view>
   <view class="pad" wx:else>
-    <text class="sub">{{report.range}} · {{report.generatedAt}}</text>
-    <text class="sub">{{report.version}} · {{report.sufficiency}}</text>
+    <view class="report-cover"><view class="report-cover-head"><view class="icon-box icon-mint"><image src="/assets/icons/lucide/document.png" mode="aspectFit" /></view><text class="pill pill-mint">{{report.sufficiency}}</text></view><text class="h1">{{report.title}}</text><text class="sub">{{report.range}}</text><text class="caption mt-8">生成于 {{report.generatedAt}}</text></view>
     <view class="card card-p mt-20" wx:for="{{report.sections}}" wx:key="title">
-      <text class="h3">{{item.title}}</text>
+      <view class="report-section-title"><view class="section-number">{{index + 1}}</view><text class="h3">{{item.title}}</text></view>
       <text class="sub mt-8">{{item.body}}</text>
     </view>
   </view>

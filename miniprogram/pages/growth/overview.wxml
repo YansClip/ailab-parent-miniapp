@@ -2,10 +2,10 @@
   <nav-bar title="成长总览详情" />
   <view class="pad">
     <text class="h1">本周成长洞察</text>
-    <text class="sub mt-8">统计周期、规则版本与数据充分性同屏展示。</text>
+    <text class="sub mt-8">结合本周的互动、探索与成果记录，了解各项能力的变化。</text>
     <view class="card card-p mt-20">
       <text class="h3">数据依据</text>
-      <text class="sub mt-8">正式产品仅展示有有效事件支撑的维度；当前为高保真演示数据。</text>
+      <text class="sub mt-8">仅在有足够观察记录时呈现维度变化，不用单次表现替代长期成长。</text>
     </view>
     <button class="item list-button" wx:for="{{dims}}" wx:key="key" data-key="{{item.key}}" hover-class="pressed" bindtap="goDim" aria-label="查看{{item.name}}维度详情">
       <view class="between">

@@ -2,7 +2,7 @@
   <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
     <view class="pad title-row">
       <text class="h1">我的</text>
-      <view class="notice-pill">3 条新消息</view>
+      <view class="notice-pill">家庭与设备管理</view>
     </view>
 
     <view class="pad" wx:if="{{loading}}" role="status" aria-label="正在加载账号与家庭信息">
@@ -12,7 +12,7 @@
     </view>
 
     <view class="pad" wx:elif="{{error}}">
-      <empty-state title="账号信息暂时不可用" desc="{{error}}" action="重新加载" icon="!" tone="coral" bind:action="reload" />
+      <empty-state title="账号信息暂时不可用" desc="{{error}}" action="重新加载" tone="coral" bind:action="reload" />
     </view>
 
     <block wx:else>
@@ -24,14 +24,16 @@
             <text class="family-name">{{family.name}}</text>
             <text class="sub">{{child.name}} · {{child.deviceName}} · 当前</text>
           </view>
-          <text class="chev">›</text>
+          <image class="profile-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" />
         </button>
       </view>
 
       <view class="pad mt-16">
         <view class="guardian-card">
-          <view class="between">
-            <view>
+          <image class="guardian-device" src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" />
+          <view class="guardian-content">
+          <view class="between guardian-head">
+            <view class="guardian-copy">
               <text class="guardian-title">{{!device.id ? 'Mini 设备尚未绑定' : device.online ? '家庭守护运行正常' : '家庭守护需要关注'}}</text>
               <text class="sub">{{!device.id ? '完成设备绑定后可使用实时守护工具' : device.online ? '设备在线 · 定位更新正常' : '设备离线 · 守护工具暂不可用'}}</text>
             </view>
@@ -42,6 +44,7 @@
             <view><text>{{family.members.length || 0}} 人</text><text class="sub">家庭成员</text></view>
             <view><text>{{device.id ? device.battery + '%' : '—'}}</text><text class="sub">设备电量</text></view>
           </view>
+          </view>
         </view>
       </view>
 
@@ -50,13 +53,13 @@
         <view class="menu surface-border">
           <button class="menu-row" wx:for="{{group.items}}" wx:key="url" data-url="{{item.url}}" hover-class="pressed" bindtap="go" aria-label="进入{{item.title}}，{{item.desc}}">
             <view class="left">
-              <view class="menu-icon tone-{{item.tone}}">{{item.icon}}</view>
+              <view class="menu-icon tone-{{item.tone}}"><image src="{{item.icon}}" mode="aspectFit" /></view>
               <view class="menu-copy">
                 <text class="name">{{item.title}}</text>
                 <text class="sub">{{item.desc}}</text>
               </view>
             </view>
-            <text class="chev">›</text>
+            <image class="menu-chev" src="/assets/icons/lucide/chevron.png" mode="aspectFit" />
           </button>
         </view>
       </view>

@@ -4,6 +4,8 @@ const SCENARIO_KEY = 'ailab.mock.scenario'
 const TASK_KEY = 'ailab.tasks'
 const FOLLOW_KEY = 'ailab.follows'
 const DATA_KEY = 'ailab.demo.data'
+const DATA_VERSION_KEY = 'ailab.local.version'
+const DATA_VERSION = 3
 
 function read(key, fallback) {
   try {
@@ -16,6 +18,10 @@ function read(key, fallback) {
 
 function write(key, value) {
   wx.setStorageSync(key, value)
+}
+
+function asRecord(value) {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value : {}
 }
 
 const listeners = []
@@ -49,6 +55,24 @@ function defaultSession() {
 
 const store = {
   init() {
+    const version = Number(read(DATA_VERSION_KEY, 0))
+    if (version < 2) {
+      const legacySos = read(SOS_KEY, ['c1', 'c2'])
+      if (Array.isArray(legacySos)) write(SOS_KEY, { 'child-xiaoman': legacySos })
+    }
+    if (version < 3) {
+      const legacyData = asRecord(read(DATA_KEY, {}))
+      if (Object.prototype.hasOwnProperty.call(legacyData, 'contacts') && !Object.prototype.hasOwnProperty.call(legacyData, 'contacts.child-xiaoman')) {
+        legacyData['contacts.child-xiaoman'] = legacyData.contacts
+        delete legacyData.contacts
+      }
+      if (Object.prototype.hasOwnProperty.call(legacyData, 'alarms') && !Object.prototype.hasOwnProperty.call(legacyData, 'alarms.child-xiaoman')) {
+        legacyData['alarms.child-xiaoman'] = legacyData.alarms
+        delete legacyData.alarms
+      }
+      write(DATA_KEY, legacyData)
+    }
+    write(DATA_VERSION_KEY, DATA_VERSION)
     const session = Object.assign(defaultSession(), read(KEY, {}))
     write(KEY, session)
     if (!read(CHILD_KEY, '')) write(CHILD_KEY, 'child-xiaoman')
@@ -88,7 +112,7 @@ const store = {
   },
 
   getTasks() {
-    return read(TASK_KEY, {})
+    return asRecord(read(TASK_KEY, {}))
   },
 
   setTask(id, task) {
@@ -99,17 +123,17 @@ const store = {
   },
 
   getFollows() {
-    return read(FOLLOW_KEY, {})
+    return asRecord(read(FOLLOW_KEY, {}))
   },
 
   getDemoData(key, fallback) {
-    const all = read(DATA_KEY, {})
+    const all = asRecord(read(DATA_KEY, {}))
     if (!Object.prototype.hasOwnProperty.call(all, key)) return fallback
     return all[key]
   },
 
   setDemoData(key, value) {
-    const all = read(DATA_KEY, {})
+    const all = asRecord(read(DATA_KEY, {}))
     all[key] = value
     write(DATA_KEY, all)
     emit('demo-data', { key, value })
@@ -132,17 +156,37 @@ const store = {
   },
 
   getSosIds() {
-    return read(SOS_KEY, ['c1', 'c2'])
+    const value = read(SOS_KEY, {})
+    if (Array.isArray(value)) return value
+    return asRecord(value)[this.getCurrentChildId()] || ['c1', 'c2']
   },
 
   setSosIds(ids) {
-    write(SOS_KEY, ids)
+    const value = read(SOS_KEY, {})
+    const all = Array.isArray(value) ? { 'child-xiaoman': value } : asRecord(value)
+    all[this.getCurrentChildId()] = ids
+    write(SOS_KEY, all)
     emit('sos', ids)
     return ids
   },
 
+  getReadMessageIds() {
+    const all = asRecord(this.getDemoData('messageReads', {}))
+    const ids = all[this.getCurrentChildId()]
+    return Array.isArray(ids) ? ids : []
+  },
+
+  markMessageRead(id) {
+    const all = asRecord(this.getDemoData('messageReads', {}))
+    const childId = this.getCurrentChildId()
+    const ids = all[childId] || []
+    if (ids.indexOf(id) < 0) all[childId] = ids.concat(id)
+    this.setDemoData('messageReads', all)
+    return all[childId] || ids
+  },
+
   getInvites() {
-    return read(INVITE_KEY, { u3: 'pending' })
+    return Object.assign({ u3: 'pending' }, asRecord(read(INVITE_KEY, {})))
   },
 
   setInvite(id, status) {
@@ -158,9 +202,22 @@ const store = {
     write(CHILD_KEY, 'child-xiaoman')
     write(TASK_KEY, {})
     write(FOLLOW_KEY, {})
-    write(SOS_KEY, ['c1', 'c2'])
+    write(SOS_KEY, { 'child-xiaoman': ['c1', 'c2'] })
     write(INVITE_KEY, { u3: 'pending' })
     write(DATA_KEY, {})
+    write(DATA_VERSION_KEY, DATA_VERSION)
+  },
+
+  resetDemoData() {
+    write(CHILD_KEY, 'child-xiaoman')
+    write(SCENARIO_KEY, 'default')
+    write(TASK_KEY, {})
+    write(FOLLOW_KEY, {})
+    write(SOS_KEY, { 'child-xiaoman': ['c1', 'c2'] })
+    write(INVITE_KEY, { u3: 'pending' })
+    write(DATA_KEY, {})
+    write(DATA_VERSION_KEY, DATA_VERSION)
+    emit('reset', { childId: 'child-xiaoman' })
   },
 
   clearSensitive(nextId) {

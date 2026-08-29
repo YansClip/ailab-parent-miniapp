@@ -1,13 +1,14 @@
 <view class="page">
   <nav-bar title="紧急联系人" action="添加" bind:action="add" />
   <view class="pad">
+    <view class="sos-hero"><view class="sos-icon"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view><view><text class="h2">紧急时优先联系</text><text class="sub">按顺序尝试呼叫，确保至少一人可及时响应</text></view></view>
     <text class="sub">至少 1 名、最多 3 名。仅可从已授权联系人中选择。</text>
     <view class="item" wx:for="{{list}}" wx:key="id">
       <view class="between">
-        <view>
-          <text class="h3">{{index + 1}}. {{item.name}}</text>
+        <view class="contact-main"><view class="rank">{{index + 1}}</view><view>
+          <text class="h3">{{item.name}}</text>
           <text class="sub">{{item.relation}}</text>
-        </view>
+        </view></view>
         <button class="danger-inline" data-id="{{item.id}}" loading="{{busy}}" disabled="{{busy}}" catchtap="remove" aria-label="移除紧急联系人{{item.name}}">移除</button>
       </view>
     </view>

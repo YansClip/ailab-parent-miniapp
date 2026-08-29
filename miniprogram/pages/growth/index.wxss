@@ -7,26 +7,34 @@
 }
 .scroll { flex: 1; height: 0; }
 .head { display: flex; justify-content: space-between; align-items: flex-start; }
+.head { padding-top: 8rpx; padding-bottom: 12rpx; }
 .child-pill { margin: 0; line-height: 1.2; }
 .loading { padding-top: 48rpx; color: #61758a; }
-.insight { padding: 32rpx; }
+.growth-hero { height: 328rpx; border-radius: 44rpx; overflow: hidden; position: relative; box-shadow: 0 18rpx 46rpx rgba(55,61,105,.14); }
+.growth-child { position:absolute; z-index:3; right:22rpx; top:22rpx; color:#7762d5; }
+.growth-hero>image,.growth-hero-mask { position:absolute; left:0; right:0; top:0; bottom:0; width:100%; height:100%; }
+.growth-hero-mask { background:linear-gradient(90deg,rgba(16,42,67,.78),rgba(16,42,67,.06)); }
+.growth-hero-copy { position:absolute; left:30rpx; top:30rpx; bottom:28rpx; width:58%; color:#fff; display:flex; flex-direction:column; justify-content:flex-end; align-items:flex-start; }
+.hero-title { margin-top:16rpx; font-size:34rpx; line-height:1.3; font-weight:700; }.hero-sub { margin-top:8rpx; font-size:22rpx; opacity:.9; }
+.insight { padding: 32rpx; background:linear-gradient(145deg,#fff,#fbfafc); }
 .insight-lead { font-size: 30rpx; font-weight: 600; }
 .metrics { display: flex; margin-top: 24rpx; }
-.m { flex: 1; display: flex; flex-direction: column; margin-right: 24rpx; }
+.m { flex: 1; display: flex; flex-direction: column; margin-right: 12rpx; padding:18rpx 16rpx; background:#f8f7fb; border-radius:24rpx; }
 .m:last-child { margin-right: 0; }
 .m .sub { margin-top: 6rpx; }
 .n { font-size: 36rpx; font-weight: 700; color: #8b78e6; }
-.brief { width: 100%; margin: 0; text-align: left; line-height: 1.4; background: #f4eeff; border-radius: 40rpx; padding: 32rpx; display: flex; flex-direction: column; }
-.radar { padding: 32rpx; }
+.brief { width: 100% !important; margin: 0; text-align: left; line-height: 1.4; background: linear-gradient(135deg,#f0ebff,#faf8ff); border-radius: 40rpx; padding: 32rpx; display: flex; flex-direction: column; box-shadow:0 12rpx 34rpx rgba(94,76,172,.09); }
+.brief-top { display:flex; align-items:center; gap:18rpx; }.brief-top .h3,.brief-top .caption { display:block; }.brief-action { margin-top:22rpx; display:flex; align-items:center; gap:4rpx; color:#7762d5; font-size:24rpx; font-weight:650; }.brief-action image { width:28rpx; height:28rpx; }
+.radar { padding: 32rpx; overflow:hidden; }
 .radar-wrap { display: flex; justify-content: center; margin: 8rpx 0 -8rpx; }
 .radar-canvas { width: 300px; height: 248px; }
 .dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
-.dim-chip { margin: 0; padding: 16rpx; border-radius: 22rpx; background: #faf8ff; line-height: 1.35; display: flex; flex-direction: column; }
+.dim-chip { width:100% !important; margin: 0; padding: 16rpx; border-radius: 22rpx; background: #faf8ff; line-height: 1.35; display: flex; flex-direction: column; }
 .dim-name { font-size: 22rpx; color: #61758a; }
 .dim-v { margin-top: 4rpx; font-size: 26rpx; color: #102a43; font-weight: 700; }
-.radar-more { width: 100%; margin: 20rpx 0 0; padding: 16rpx; background: transparent; color: #8b78e6; font-size: 24rpx; }
+.radar-more { width: 100% !important; margin: 20rpx 0 0; padding: 16rpx; background: transparent; color: #8b78e6; font-size: 24rpx; }
 .rep, .ach {
-  width: 100%;
+  width: 100% !important;
   margin-left: 0;
   margin-right: 0;
   text-align: left;
@@ -35,7 +43,8 @@
   display: flex; justify-content: space-between; align-items: center;
   box-shadow: 0 8rpx 24rpx rgba(16,42,67,0.06);
 }
-.rep view, .ach { display: flex; flex-direction: column; }
+.rep { min-height:124rpx; gap:18rpx; }.report-icon { width:68rpx; height:68rpx; border-radius:22rpx; }.report-icon image{width:36rpx;height:36rpx}.report-copy{flex:1;min-width:0;display:flex;flex-direction:column}.chevron{width:34rpx;height:34rpx;opacity:.42;flex:none}
+.ach { flex-direction:row; gap:20rpx; padding:18rpx; }.ach-thumb{width:142rpx;height:104rpx;border-radius:24rpx;flex:none}.ach-meta{flex:1;min-width:0;display:flex;flex-direction:column}.ach-meta .sub{margin-top:6rpx}
 .rep .sub, .ach .sub { margin-top: 8rpx; }
 .pb { padding-bottom: calc(168rpx + env(safe-area-inset-bottom)); }
 .sk-growth-lead { width: 54%; height: 52rpx; border-radius: 18rpx; }

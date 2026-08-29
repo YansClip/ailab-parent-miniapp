@@ -1,11 +1,12 @@
 <view class="page welcome" style="padding-top: {{statusBarHeight}}px;">
-  <view class="hero-space"></view>
+  <view class="brand"><view class="brand-mark">AI</view><text>AILab 家长端</text></view>
   <view class="copy">
     <text class="h1">欢迎来到 AILab 家长端</text>
     <text class="sub mt-12">陪伴动态、实时守护、成长记录与家庭管理。</text>
   </view>
   <view class="art">
-    <image class="art-img" src="/assets/images/hero.jpg" mode="aspectFill" aria-label="孩子与 Mini 设备的陪伴插画" />
+    <image class="art-img" src="/assets/illustrations/welcome-v2.jpg" mode="aspectFill" aria-label="孩子与 Mini 设备的陪伴插画" />
+    <view class="art-tag"><text>安心守护</text><text>温柔陪伴每一次成长</text></view>
   </view>
   <view class="actions">
     <button class="btn btn-primary" hover-class="pressed" bindtap="onStart">开始使用</button>

@@ -1,1 +1,2 @@
 @import "../../styles/detail.wxss";
+.edit-hero{display:flex;align-items:center;gap:20rpx;margin-bottom:28rpx}.form-label{display:block;font-size:24rpx;color:#61758a;font-weight:600}.feedback-success{min-height:72vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.feedback-success image{width:120rpx;height:120rpx;margin-bottom:24rpx}.feedback-success .sub{margin-top:12rpx}

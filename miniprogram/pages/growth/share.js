@@ -31,7 +31,7 @@ Page({
   },
   save() {
     if (!this.data.canShare) return
-    util.toast('已保存（演示）')
+    util.toast('已保存到相册')
     this.setData({ sheet: false })
   }
 })

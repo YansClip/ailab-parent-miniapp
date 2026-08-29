@@ -1,13 +1,15 @@
 <view class="page page-has-footer">
   <nav-bar title="{{pick ? '选择紧急联系人' : '通讯录'}}" action="{{pick ? '' : '新增'}}" bind:action="add" />
   <view class="pad">
+    <view class="section-intro"><view class="icon-box icon-pink"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><view><text class="h2">{{pick ? '选择重要联系人' : '设备通讯录'}}</text><text class="sub">联系人会与当前孩子的 Mini 设备保持同步</text></view></view>
     <text class="sub" wx:if="{{pick}}">从已授权联系人中选择，至少 1 名、最多 3 名。已选 {{count}} 人。</text>
+    <empty-state wx:if="{{!list.length}}" title="还没有联系人" desc="新增家人或老师后，孩子可通过 Mini 设备联系。" action="新增联系人" bind:action="add" />
     <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="edit" aria-label="{{pick ? '选择' : '编辑'}}联系人{{item.name}}">
       <view class="between">
-        <view>
+        <view class="contact-main"><view class="contact-avatar"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><view>
           <text class="h3">{{item.name}}</text>
           <text class="sub">{{item.relation}} · {{item.phone}}</text>
-        </view>
+        </view></view>
         <text class="status" wx:if="{{pick}}">{{item.picked ? '已选' : '选择'}}</text>
         <text class="status" wx:else>{{item.deviceCall ? '可通话' : '仅保存'}}</text>
       </view>

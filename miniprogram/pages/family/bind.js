@@ -2,8 +2,25 @@ const api = require('../../services/api')
 const util = require('../../utils/util')
 
 Page({
-  data: { code: '826410', loading: false, error: '' },
+  data: { code: '', loading: false, error: '' },
   onCode(e) { this.setData({ code: e.detail.value, error: '' }) },
+  onScan() {
+    wx.scanCode({
+      onlyFromCamera: false,
+      success: (result) => {
+        const matched = String(result.result || '').match(/(\d{6})/)
+        if (!matched) {
+          this.setData({ error: '没有识别到有效的 6 位绑定码，请改为手动输入。' })
+          return
+        }
+        this.setData({ code: matched[1], error: '' })
+      },
+      fail: (error) => {
+        if (error && /cancel/i.test(error.errMsg || '')) return
+        this.setData({ error: '扫码未完成，请检查相机权限或手动输入绑定码。' })
+      }
+    })
+  },
   onSubmit() {
     if (this.data.loading) return
     const code = (this.data.code || '').trim()

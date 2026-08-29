@@ -1,1 +1,2 @@
 @import "../../styles/detail.wxss";
+.child-hero{display:flex;align-items:center;gap:20rpx;margin-bottom:24rpx}.child-card-head{display:flex;align-items:center;gap:18rpx}.child-avatar{width:74rpx;height:74rpx;border-radius:24rpx;color:#fff;font-size:26rpx;font-weight:700;display:flex;align-items:center;justify-content:center}.child-card-head>view:nth-child(2){flex:1;min-width:0}.child-card-head>.pill{flex:none}

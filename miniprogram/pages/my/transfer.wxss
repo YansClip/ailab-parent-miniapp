@@ -1,1 +1,2 @@
 @import "../../styles/detail.wxss";
+.transfer-hero{padding:34rpx;border-radius:40rpx;background:linear-gradient(145deg,#f1edff,#fbf9ff);display:flex;flex-direction:column;align-items:flex-start}.transfer-hero .h1{margin-top:20rpx}.transfer-hero .sub{margin-top:10rpx}

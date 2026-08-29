@@ -1,5 +1,5 @@
 <view class="empty" role="status" aria-label="{{title}}，{{desc}}">
-  <view class="dot tone-{{tone}}"><text>{{icon}}</text></view>
+  <view class="dot tone-{{tone}}"><image src="{{image}}" mode="aspectFit" /></view>
   <text class="title">{{title}}</text>
   <text class="desc">{{desc}}</text>
   <button class="btn" wx:if="{{action}}" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="onTap">{{busy ? '处理中…' : action}}</button>

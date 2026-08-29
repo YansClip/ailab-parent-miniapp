@@ -7,7 +7,7 @@ Page({
   },
   async unbind(e) {
     if (this.data.list.length <= 1) {
-      util.toast('演示家庭至少保留一名孩子')
+      util.toast('家庭中至少需要保留一名孩子')
       return
     }
     const id = e.currentTarget.dataset.id

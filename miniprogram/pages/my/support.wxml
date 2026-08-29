@@ -1,10 +1,10 @@
 <view class="page">
   <nav-bar title="专属支持" />
   <view class="pad">
-    <button class="item list-button" hover-class="pressed" bindtap="goFb"><text class="h3">意见反馈</text><text class="sub">可关联设备与时间</text></button>
+    <view class="support-hero"><view class="icon-box icon-coral"><image src="/assets/icons/lucide/support.png" mode="aspectFit" /></view><text class="h1">需要帮助？</text><text class="sub">设备使用、家庭管理与账号问题都可以在这里反馈</text><button class="btn btn-primary mt-20" hover-class="pressed" bindtap="goFb">提交问题</button></view>
     <view class="item">
       <text class="h3">服务单 AIL-20260825-03</text>
-      <text class="sub">处理中 · 已脱敏设备日志</text>
+      <text class="sub">处理中 · 已关联 Mini 01</text><view class="progress-track mt-12"><view class="progress-fill" style="width: 68%"></view></view>
     </view>
     <button class="item list-button" wx:for="{{faqs}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="toggle" aria-label="{{item.open ? '收起' : '展开'}}问题：{{item.q}}">
       <text class="h3">{{item.q}}</text>

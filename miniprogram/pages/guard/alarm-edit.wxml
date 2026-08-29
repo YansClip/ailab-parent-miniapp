@@ -1,12 +1,16 @@
 <view class="page">
   <nav-bar title="{{id ? '编辑闹钟' : '新建闹钟'}}" />
   <view class="pad">
+    <view class="edit-hero"><view class="icon-box icon-mint"><image src="/assets/icons/lucide/alarm.png" mode="aspectFit" /></view><view><text class="h2">{{id ? '调整日常提醒' : '添加日常提醒'}}</text><text class="sub">设置会同步到当前孩子的 Mini 设备</text></view></view>
+    <text class="form-label">提醒时间</text>
     <picker mode="time" value="{{time}}" bindchange="onTime">
-      <view class="item between"><text>时间</text><text>{{time}}</text></view>
+      <view class="time-picker"><text>{{time}}</text><text class="caption">轻触修改</text></view>
     </picker>
+    <text class="form-label mt-16">提醒名称</text>
     <input class="input mt-12" value="{{label}}" bindinput="onLabel" placeholder="标签" />
+    <text class="form-label mt-16">重复方式</text>
     <picker mode="selector" range="{{repeatOptions}}" bindchange="onRepeat">
-      <view class="item mt-12 between"><text>重复</text><text class="status">{{repeat}} ›</text></view>
+      <view class="item mt-12 between"><text>重复</text><view class="row"><text class="status">{{repeat}}</text><image class="mini-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></view></view>
     </picker>
     <button class="item toggle-row mt-12 between" bindtap="toggle" aria-label="{{enabled ? '关闭闹钟' : '开启闹钟'}}"><text>启用</text><text class="status">{{enabled ? '开' : '关'}}</text></button>
     <text class="sub mt-16">提交后显示保存结果和设备同步状态。启停以设备最终状态为准。</text>

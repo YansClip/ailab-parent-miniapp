@@ -1,13 +1,12 @@
 <view class="page">
   <nav-bar title="儿童信息" />
   <view class="pad">
-    <text class="h1">处理范围与进度</text>
-    <text class="sub mt-12">可申请查看、更正或删除。页面显示影响、进度和最终结果，必须由服务端完成。</text>
+    <view class="risk-hero safe"><view class="risk-icon"><image src="/assets/icons/lucide/child.png" mode="aspectFit" /></view><text class="h1">儿童信息管理</text><text class="sub">由主管理员查看并管理孩子的相关信息</text></view>
     <view class="card card-p mt-20">
       <text class="h3">当前授权</text>
-      <text class="sub mt-8">监护人同意有效 · 最近变更 2026-08-20</text>
+      <text class="sub mt-8">监护人同意有效 · 最近更新 2026-08-20</text><view class="consent-status"><view></view><text>授权状态正常</text></view>
     </view>
     <button class="btn btn-secondary mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">申请查看/更正</button>
-    <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+    <view class="task-state mt-16 {{task.status==='success' ? 'success' : task.status==='failed' ? 'failed' : ''}}" wx:if="{{task}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">申请进度</text><text class="sub">{{task.message}}</text></view></view>
   </view>
 </view>

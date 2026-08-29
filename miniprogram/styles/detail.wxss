@@ -1,79 +1,14 @@
-.page-has-footer { padding-bottom: calc(180rpx + env(safe-area-inset-bottom)); }
-
-.page-fixed-footer,
-.footer {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
-  padding: 24rpx 40rpx calc(24rpx + env(safe-area-inset-bottom));
-  background: rgba(255, 249, 241, .96);
-  border-top: 1rpx solid rgba(16, 42, 67, .06);
-}
-
-.card-p { padding: 32rpx; }
-
-.item {
-  background: #fff;
-  border-radius: 32rpx;
-  padding: 28rpx;
-  margin-top: 16rpx;
-  box-shadow: 0 8rpx 24rpx rgba(16, 42, 67, .06);
-}
-
-.list-button {
-  width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-  text-align: left;
-  line-height: 1.4;
-}
-.list-button > text { display: block; }
-.list-button > .sub, .list-button > .status { margin-top: 6rpx; }
-
 .danger-inline {
+  width: auto !important;
   margin: 0;
   padding: 16rpx;
   background: transparent;
-  color: #e85d69;
+  color: var(--coral);
   font-size: 24rpx;
   line-height: 1;
 }
-
-.danger { color: #e85d69; }
-.status { font-size: 24rpx; color: #40b352; }
-
-.call-stage { text-align: center; padding: 80rpx 40rpx; }
-.big { font-size: 40rpx; font-weight: 700; }
-.actions { display: flex; justify-content: center; margin-top: 48rpx; }
-.actions > view, .actions > button { margin: 0 16rpx; }
-.fab {
-  width: 112rpx;
-  height: 112rpx;
-  border-radius: 40rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 24rpx;
-}
-
-.share-mask {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 100;
-  background: rgba(16, 42, 67, .4);
-  display: flex;
-  align-items: flex-end;
-}
-
-.share-sheet {
-  width: 100%;
-  background: #fff;
-  border-radius: 32rpx 32rpx 0 0;
-  padding: 32rpx 32rpx calc(24rpx + env(safe-area-inset-bottom));
-}
+.privacy-tip { padding:22rpx 24rpx; border-radius:24rpx; background:#e9f8f2; color:#3b6a50; font-size:23rpx; line-height:1.55; display:flex; align-items:flex-start; gap:12rpx; }.privacy-tip image{width:32rpx;height:32rpx;flex:none;margin-top:2rpx}
+.risk-hero{padding:34rpx;border-radius:38rpx;background:linear-gradient(145deg,#fff0ef,#fff9f7);display:flex;flex-direction:column;align-items:flex-start}.risk-hero.safe{background:linear-gradient(145deg,#eaf6ff,#edf8f4)}.risk-icon{width:80rpx;height:80rpx;border-radius:26rpx;background:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:20rpx;box-shadow:0 8rpx 24rpx rgba(16,42,67,.07)}.risk-icon image{width:43rpx;height:43rpx}.risk-hero .sub{margin-top:8rpx}.impact-row{position:relative;margin-top:18rpx;padding-left:30rpx;color:#40566a;font-size:26rpx}.impact-row::before{content:'';position:absolute;left:2rpx;top:13rpx;width:12rpx;height:12rpx;border-radius:50%;background:#e85d69}.consent-status{margin-top:18rpx;padding:14rpx 18rpx;border-radius:20rpx;background:#e9f8f2;color:#278c3d;font-size:23rpx;display:flex;align-items:center;gap:10rpx}.consent-status view{width:14rpx;height:14rpx;border-radius:50%;background:#40b352}
+.curiosity-cover{margin-bottom:30rpx}.report-cover{padding:34rpx;border-radius:42rpx;background:linear-gradient(145deg,#e9f8f2,#f7fffb);box-shadow:0 12rpx 34rpx rgba(55,126,88,.09)}.report-cover.phase-cover{background:linear-gradient(145deg,#f1edff,#fbf9ff)}.report-cover-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:30rpx}.report-cover .sub{margin-top:10rpx}.report-section-title{display:flex;align-items:center;gap:14rpx}.section-number{width:48rpx;height:48rpx;border-radius:17rpx;background:#f1edff;color:#8874e8;font-weight:700;font-size:22rpx;display:flex;align-items:center;justify-content:center}.achievement-cover{width:100%;height:360rpx;border-radius:42rpx;box-shadow:0 14rpx 38rpx rgba(16,42,67,.12);margin-bottom:28rpx}
+.family-hero,.guide-hero,.message-hero,.account-hero{display:flex;align-items:center;gap:20rpx;margin-bottom:24rpx}.member-main,.device-main{display:flex;align-items:center;gap:18rpx}.member-avatar{width:66rpx;height:66rpx;border-radius:22rpx;background:#f1edff;color:#8874e8;font-weight:700;display:flex;align-items:center;justify-content:center}.device-hero{height:270rpx;border-radius:40rpx;padding:30rpx;background:linear-gradient(145deg,#eaf6ff,#edf8f4);position:relative;overflow:hidden;margin-bottom:24rpx}.device-hero>view{position:relative;z-index:2;width:58%}.device-hero>image{position:absolute;right:-10rpx;bottom:-20rpx;width:260rpx;height:270rpx}.mini-thumb{width:82rpx;height:82rpx;border-radius:26rpx;background:#edf8f4;display:flex;align-items:center;justify-content:center}.mini-thumb image{width:74rpx;height:74rpx}.device-state{display:flex;align-items:center;gap:8rpx;color:#829ab1;font-size:22rpx}.device-state view{width:13rpx;height:13rpx;border-radius:50%;background:#a9b7c4}.device-state.online{color:#278c3d}.device-state.online view{background:#40b352}.guide-row,.icon-row{display:flex;align-items:center;gap:18rpx}.guide-number{width:64rpx;height:64rpx;border-radius:22rpx;background:#e9f8f2;color:#278c3d;font-weight:700;display:flex;align-items:center;justify-content:center}.guide-copy,.row-copy{flex:1;min-width:0;display:flex;flex-direction:column}.row-chevron{width:34rpx;height:34rpx;opacity:.42;flex:none}.message-type{display:flex;align-items:center;gap:10rpx}.message-type image{width:30rpx;height:30rpx}.support-hero{padding:34rpx;border-radius:40rpx;background:linear-gradient(145deg,#fff0ef,#fffaf7);display:flex;flex-direction:column;align-items:flex-start;margin-bottom:24rpx}.about-hero{padding:54rpx 32rpx;border-radius:42rpx;background:linear-gradient(145deg,#f1edff,#edf8f4);display:flex;flex-direction:column;align-items:center;text-align:center;margin-bottom:26rpx}.about-mark{width:110rpx;height:110rpx;border-radius:36rpx;background:linear-gradient(135deg,#8874e8,#40b352);color:#fff;font-size:36rpx;font-weight:750;display:flex;align-items:center;justify-content:center;margin-bottom:20rpx;box-shadow:0 14rpx 34rpx rgba(91,90,177,.2)}
+.device-detail-hero{height:300rpx;border-radius:42rpx;background:linear-gradient(145deg,#eaf6ff,#edf8f4);display:flex;align-items:center;padding:24rpx 30rpx;overflow:hidden}.device-detail-hero image{width:270rpx;height:280rpx;flex:none}.device-detail-hero>view{display:flex;flex-direction:column;align-items:flex-start}.device-detail-hero .pill{margin-top:14rpx}

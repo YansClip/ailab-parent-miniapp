@@ -6,5 +6,7 @@
       <text class="h3">{{item.name}}</text>
       <text class="status" wx:if="{{item.id === current}}">当前</text>
     </button>
+    <button class="btn btn-danger mt-24" bindtap="reset">重置全部本地数据</button>
+    <text class="sub mt-12">会恢复联系人、闹钟、家庭邀请、已读消息、设备绑定和当前孩子。</text>
   </view>
 </view>

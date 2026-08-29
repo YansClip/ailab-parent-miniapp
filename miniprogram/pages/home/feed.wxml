@@ -1,9 +1,35 @@
 <view class="page">
   <nav-bar title="全部动态" />
   <view class="pad">
-    <view class="item" wx:for="{{list}}" wx:key="id">
-      <text class="h3">{{item.title}}</text>
-      <text class="sub">{{item.desc}} · {{item.time}}</text>
+    <view class="feed-head">
+      <text class="h1">陪伴动态</text>
+      <text class="sub">按时间整理孩子的互动、设备与家庭记录</text>
+    </view>
+    <view wx:if="{{loading}}" class="feed-skeleton">
+      <view class="skeleton sk-row" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
+    </view>
+    <view wx:elif="{{error}}" class="card card-p feed-state">
+      <image src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" />
+      <text class="h3">暂时没能加载动态</text>
+      <text class="sub">{{error}}</text>
+      <button class="btn btn-secondary" bindtap="load" hover-class="pressed">重新加载</button>
+    </view>
+    <view wx:elif="{{!list.length}}" class="card card-p feed-state">
+      <image src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" />
+      <text class="h3">还没有新的动态</text>
+      <text class="sub">孩子完成互动或设备状态发生变化后，会在这里留下记录。</text>
+    </view>
+    <view wx:else class="feed-list">
+      <view class="feed-row" wx:for="{{list}}" wx:key="id">
+        <view class="feed-rail">
+          <view class="feed-icon icon-{{item.tone}}"><image src="{{item.icon}}" mode="aspectFit" /></view>
+          <view class="feed-line" wx:if="{{index < list.length - 1}}"></view>
+        </view>
+        <view class="feed-card card">
+          <view class="between"><text class="h3">{{item.title}}</text><text class="caption">{{item.time}}</text></view>
+          <text class="sub">{{item.desc}}</text>
+        </view>
+      </view>
     </view>
   </view>
 </view>

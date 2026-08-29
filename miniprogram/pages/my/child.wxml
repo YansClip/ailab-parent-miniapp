@@ -1,9 +1,9 @@
 <view class="page">
   <nav-bar title="孩子管理" />
   <view class="pad">
+    <view class="child-hero"><view class="icon-box icon-sky"><image src="/assets/icons/lucide/child.png" mode="aspectFit" /></view><view><text class="h1">家庭中的孩子</text><text class="sub">每个孩子的数据与设备状态相互隔离</text></view></view>
     <view class="item" wx:for="{{list}}" wx:key="id">
-      <text class="h3">{{item.name}}</text>
-      <text class="sub">{{item.deviceName}} · 陪伴 {{item.days}} 天</text>
+      <view class="child-card-head"><view class="child-avatar" style="background:{{item.avatarColor}}">{{item.avatarText}}</view><view><text class="h3">{{item.name}}</text><text class="sub">{{item.deviceName}} · 陪伴 {{item.days}} 天</text></view><text class="pill {{item.online ? 'pill-mint' : 'pill-coral'}}">{{item.online ? '在线' : '离线'}}</text></view>
       <button class="btn btn-danger mt-16" loading="{{busyId === item.id}}" disabled="{{busyId !== ''}}" hover-class="pressed" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="unbind">解除孩子关系</button>
     </view>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>

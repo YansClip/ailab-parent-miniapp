@@ -1,9 +1,9 @@
 <view class="page">
   <nav-bar title="申请删除" />
   <view class="pad">
-    <text class="h1">删除儿童相关数据</text>
-    <text class="sub mt-12">高风险操作。完成后可在此查询处理进度，不会仅以前端成功提示结束。</text>
+    <view class="risk-hero"><view class="risk-icon"><image src="/assets/icons/lucide/trash.png" mode="aspectFit" /></view><text class="h1">删除儿童相关数据</text><text class="sub">删除完成后相关记录将无法恢复</text></view>
+    <view class="card card-p mt-20"><text class="h3">申请范围</text><view class="impact-row"><text>孩子基础资料与家庭关联信息</text></view><view class="impact-row"><text>互动、成长报告与成果记录</text></view><view class="impact-row"><text>设备关联及相关操作记录</text></view><text class="caption mt-12">依法需要保留的信息不在本次删除范围内，并会说明保留期限。</text></view>
     <button class="btn btn-danger mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">提交删除申请</button>
-    <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+    <view class="task-state mt-16 {{task.status==='success' ? 'success' : task.status==='failed' ? 'failed' : ''}}" wx:if="{{task}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">处理进度</text><text class="sub">{{task.message}}</text></view></view>
   </view>
 </view>

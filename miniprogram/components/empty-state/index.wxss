@@ -6,18 +6,16 @@
   text-align: center;
 }
 .dot {
-  width: 88rpx;
-  height: 88rpx;
-  border-radius: 32rpx;
-  background: #f0ebff;
+  width: 260rpx;
+  height: 176rpx;
+  border-radius: 36rpx;
+  background: linear-gradient(145deg,#f1edff,#edf8f4);
   margin-bottom: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8b78e6;
-  font-size: 48rpx;
-  font-weight: 700;
 }
+.dot image { width: 230rpx; height: 160rpx; }
 .tone-mint { background: #e9f8f2; color: #40b352; }
 .tone-coral { background: #fff0ef; color: #e85d69; }
 .tone-sky { background: #eaf6ff; color: #3a8fd4; }

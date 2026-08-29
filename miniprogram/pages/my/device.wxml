@@ -1,13 +1,15 @@
 <view class="page">
   <nav-bar title="设备中心" />
   <view class="pad">
+    <view class="device-hero"><view><text class="h1">Mini 设备中心</text><text class="sub">查看设备状态、绑定关系与系统信息</text></view><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view>
+    <empty-state wx:if="{{!list.length}}" title="还没有绑定设备" desc="完成绑定后可使用实时守护与设备工具。" />
     <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="detail" aria-label="查看设备{{item.name}}详情">
       <view class="between">
-        <view>
+        <view class="device-main"><view class="mini-thumb"><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view><view>
           <text class="h3">{{item.name}}</text>
           <text class="sub">{{item.childName}} · {{item.locate}} · {{item.updatedAt}}</text>
-        </view>
-        <text class="status">{{item.online ? '在线' : '离线'}} {{item.battery}}%</text>
+        </view></view>
+        <view class="device-state {{item.online ? 'online' : ''}}"><view></view><text>{{item.online ? '在线' : '离线'}} · {{item.battery}}%</text></view>
       </view>
     </button>
   </view>

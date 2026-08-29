@@ -15,23 +15,23 @@ Page({
       {
         title: '家庭与设备',
         items: [
-          { icon: '家', title: '家庭管理', desc: '家庭成员、孩子与管理员权限', url: '/pages/my/family', tone: 'lavender' },
-          { icon: 'M', title: '设备中心', desc: '设备状态、固件与解绑', url: '/pages/my/device', tone: 'sky' },
-          { icon: '?', title: '玩机指南', desc: '守护与设备工具使用说明', url: '/pages/my/guide', tone: 'mint' }
+          { icon: '/assets/icons/lucide/family.png', title: '家庭管理', desc: '家庭成员、孩子与管理员权限', url: '/pages/my/family', tone: 'lavender' },
+          { icon: '/assets/icons/lucide/device.png', title: '设备中心', desc: '设备状态、固件与解绑', url: '/pages/my/device', tone: 'sky' },
+          { icon: '/assets/icons/lucide/guide.png', title: '玩机指南', desc: '守护与设备工具使用说明', url: '/pages/my/guide', tone: 'mint' }
         ]
       },
       {
         title: '消息与服务',
         items: [
-          { icon: '信', title: '消息中心', desc: '站内消息与微信订阅设置', url: '/pages/my/message', tone: 'butter' },
-          { icon: '服', title: '专属支持', desc: '常见问题、客服与反馈进度', url: '/pages/my/support', tone: 'coral' }
+          { icon: '/assets/icons/lucide/message.png', title: '消息中心', desc: '站内消息与微信订阅设置', url: '/pages/my/message', tone: 'butter' },
+          { icon: '/assets/icons/lucide/support.png', title: '专属支持', desc: '常见问题、客服与反馈进度', url: '/pages/my/support', tone: 'coral' }
         ]
       },
       {
         title: '账号与关于',
         items: [
-          { icon: '我', title: '我的账号', desc: '账号、隐私与儿童信息管理', url: '/pages/my/account', tone: 'lavender' },
-          { icon: 'i', title: '关于我们', desc: '版本、协议与意见反馈', url: '/pages/my/about', tone: 'neutral' }
+          { icon: '/assets/icons/lucide/account.png', title: '我的账号', desc: '账号、隐私与儿童信息管理', url: '/pages/my/account', tone: 'lavender' },
+          { icon: '/assets/icons/lucide/about.png', title: '关于我们', desc: '版本、协议与意见反馈', url: '/pages/my/about', tone: 'neutral' }
         ]
       }
     ]
