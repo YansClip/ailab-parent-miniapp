@@ -1,23 +1,68 @@
 <view class="page page-tab me" style="padding-top: {{statusBarHeight}}px;">
-  <view class="pad profile">
-    <image class="avatar" src="{{parent.avatar}}" mode="aspectFill" />
-    <view class="meta">
-      <text class="h1">{{parent.name}}</text>
-      <text class="sub">{{parent.role}} · 当前孩子 {{childName}}</text>
+  <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
+    <view class="pad title-row">
+      <text class="h1">我的</text>
+      <view class="notice-pill">3 条新消息</view>
     </view>
-  </view>
-  <view class="pad">
-    <view class="menu">
-      <view class="row" wx:for="{{menus}}" wx:key="url" data-url="{{item.url}}" hover-class="pressed" bindtap="go">
-        <view class="left">
-          <view class="dot" style="background: {{item.color}}"></view>
-          <view>
-            <text class="name">{{item.title}}</text>
-            <text class="sub">{{item.desc}}</text>
+
+    <view class="pad" wx:if="{{loading}}" role="status" aria-label="正在加载账号与家庭信息">
+      <view class="sk-profile skeleton"></view>
+      <view class="sk-status skeleton"></view>
+      <view class="sk-list skeleton"></view>
+    </view>
+
+    <view class="pad" wx:elif="{{error}}">
+      <empty-state title="账号信息暂时不可用" desc="{{error}}" action="重新加载" icon="!" tone="coral" bind:action="reload" />
+    </view>
+
+    <block wx:else>
+      <view class="pad">
+        <button class="profile card-soft" bindtap="openSwitcher" hover-class="pressed" aria-label="当前为{{parent.name}}，切换孩子与设备">
+          <image class="avatar" src="{{parent.avatar}}" mode="aspectFill" aria-label="{{parent.name}}的头像" />
+          <view class="meta">
+            <view class="row"><text class="profile-name">{{parent.name}}</text><view class="role-pill">{{parent.role}}</view></view>
+            <text class="family-name">{{family.name}}</text>
+            <text class="sub">{{child.name}} · {{child.deviceName}} · 当前</text>
+          </view>
+          <text class="chev">›</text>
+        </button>
+      </view>
+
+      <view class="pad mt-16">
+        <view class="guardian-card">
+          <view class="between">
+            <view>
+              <text class="guardian-title">{{!device.id ? 'Mini 设备尚未绑定' : device.online ? '家庭守护运行正常' : '家庭守护需要关注'}}</text>
+              <text class="sub">{{!device.id ? '完成设备绑定后可使用实时守护工具' : device.online ? '设备在线 · 定位更新正常' : '设备离线 · 守护工具暂不可用'}}</text>
+            </view>
+            <view class="pill {{device.online ? 'pill-mint' : 'pill-coral'}}">{{!device.id ? '未绑定' : device.online ? '正常' : '离线'}}</view>
+          </view>
+          <view class="guardian-metrics">
+            <view><text>{{child.days || 0}} 天</text><text class="sub">连续守护</text></view>
+            <view><text>{{family.members.length || 0}} 人</text><text class="sub">家庭成员</text></view>
+            <view><text>{{device.id ? device.battery + '%' : '—'}}</text><text class="sub">设备电量</text></view>
           </view>
         </view>
-        <text class="chev">›</text>
       </view>
-    </view>
-  </view>
+
+      <view class="pad menu-group" wx:for="{{groups}}" wx:key="title" wx:for-item="group">
+        <text class="section-title">{{group.title}}</text>
+        <view class="menu surface-border">
+          <button class="menu-row" wx:for="{{group.items}}" wx:key="url" data-url="{{item.url}}" hover-class="pressed" bindtap="go" aria-label="进入{{item.title}}，{{item.desc}}">
+            <view class="left">
+              <view class="menu-icon tone-{{item.tone}}">{{item.icon}}</view>
+              <view class="menu-copy">
+                <text class="name">{{item.title}}</text>
+                <text class="sub">{{item.desc}}</text>
+              </view>
+            </view>
+            <text class="chev">›</text>
+          </button>
+        </view>
+      </view>
+      <view class="pb"></view>
+    </block>
+  </scroll-view>
+
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

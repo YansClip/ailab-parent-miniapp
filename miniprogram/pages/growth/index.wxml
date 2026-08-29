@@ -3,16 +3,20 @@
     <view class="pad head">
       <view>
         <text class="h1">成长观察</text>
-        <text class="sub">基于正式事件，不使用默认分数填充</text>
+        <text class="sub">当前展示演示数据，空状态不使用默认分数填充</text>
       </view>
-      <view class="pill pill-lavender" hover-class="pressed" bindtap="openSwitcher" wx:if="{{data.child.shortName}}">{{data.child.shortName}}</view>
+      <button class="pill pill-lavender child-pill" hover-class="pressed" bindtap="openSwitcher" wx:if="{{data.child.shortName}}" aria-label="切换孩子">{{data.child.shortName}}</button>
     </view>
 
-    <view wx:if="{{loading}}" class="pad loading">正在加载当前孩子的成长数据…</view>
+    <view wx:if="{{loading}}" class="pad loading" role="status" aria-label="正在加载成长数据">
+      <view class="sk-growth-lead skeleton"></view>
+      <view class="sk-growth-card skeleton"></view>
+      <view class="sk-growth-card tall skeleton"></view>
+    </view>
 
     <view wx:elif="{{error && !data.child.id}}" class="pad loading">
       <text>{{error}}</text>
-      <view class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</view>
+      <button class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</button>
     </view>
 
     <empty-state wx:elif="{{empty}}" title="本周数据还不够" desc="好奇成长简报需要代表性提问与验证记录。数据不足时不会造数。" />
@@ -34,7 +38,7 @@
       </view>
 
       <view class="pad mt-16">
-        <view class="brief" hover-class="pressed" bindtap="go" data-url="/pages/growth/curiosity">
+        <button class="brief" hover-class="pressed" bindtap="go" data-url="/pages/growth/curiosity" aria-label="查看好奇成长简报">
           <view class="pill pill-lavender">好奇成长简报</view>
           <block wx:if="{{data.brief.status === 'ready'}}">
             <text class="h3 mt-12">{{data.brief.question}}</text>
@@ -45,44 +49,49 @@
             <text class="sub mt-8">{{data.brief.reason || '缺少代表性事件，不生成虚构结论。'}}</text>
           </block>
           <text class="link mt-8">查看详情 →</text>
-        </view>
+        </button>
       </view>
 
       <view class="pad mt-16">
-        <view class="card radar" hover-class="pressed" bindtap="go" data-url="/pages/growth/overview">
+        <view class="card radar">
           <view class="between">
             <text class="h3">六维能力</text>
-            <text class="sub">规则 v2.4</text>
+            <view class="pill pill-mint">本周 +5</view>
           </view>
-          <view class="dim" wx:for="{{data.dimensions}}" wx:key="key">
-            <text class="dim-name">{{item.name}}</text>
-            <view class="bar"><view class="fill" style="width: {{item.insufficient ? 0 : item.value}}%;"></view></view>
-            <text class="dim-v">{{item.insufficient ? '不足' : item.value}}</text>
+          <view class="radar-wrap">
+            <canvas class="radar-canvas" canvas-id="growthRadar" aria-label="六维能力雷达图"></canvas>
           </view>
+          <view class="dim-grid">
+            <button class="dim-chip" wx:for="{{data.dimensions}}" wx:key="key" data-key="{{item.key}}" bindtap="goDim" hover-class="pressed" aria-label="查看{{item.name}}维度详情">
+              <text class="dim-name">{{item.name}}</text>
+              <text class="dim-v">{{item.insufficient ? '数据不足' : item.value}}</text>
+            </button>
+          </view>
+          <button class="radar-more" bindtap="go" data-url="/pages/growth/overview">查看完整能力说明</button>
         </view>
       </view>
 
       <view class="pad mt-16" wx:if="{{data.reports.length}}">
         <text class="section-title">成长报告</text>
-        <view class="rep" wx:for="{{data.reports}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.type}}" hover-class="pressed" bindtap="goReport">
+        <button class="rep" wx:for="{{data.reports}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.type}}" hover-class="pressed" bindtap="goReport" aria-label="查看{{item.title}}">
           <view>
             <text class="h3">{{item.title}}</text>
             <text class="sub">{{item.range}} · {{item.version}}</text>
           </view>
           <text class="link">查看</text>
-        </view>
+        </button>
       </view>
 
       <view class="pad mt-16 pb">
         <text class="section-title">近期成果</text>
         <view class="ach" wx:if="{{!data.achievements.length}}">
           <text class="h3">暂无成果</text>
-          <text class="sub">没有正式事件时不会生成演示成果。</text>
+          <text class="sub">没有有效事件时不会自动生成成果。</text>
         </view>
-        <view class="ach" wx:for="{{data.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch">
+        <button class="ach" wx:for="{{data.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch" aria-label="查看成果{{item.title}}">
           <text class="h3">{{item.title}}</text>
           <text class="sub">{{item.time}} · {{item.source}}</text>
-        </view>
+        </button>
       </view>
     </block>
   </scroll-view>

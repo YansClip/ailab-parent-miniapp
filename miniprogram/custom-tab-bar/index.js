@@ -31,8 +31,12 @@ Component({
   methods: {
     onSwitch(e) {
       const { index, path } = e.currentTarget.dataset
-      wx.switchTab({ url: path })
-      this.setData({ selected: index })
+      if (index === this.data.selected) return
+      wx.switchTab({
+        url: path,
+        success: () => this.setData({ selected: index }),
+        fail: () => wx.showToast({ title: '页面暂时无法打开', icon: 'none' })
+      })
     }
   }
 })

@@ -1,7 +1,7 @@
 <view class="page">
   <nav-bar title="设备中心" />
   <view class="pad">
-    <view class="item" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="detail">
+    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="detail" aria-label="查看设备{{item.name}}详情">
       <view class="between">
         <view>
           <text class="h3">{{item.name}}</text>
@@ -9,6 +9,6 @@
         </view>
         <text class="status">{{item.online ? '在线' : '离线'}} {{item.battery}}%</text>
       </view>
-    </view>
+    </button>
   </view>
 </view>

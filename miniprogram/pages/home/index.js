@@ -12,24 +12,34 @@ Page({
     error: ''
   },
   onShow() {
+    this.__disposed = false
     util.setTab(0)
     if (!util.guardAuth()) return
     this.setData({ statusBarHeight: util.statusBarHeight() })
     this.reload()
   },
   reload() {
-    const first = !this.data.home || !this.data.home.child || !this.data.home.child.id
-    if (first) this.setData({ loading: true, error: '' })
+    const version = util.beginRequest(this, 'home')
+    this.setData({ loading: true, error: '' })
     Promise.all([api.getHome(), api.getParent(), api.getChildren()]).then(([home, parent, children]) => {
+      if (!util.isRequestCurrent(this, 'home', version)) return
       this.setData({ home, parent, children, loading: false, error: '' })
     }).catch((e) => {
+      if (!util.isRequestCurrent(this, 'home', version)) return
       util.failToast(e)
       this.setData({ loading: false, error: (e && e.message) || '网络不可用，请稍后重试' })
     })
   },
   openSwitcher() { this.setData({ showSwitcher: true }) },
   closeSwitcher() { this.setData({ showSwitcher: false }) },
-  onChildChange() { this.reload() },
+  onChildChange() {
+    this.setData({
+      loading: true,
+      error: '',
+      home: { child: {}, summary: {}, dynamics: [], footprints: [], achievements: [], todos: [], photos: [] }
+    })
+    this.reload()
+  },
   goFootprint(e) {
     wx.navigateTo({ url: '/pages/home/footprint?id=' + (e.currentTarget.dataset.id || 'fp1') })
   },
@@ -42,5 +52,6 @@ Page({
       wx.switchTab({ url })
     } else wx.navigateTo({ url })
   },
-  goGuide() { wx.navigateTo({ url: '/pages/my/guide' }) }
+  goGuide() { wx.navigateTo({ url: '/pages/my/guide' }) },
+  onUnload() { util.disposePage(this) }
 })

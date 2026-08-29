@@ -8,16 +8,16 @@
       <text class="sub mt-8">在「我的 · 我的账号」查看授权、申请更正或删除儿童信息，以及撤回同意。位置数据超过有效期后不再作为当前位置展示，也不会保存历史轨迹。</text>
     </view>
     <view class="links mt-20">
-      <text class="link" bindtap="openPolicy" data-type="privacy">《隐私政策》</text>
+      <button class="link policy-link" bindtap="openPolicy" data-type="privacy">《隐私政策》</button>
       <text class="dot">·</text>
-      <text class="link" bindtap="openPolicy" data-type="user">《用户协议》</text>
+      <button class="link policy-link" bindtap="openPolicy" data-type="user">《用户协议》</button>
       <text class="dot">·</text>
-      <text class="link" bindtap="openPolicy" data-type="child">《儿童信息处理规则》</text>
+      <button class="link policy-link" bindtap="openPolicy" data-type="child">《儿童信息处理规则》</button>
     </view>
   </view>
   <view class="footer">
     <button class="btn btn-primary" bindtap="onAgree">同意并继续</button>
     <button class="btn btn-secondary mt-12" bindtap="openPolicy" data-type="privacy">查看完整隐私政策</button>
-    <view class="decline" bindtap="onDecline">暂不同意</view>
+    <button class="decline" bindtap="onDecline">暂不同意</button>
   </view>
 </view>

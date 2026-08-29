@@ -13,8 +13,14 @@ Page({
   goBind() { wx.navigateTo({ url: '/pages/family/bind' }) },
   onCreate() {
     if (this.data.loading) return
+    const name = (this.data.name || '').trim()
+    const relation = (this.data.relation || '').trim()
+    if (name.length < 2 || relation.length < 1) {
+      util.toast('请填写家庭名称和你的称谓')
+      return
+    }
     this.setData({ loading: true })
-    api.createFamily({ name: this.data.name, relation: this.data.relation }).then(() => {
+    api.createFamily({ name, relation }).then(() => {
       wx.redirectTo({ url: '/pages/family/bind' })
     }).catch((e) => util.failToast(e)).finally(() => this.setData({ loading: false }))
   }

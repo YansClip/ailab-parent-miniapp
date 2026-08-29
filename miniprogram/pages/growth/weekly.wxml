@@ -1,14 +1,16 @@
 <view class="page">
   <nav-bar title="{{report.title || '成长报告'}}" action="{{report.status==='ready' ? '分享' : ''}}" bind:action="share" />
-  <view class="pad" wx:if="{{report.status === 'generating'}}">
+  <view class="pad" wx:if="{{loading}}" role="status"><view class="card card-p skeleton" style="height: 240rpx;"></view></view>
+  <view class="pad" wx:elif="{{error}}"><empty-state title="报告暂时无法加载" desc="{{error}}" action="重新加载" icon="!" tone="coral" bind:action="load" /></view>
+  <view class="pad" wx:elif="{{report.status === 'generating'}}">
     <text class="h1">正在生成</text>
     <text class="sub mt-12">长耗时任务异步进行，可离开后回来查询。</text>
-    <button class="btn btn-secondary mt-24" loading="{{busy}}" hover-class="pressed" bindtap="load">刷新状态</button>
+    <button class="btn btn-secondary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="load">刷新状态</button>
   </view>
   <view class="pad" wx:elif="{{report.status === 'failed'}}">
     <text class="h1">生成失败</text>
     <text class="sub mt-12">{{report.message}}</text>
-    <button class="btn btn-primary mt-24" loading="{{busy}}" hover-class="pressed" bindtap="retry">重新生成</button>
+    <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="retry">重新生成</button>
   </view>
   <view class="pad" wx:else>
     <text class="sub">{{report.range}} · {{report.generatedAt}}</text>

@@ -5,14 +5,14 @@
     <text class="sub mt-8">统计周期、规则版本与数据充分性同屏展示。</text>
     <view class="card card-p mt-20">
       <text class="h3">数据依据</text>
-      <text class="sub mt-8">仅展示有正式事件支撑的维度。数据不足时不使用默认分数。</text>
+      <text class="sub mt-8">正式产品仅展示有有效事件支撑的维度；当前为高保真演示数据。</text>
     </view>
-    <view class="item" wx:for="{{dims}}" wx:key="key" data-key="{{item.key}}" hover-class="pressed" bindtap="goDim">
+    <button class="item list-button" wx:for="{{dims}}" wx:key="key" data-key="{{item.key}}" hover-class="pressed" bindtap="goDim" aria-label="查看{{item.name}}维度详情">
       <view class="between">
         <text class="h3">{{item.name}}</text>
         <text wx:if="{{item.insufficient}}">数据不足</text>
         <text wx:else>{{item.value}}（{{item.delta > 0 ? '+' : ''}}{{item.delta}}）</text>
       </view>
-    </view>
+    </button>
   </view>
 </view>

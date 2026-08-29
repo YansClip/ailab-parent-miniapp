@@ -3,13 +3,13 @@
   <view class="pad">
     <text class="h1">扫描或输入一次性绑定码</text>
     <text class="sub mt-12">绑定码由孩子在 Web 或已激活的 mini 设备上生成，具有有效期，使用一次后失效。</text>
-    <input class="input mt-24" value="{{code}}" bindinput="onCode" placeholder="输入 6 位绑定码" maxlength="8" />
+    <input class="input mt-24" type="number" value="{{code}}" bindinput="onCode" placeholder="输入 6 位绑定码" maxlength="6" />
     <view class="tips mt-20">
       <text class="sub">演示可直接点「提交绑定」。覆盖过期、已使用、格式错误等恢复路径。</text>
     </view>
     <view class="err" wx:if="{{error}}">{{error}}</view>
   </view>
   <view class="page-fixed-footer">
-    <button class="btn btn-primary" loading="{{loading}}" hover-class="pressed" bindtap="onSubmit">提交绑定</button>
+    <button class="btn btn-primary" loading="{{loading}}" disabled="{{loading}}" hover-class="pressed" bindtap="onSubmit">提交绑定</button>
   </view>
 </view>

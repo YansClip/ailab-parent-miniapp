@@ -3,9 +3,9 @@
   <view class="pad">
     <text class="h1">AILab 家长端</text>
     <text class="sub mt-8" bindlongpress="debug">版本 1.0.0-mock · 基础库 3.17</text>
-    <view class="item" hover-class="pressed" bindtap="policy" data-type="user"><text class="h3">用户协议</text></view>
-    <view class="item" hover-class="pressed" bindtap="policy" data-type="privacy"><text class="h3">隐私政策</text></view>
-    <view class="item" hover-class="pressed" bindtap="policy" data-type="child"><text class="h3">儿童信息处理规则</text></view>
-    <view class="item" hover-class="pressed" bindtap="fb"><text class="h3">意见反馈</text></view>
+    <button class="item list-button" hover-class="pressed" bindtap="policy" data-type="user"><text class="h3">用户协议</text></button>
+    <button class="item list-button" hover-class="pressed" bindtap="policy" data-type="privacy"><text class="h3">隐私政策</text></button>
+    <button class="item list-button" hover-class="pressed" bindtap="policy" data-type="child"><text class="h3">儿童信息处理规则</text></button>
+    <button class="item list-button" hover-class="pressed" bindtap="fb"><text class="h3">意见反馈</text></button>
   </view>
 </view>

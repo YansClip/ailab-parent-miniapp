@@ -10,9 +10,12 @@ Page({
     else this.setData({ statusText: '未找到绑定任务', failed: true, polling: false })
   },
   poll(id) {
-    util.pollTask(id, {
+    if (this.bindPoll && this.bindPoll.cancel) this.bindPoll.cancel()
+    this.bindPoll = util.pollTask(id, {
+      page: this,
       onUpdate: (t) => this.setData({ statusText: t.message || '处理中' })
-    }).then((t) => {
+    })
+    this.bindPoll.then((t) => {
       if (t.status === 'success') {
         return api.completeBind().then(() => {
           wx.redirectTo({ url: '/pages/family/success' })
@@ -32,5 +35,9 @@ Page({
     if (!this.data.taskId) return
     this.setData({ failed: false, polling: true, statusText: '正在查询…' })
     this.poll(this.data.taskId)
+  },
+  onUnload() {
+    if (this.bindPoll && this.bindPoll.cancel) this.bindPoll.cancel()
+    util.disposePage(this)
   }
 })

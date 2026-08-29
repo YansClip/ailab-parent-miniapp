@@ -2,13 +2,13 @@
   <nav-bar title="消息中心" action="订阅" bind:action="sub" />
   <view class="pad">
     <empty-state wx:if="{{loaded && !list.length}}" title="暂无消息" desc="家庭邀请、守护提醒与成长通知会显示在这里。" />
-    <view class="item" wx:for="{{list}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="open">
+    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="open" aria-label="打开消息：{{item.title}}">
       <view class="between">
         <text class="pill pill-lavender">{{item.type}}</text>
         <text class="sub">{{item.time}}</text>
       </view>
       <text class="h3 mt-8">{{item.title}}</text>
       <text class="status" wx:if="{{item.unread}}">未读</text>
-    </view>
+    </button>
   </view>
 </view>

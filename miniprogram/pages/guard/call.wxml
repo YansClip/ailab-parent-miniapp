@@ -1,17 +1,23 @@
 <view class="page">
   <nav-bar title="语音通话" />
   <view class="call-stage">
-    <view class="avatar-lg">{{child}}</view>
+    <view class="call-aura {{stage}}">
+      <view class="pulse p1" wx:if="{{stage==='calling'}}"></view>
+      <view class="pulse p2" wx:if="{{stage==='calling'}}"></view>
+      <view class="avatar-lg"><text>{{child}}</text><text class="mini">Mini</text></view>
+    </view>
     <text class="big mt-16">{{title}}</text>
     <text class="sub mt-8">{{desc}}</text>
+    <text class="duration" wx:if="{{stage==='connected'}}">{{seconds}} 秒</text>
     <view class="actions" wx:if="{{stage==='connected'}}">
-      <view class="fab {{muted ? 'on' : ''}}" hover-class="pressed" bindtap="toggleMute">静音</view>
-      <view class="fab {{speaker ? 'on' : ''}}" hover-class="pressed" bindtap="toggleSpk">扬声器</view>
-      <view class="fab {{nr ? 'on' : ''}}" hover-class="pressed" bindtap="toggleNr">降噪</view>
+      <button class="fab {{muted ? 'on' : ''}}" hover-class="pressed" bindtap="toggleMute" aria-label="{{muted ? '取消静音' : '开启静音'}}"><text class="fab-icon">{{muted ? '静' : '麦'}}</text><text>{{muted ? '已静音' : '静音'}}</text></button>
+      <button class="fab cyan {{speaker ? 'on' : ''}}" hover-class="pressed" bindtap="toggleSpk" aria-label="{{speaker ? '关闭扬声器' : '开启扬声器'}}"><text class="fab-icon">声</text><text>{{speaker ? '扬声器开' : '扬声器'}}</text></button>
+      <button class="fab purple {{nr ? 'on' : ''}}" hover-class="pressed" bindtap="toggleNr" aria-label="{{nr ? '关闭智能降噪' : '开启智能降噪'}}"><text class="fab-icon">净</text><text>{{nr ? '降噪开' : '降噪'}}</text></button>
     </view>
+    <view class="demo-note mt-24">高保真演示：仅模拟呼叫状态，不会连接真实麦克风或 Mini 设备。</view>
   </view>
   <view class="page-fixed-footer">
-    <button class="btn btn-primary" wx:if="{{stage==='ready'}}" loading="{{busy}}" hover-class="pressed" bindtap="startCall">呼叫 Mini</button>
+    <button class="btn btn-primary" wx:if="{{stage==='ready'}}" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="startCall">呼叫 Mini</button>
     <button class="btn btn-danger" wx:if="{{stage==='calling' || stage==='connected'}}" hover-class="pressed" bindtap="hang">结束通话</button>
     <button class="btn btn-secondary" wx:if="{{stage==='failed'}}" hover-class="pressed" bindtap="retry">失败重试</button>
     <text class="sub mt-12 note">不启用摄像头，不保存通话内容。</text>

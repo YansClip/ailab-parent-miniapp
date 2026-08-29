@@ -3,7 +3,7 @@
   <view class="pad">
     <text class="h1">撤回后的影响</text>
     <text class="sub mt-12">停止新的相关数据处理。依法或为履行必要服务保留的数据会说明依据和期限。</text>
-    <button class="btn btn-danger mt-24" bindtap="submit">确认撤回</button>
+    <button class="btn btn-danger mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">确认撤回</button>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
   </view>
 </view>

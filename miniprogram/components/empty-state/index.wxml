@@ -1,6 +1,6 @@
-<view class="empty">
-  <view class="dot"></view>
+<view class="empty" role="status" aria-label="{{title}}，{{desc}}">
+  <view class="dot tone-{{tone}}"><text>{{icon}}</text></view>
   <text class="title">{{title}}</text>
   <text class="desc">{{desc}}</text>
-  <view class="btn" wx:if="{{action}}" hover-class="pressed" bindtap="onTap">{{action}}</view>
+  <button class="btn" wx:if="{{action}}" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="onTap">{{busy ? '处理中…' : action}}</button>
 </view>

@@ -5,6 +5,6 @@
     <text class="sub mt-16">登录后可管理家庭、查看陪伴动态与成长，并使用实时守护工具。</text>
   </view>
   <view class="page-fixed-footer">
-    <button class="btn btn-primary" loading="{{loading}}" hover-class="pressed" bindtap="onLogin">微信一键登录</button>
+    <button class="btn btn-primary" loading="{{loading}}" disabled="{{loading}}" hover-class="pressed" bindtap="onLogin">微信一键登录</button>
   </view>
 </view>

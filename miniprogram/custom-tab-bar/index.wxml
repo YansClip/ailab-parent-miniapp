@@ -1,5 +1,5 @@
 <view class="tabbar">
-  <view
+  <button
     class="item"
     wx:for="{{list}}"
     wx:key="pagePath"
@@ -7,10 +7,11 @@
     data-path="{{item.pagePath}}"
     hover-class="pressed"
     bindtap="onSwitch"
+    aria-label="{{item.text}}{{selected === index ? '，当前页面' : ''}}"
   >
     <view class="icon-wrap {{selected === index ? 'on' : ''}}">
       <image class="icon" src="{{selected === index ? item.selectedIconPath : item.iconPath}}" mode="aspectFit" />
     </view>
     <text class="label {{selected === index ? 'on' : ''}}">{{item.text}}</text>
-  </view>
+  </button>
 </view>

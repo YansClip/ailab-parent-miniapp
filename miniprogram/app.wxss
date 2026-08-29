@@ -10,11 +10,19 @@ page {
   --mint-bg: #e9f8f2;
   --coral: #e85d69;
   --coral-bg: #fff0ef;
+  --surface: #ffffff;
+  --surface-warm: #fffdf9;
+  --surface-blue: #eaf6ff;
+  --surface-lavender: #f3efff;
   --muted: #61758a;
   --tab-inactive: #829ab1;
   --border: #e9e4ec;
   --page-bg: #fff9f1;
   --card-shadow: 0 8rpx 40rpx rgba(16, 42, 67, 0.08);
+  --card-shadow-soft: 0 14rpx 38rpx rgba(43, 59, 77, 0.07);
+  --radius-lg: 40rpx;
+  --radius-md: 28rpx;
+  --space-page: 40rpx;
   background-color: var(--page-bg);
   color: var(--navy);
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans SC", sans-serif;
@@ -42,6 +50,18 @@ button::after {
   min-height: 100vh;
   background: var(--page-bg);
   padding-bottom: calc(env(safe-area-inset-bottom) + 24rpx);
+}
+
+.page::before {
+  content: '';
+  position: fixed;
+  top: -180rpx;
+  right: -180rpx;
+  width: 460rpx;
+  height: 460rpx;
+  border-radius: 50%;
+  background: rgba(139, 120, 230, 0.045);
+  pointer-events: none;
 }
 
 .page-tab {
@@ -91,6 +111,10 @@ button::after {
   background: #fff;
   border-radius: 36rpx;
   box-shadow: 0 12rpx 32rpx rgba(15, 26, 41, 0.08);
+}
+
+.surface-border {
+  border: 2rpx solid rgba(16, 42, 67, 0.07);
 }
 
 .pill {
@@ -193,6 +217,13 @@ button::after {
   color: var(--accent);
 }
 
+.inline-action {
+  margin: 0;
+  padding: 12rpx 0;
+  background: transparent;
+  line-height: 1.3;
+}
+
 .section-title {
   font-size: 34rpx;
   font-weight: 700;
@@ -230,6 +261,42 @@ button::after {
 
 .pressed {
   opacity: 0.72;
+  transform: scale(0.985);
+}
+
+.tap-target {
+  min-width: 88rpx;
+  min-height: 88rpx;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #f0edf1;
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -65%;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.72), transparent);
+  animation: skeleton-shine 1.35s ease-in-out infinite;
+}
+
+@keyframes skeleton-shine {
+  100% { left: 120%; }
+}
+
+.demo-note {
+  padding: 16rpx 20rpx;
+  border-radius: 20rpx;
+  background: rgba(104, 184, 247, 0.12);
+  color: #3b739e;
+  font-size: 22rpx;
+  line-height: 1.5;
 }
 
 .ellipsis {

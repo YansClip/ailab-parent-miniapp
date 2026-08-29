@@ -1,7 +1,8 @@
 <view class="page">
   <nav-bar title="意见反馈" />
   <view class="pad">
-    <textarea class="textarea" placeholder="描述问题，可选择是否附带必要日志" bindinput="onInput" />
-    <button class="btn btn-primary mt-24" bindtap="send">提交</button>
+    <textarea class="textarea" value="{{text}}" maxlength="500" placeholder="描述问题，可选择是否附带必要日志" bindinput="onInput" />
+    <text class="sub mt-8">{{count}} / 500</text>
+    <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="send">提交</button>
   </view>
 </view>

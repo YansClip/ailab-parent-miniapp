@@ -1,6 +1,6 @@
 # AILab 微信小程序家长端
 
-原生微信小程序（WXML / WXSS / JS），对齐 Figma V3.2 与 PRD-MiniApp 端 V2.0。  
+原生微信小程序（WXML / WXSS / JavaScript），以 Figma 当前可见 V3 页面为演示基准。
 四个一级入口：**首页｜守护｜成长｜我的**。数据层当前为 Mock，接口形状可替换为真实 SaaS。
 
 ## 打开方式
@@ -28,6 +28,18 @@ miniprogram/
 ```
 
 不依赖微信云开发。不提供历史轨迹、远程摄像头、学习一级页、商城。
+
+## 质量检查
+
+项目只依赖 Node.js 内置能力，不需要安装第三方 npm 包：
+
+```bash
+npm run verify
+```
+
+该命令会检查 46 个页面的注册与四件套、JavaScript 语法、WXML 事件方法、路由、资源、疑似敏感信息和重复样式，并运行状态隔离、异步安全与 Mock 数据单元测试。完整评测记录见 [`docs/QUALITY-AUDIT.md`](docs/QUALITY-AUDIT.md)。
+
+孩子或设备切换时会先清空旧主体数据；轮询任务在离开页面后停止 UI 更新。联系人、闹钟、紧急联系人、家庭邀请等演示操作会写入本地存储，可通过退出登录或清除开发者工具缓存复位。
 
 ## Mock 场景
 
@@ -59,4 +71,4 @@ wx.setStorageSync('ailab.session.v1', {
 
 编辑 [`miniprogram/services/api.js`](miniprogram/services/api.js)，保持现有方法名与返回字段。页面不直接依赖 mock。设备任务需支持：已提交 → 执行中 → 成功/失败/超时 → 可再查询。
 
-本版本**未连接**真实 SaaS 与设备网关，不能直接提审上线。
+本版本**未连接**真实 SaaS、设备网关、定位与语音能力。页面中的“任务提交、设备执行、报告生成、分享和订阅”均为高保真模拟，不能直接提审上线。

@@ -17,7 +17,6 @@ Component({
         this.triggerEvent('close')
         return
       }
-      store.clearSensitive()
       store.setCurrentChildId(id)
       this.triggerEvent('change', { id })
       this.triggerEvent('close')

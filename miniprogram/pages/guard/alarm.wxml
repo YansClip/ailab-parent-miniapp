@@ -1,7 +1,7 @@
 <view class="page">
   <nav-bar title="闹钟" action="新建" bind:action="add" />
   <view class="pad">
-    <view class="item" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="edit">
+    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="edit" aria-label="编辑闹钟{{item.label}}，{{item.time}}">
       <view class="between">
         <view>
           <text class="h1">{{item.time}}</text>
@@ -9,6 +9,6 @@
         </view>
         <text class="status">{{item.enabled ? '开启 · 已同步' : '关闭'}}</text>
       </view>
-    </view>
+    </button>
   </view>
 </view>

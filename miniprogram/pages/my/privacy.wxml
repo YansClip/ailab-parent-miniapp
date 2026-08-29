@@ -7,7 +7,7 @@
       <text class="h3">当前授权</text>
       <text class="sub mt-8">监护人同意有效 · 最近变更 2026-08-20</text>
     </view>
-    <button class="btn btn-secondary mt-24" bindtap="submit">申请查看/更正</button>
+    <button class="btn btn-secondary mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">申请查看/更正</button>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
   </view>
 </view>

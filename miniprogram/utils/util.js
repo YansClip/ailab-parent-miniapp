@@ -15,6 +15,7 @@ function toast(title, icon) {
 }
 
 function failToast(err) {
+  if (err && err.code === 'CANCELLED') return
   const msg = (err && (err.message || err.errMsg)) || '网络不可用，请稍后重试'
   toast(msg)
 }
@@ -63,13 +64,52 @@ function statusBarHeight() {
 
 function withLoading(page, promise, key) {
   const loadingKey = key || 'loading'
-  page.setData({ [loadingKey]: true })
+  safeSetData(page, { [loadingKey]: true })
   return Promise.resolve(promise)
     .catch((err) => {
       failToast(err)
       throw err
     })
-    .finally(() => page.setData({ [loadingKey]: false }))
+    .finally(() => safeSetData(page, { [loadingKey]: false }))
+}
+
+function currentPage() {
+  if (typeof getCurrentPages !== 'function') return null
+  const pages = getCurrentPages()
+  return pages[pages.length - 1] || null
+}
+
+function pageMounted(page) {
+  if (!page || page.__disposed) return false
+  if (typeof getCurrentPages !== 'function') return true
+  return getCurrentPages().indexOf(page) >= 0
+}
+
+function safeSetData(page, patch, cb) {
+  if (!pageMounted(page) || typeof page.setData !== 'function') return false
+  page.setData(patch, cb)
+  return true
+}
+
+function beginRequest(page, key) {
+  const name = key || 'default'
+  page.__requestVersions = page.__requestVersions || {}
+  const next = (page.__requestVersions[name] || 0) + 1
+  page.__requestVersions[name] = next
+  return next
+}
+
+function isRequestCurrent(page, key, version) {
+  return pageMounted(page) && page.__requestVersions && page.__requestVersions[key || 'default'] === version
+}
+
+function disposePage(page) {
+  if (!page) return
+  page.__disposed = true
+  const jobs = page.__cancelJobs || []
+  jobs.splice(0).forEach((cancel) => {
+    try { cancel() } catch (e) { console.warn('[AILab async] cancel failed', e) }
+  })
 }
 
 function pollTask(id, opts) {
@@ -77,11 +117,16 @@ function pollTask(id, opts) {
   const interval = opts.interval || 700
   const max = opts.max || 12
   const onUpdate = opts.onUpdate
+  const owner = opts.page || currentPage()
   const api = require('../services/api')
   let n = 0
-  return new Promise((resolve, reject) => {
+  let timer = null
+  let cancelled = false
+  const promise = new Promise((resolve, reject) => {
     function tick() {
+      if (cancelled || (owner && !pageMounted(owner))) return
       api.getTask(id).then((t) => {
+        if (cancelled || (owner && !pageMounted(owner))) return
         if (onUpdate) onUpdate(t)
         if (t.status === 'success' || t.status === 'failed' || t.status === 'timeout' || t.status === 'unknown') {
           resolve(t)
@@ -92,30 +137,40 @@ function pollTask(id, opts) {
           resolve(t)
           return
         }
-        setTimeout(tick, interval)
+        timer = setTimeout(tick, interval)
       }).catch(reject)
     }
-    setTimeout(tick, interval)
+    timer = setTimeout(tick, interval)
   })
+  promise.cancel = function () {
+    cancelled = true
+    if (timer) clearTimeout(timer)
+  }
+  if (owner) {
+    owner.__cancelJobs = owner.__cancelJobs || []
+    owner.__cancelJobs.push(promise.cancel)
+  }
+  return promise
 }
 
 function runTask(page, type, payload) {
   const api = require('../services/api')
   if (page && page.data && page.data.busy) return Promise.resolve(null)
-  if (page) page.setData({ busy: true })
+  if (page) safeSetData(page, { busy: true })
   return api.submitTask(type, payload || {}).then((t) => {
-    if (page) page.setData({ task: t })
+    if (page) safeSetData(page, { task: t })
     return pollTask(t.id, {
+      page,
       onUpdate(x) {
-        if (page) page.setData({ task: x })
+        if (page) safeSetData(page, { task: x })
       }
     }).then((x) => {
-      if (page) page.setData({ task: x, busy: false })
+      if (page) safeSetData(page, { task: x, busy: false })
       toast(x.message)
       return x
     })
   }).catch((err) => {
-    if (page) page.setData({ busy: false })
+    if (page) safeSetData(page, { busy: false })
     failToast(err)
     throw err
   })
@@ -144,5 +199,9 @@ module.exports = {
   pollTask,
   runTask,
   acquire,
-  release
+  release,
+  safeSetData,
+  beginRequest,
+  isRequestCurrent,
+  disposePage
 }

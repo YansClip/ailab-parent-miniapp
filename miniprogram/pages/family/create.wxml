@@ -13,7 +13,7 @@
     </view>
   </view>
   <view class="page-fixed-footer">
-    <button class="btn btn-primary" loading="{{loading}}" hover-class="pressed" bindtap="onCreate">创建并成为主管理员</button>
-    <view class="alt" hover-class="pressed" bindtap="goBind">我有绑定码，加入已有家庭</view>
+    <button class="btn btn-primary" loading="{{loading}}" disabled="{{loading}}" hover-class="pressed" bindtap="onCreate">创建并成为主管理员</button>
+    <button class="alt" hover-class="pressed" bindtap="goBind">我有绑定码，加入已有家庭</button>
   </view>
 </view>

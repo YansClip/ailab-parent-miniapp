@@ -7,6 +7,7 @@
 }
 .scroll { flex: 1; height: 0; }
 .head { display: flex; justify-content: space-between; align-items: flex-start; }
+.child-pill { margin: 0; line-height: 1.2; }
 .loading { padding-top: 48rpx; color: #61758a; }
 .insight { padding: 32rpx; }
 .insight-lead { font-size: 30rpx; font-weight: 600; }
@@ -15,14 +16,21 @@
 .m:last-child { margin-right: 0; }
 .m .sub { margin-top: 6rpx; }
 .n { font-size: 36rpx; font-weight: 700; color: #8b78e6; }
-.brief { background: #f4eeff; border-radius: 40rpx; padding: 32rpx; display: flex; flex-direction: column; }
+.brief { width: 100%; margin: 0; text-align: left; line-height: 1.4; background: #f4eeff; border-radius: 40rpx; padding: 32rpx; display: flex; flex-direction: column; }
 .radar { padding: 32rpx; }
-.dim { display: flex; align-items: center; margin-top: 18rpx; }
-.dim-name { width: 72rpx; font-size: 24rpx; margin-right: 16rpx; }
-.bar { flex: 1; height: 16rpx; background: #f0ebff; border-radius: 8rpx; overflow: hidden; }
-.fill { height: 100%; background: #8b78e6; border-radius: 8rpx; }
-.dim-v { width: 64rpx; text-align: right; font-size: 22rpx; font-weight: 600; margin-left: 16rpx; }
+.radar-wrap { display: flex; justify-content: center; margin: 8rpx 0 -8rpx; }
+.radar-canvas { width: 300px; height: 248px; }
+.dim-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
+.dim-chip { margin: 0; padding: 16rpx; border-radius: 22rpx; background: #faf8ff; line-height: 1.35; display: flex; flex-direction: column; }
+.dim-name { font-size: 22rpx; color: #61758a; }
+.dim-v { margin-top: 4rpx; font-size: 26rpx; color: #102a43; font-weight: 700; }
+.radar-more { width: 100%; margin: 20rpx 0 0; padding: 16rpx; background: transparent; color: #8b78e6; font-size: 24rpx; }
 .rep, .ach {
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  text-align: left;
+  line-height: 1.4;
   background: #fff; border-radius: 32rpx; padding: 28rpx; margin-top: 16rpx;
   display: flex; justify-content: space-between; align-items: center;
   box-shadow: 0 8rpx 24rpx rgba(16,42,67,0.06);
@@ -30,3 +38,6 @@
 .rep view, .ach { display: flex; flex-direction: column; }
 .rep .sub, .ach .sub { margin-top: 8rpx; }
 .pb { padding-bottom: calc(168rpx + env(safe-area-inset-bottom)); }
+.sk-growth-lead { width: 54%; height: 52rpx; border-radius: 18rpx; }
+.sk-growth-card { height: 220rpx; border-radius: 40rpx; margin-top: 28rpx; }
+.sk-growth-card.tall { height: 520rpx; }

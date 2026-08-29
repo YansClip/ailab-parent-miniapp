@@ -7,8 +7,8 @@ Page({
   onSubmit() {
     if (this.data.loading) return
     const code = (this.data.code || '').trim()
-    if (!code || code.length < 4) {
-      this.setData({ error: '绑定码格式不正确，请核对后重试。' })
+    if (!/^\d{6}$/.test(code)) {
+      this.setData({ error: '请输入 6 位数字绑定码。' })
       return
     }
     if (code === '000000') {

@@ -20,6 +20,9 @@
   flex-direction: column;
   align-items: center;
   padding-top: 8rpx;
+  margin: 0;
+  background: transparent;
+  line-height: 1.2;
 }
 
 .icon-wrap {
@@ -30,15 +33,6 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 8rpx;
-}
-
-.icon-wrap {
-  width: 64rpx;
-  height: 64rpx;
-  border-radius: 20rpx;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .icon-wrap.on {

@@ -8,7 +8,7 @@
           <text class="h3">{{index + 1}}. {{item.name}}</text>
           <text class="sub">{{item.relation}}</text>
         </view>
-        <text class="danger" data-id="{{item.id}}" catchtap="remove">移除</text>
+        <button class="danger-inline" data-id="{{item.id}}" loading="{{busy}}" disabled="{{busy}}" catchtap="remove" aria-label="移除紧急联系人{{item.name}}">移除</button>
       </view>
     </view>
     <text class="status mt-16" wx:if="{{task}}">{{task.message}}</text>

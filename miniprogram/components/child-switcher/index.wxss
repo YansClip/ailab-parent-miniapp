@@ -36,13 +36,22 @@
   line-height: 1.5;
 }
 .item {
+  width: 100%;
+  margin: 0;
+  background: transparent;
+  text-align: left;
   display: flex;
   align-items: center;
   padding: 20rpx 0;
   border-bottom: 1rpx solid #f3eef4;
 }
 .item.on {
-  opacity: 1;
+  background: #faf8ff;
+  margin: 0 -16rpx;
+  padding-left: 16rpx;
+  padding-right: 16rpx;
+  width: calc(100% + 32rpx);
+  border-radius: 24rpx;
 }
 .avatar {
   width: 72rpx;
@@ -61,6 +70,8 @@
 .dev { font-size: 22rpx; color: #61758a; }
 .check { font-size: 22rpx; color: #40b352; }
 .cancel {
+  width: 100%;
+  background: transparent;
   text-align: center;
   padding: 28rpx 0 8rpx;
   color: #61758a;

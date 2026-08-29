@@ -1,10 +1,10 @@
 <view class="page">
   <nav-bar title="玩机指南" />
   <view class="pad">
-    <view class="item" wx:for="{{list}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="open">
+    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="open" aria-label="查看指南：{{item.title}}">
       <text class="h3">{{item.title}}</text>
       <text class="sub">{{item.desc}}</text>
       <text class="status">{{item.status}} · 查看 ›</text>
-    </view>
+    </button>
   </view>
 </view>

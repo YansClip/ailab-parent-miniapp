@@ -11,7 +11,16 @@
   border-radius: 32rpx;
   background: #f0ebff;
   margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8b78e6;
+  font-size: 48rpx;
+  font-weight: 700;
 }
+.tone-mint { background: #e9f8f2; color: #40b352; }
+.tone-coral { background: #fff0ef; color: #e85d69; }
+.tone-sky { background: #eaf6ff; color: #3a8fd4; }
 .title {
   font-size: 30rpx;
   font-weight: 700;
@@ -31,4 +40,5 @@
   padding: 16rpx 36rpx;
   border-radius: 999rpx;
   font-size: 26rpx;
+  line-height: 1;
 }

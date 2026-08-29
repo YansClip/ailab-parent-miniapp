@@ -1,17 +1,23 @@
 const api = require('../../services/api')
-const store = require('../../services/store')
 const util = require('../../utils/util')
 Page({
-  data: { stage: 'start', title: '让 Mini 响铃', desc: '响铃可能打扰身边的人，请确认后再提交。单次最长 60 秒。', left: 60, taskId: '' },
+  data: { stage: 'start', title: '让 Mini 响铃', desc: '响铃可能打扰身边的人，请确认后再提交。单次最长 60 秒。', left: 60, taskId: '', task: null },
+  onLoad() { this.__disposed = false },
   start() {
     if (!util.acquire(this)) return
-    const childOffline = store.getCurrentChildId() === 'child-xinghe'
-    if (childOffline) {
-      util.release(this)
-      this.setData({ stage: 'offline', title: '设备离线', desc: '离线时不能发起查找。请待设备上线后重试。' })
-      return
-    }
-    api.submitTask('find-device', {}).then((t) => {
+    api.getLocation().then((loc) => {
+      if (!loc.online) {
+        util.release(this)
+        this.setData({
+          stage: 'offline',
+          title: loc.status === 'unbound' ? '尚未绑定设备' : '设备离线',
+          desc: loc.status === 'unbound' ? '请先在设备中心绑定 Mini 设备。' : '离线时不能发起查找。请待设备上线后重试。'
+        })
+        return null
+      }
+      return api.submitTask('find-device', {})
+    }).then((t) => {
+      if (!t) return null
       this.setData({ stage: 'ringing', title: '正在查找', desc: '请求已提交，设备响铃中。', left: 60, taskId: t.id })
       const timer = setInterval(() => {
         const left = this.data.left - 1
@@ -25,7 +31,8 @@ Page({
         } else this.setData({ left })
       }, 1000)
       this.timer = timer
-      return util.pollTask(t.id).then((x) => {
+      this.findPoll = util.pollTask(t.id, { page: this, onUpdate: (task) => util.safeSetData(this, { task }) })
+      return this.findPoll.then((x) => {
         if (this.data.stage !== 'ringing') return
         if (this.timer) { clearInterval(this.timer); this.timer = null }
         if (x.status === 'failed') {
@@ -42,13 +49,29 @@ Page({
     }).finally(() => util.release(this))
   },
   stop() {
+    if (this.data.stage !== 'ringing') return
     if (this.timer) { clearInterval(this.timer); this.timer = null }
-    util.release(this)
-    this.setData({ stage: 'found', title: '已手动停止', desc: '响铃已停止。' })
+    if (this.findPoll && this.findPoll.cancel) this.findPoll.cancel()
+    this.setData({ stage: 'stopping', title: '正在停止响铃', desc: '等待设备确认最终状态…' })
+    api.submitTask('find-stop', { sourceTaskId: this.data.taskId }).then((task) => {
+      this.stopPoll = util.pollTask(task.id, { page: this, onUpdate: (x) => util.safeSetData(this, { task: x }) })
+      return this.stopPoll
+    }).then((x) => {
+      if (!x) return
+      this.setData({ stage: x.status === 'success' ? 'found' : 'failed', title: x.status === 'success' ? '已停止响铃' : '停止失败', desc: x.message })
+    }).catch((e) => {
+      util.failToast(e)
+      util.safeSetData(this, { stage: 'failed', title: '停止失败', desc: (e && e.message) || '请重试' })
+    }).finally(() => util.release(this))
   },
   reset() {
     util.release(this)
     this.setData({ stage: 'start', title: '让 Mini 响铃', desc: '响铃可能打扰身边的人，请确认后再提交。单次最长 60 秒。' })
   },
-  onUnload() { if (this.timer) clearInterval(this.timer) }
+  onUnload() {
+    if (this.timer) clearInterval(this.timer)
+    if (this.findPoll && this.findPoll.cancel) this.findPoll.cancel()
+    if (this.stopPoll && this.stopPoll.cancel) this.stopPoll.cancel()
+    util.disposePage(this)
+  }
 })

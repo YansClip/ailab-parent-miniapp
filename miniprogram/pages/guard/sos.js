@@ -1,7 +1,7 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
 Page({
-  data: { list: [], task: null },
+  data: { list: [], task: null, busy: false },
   onShow() {
     api.getSos().then((list) => this.setData({ list })).catch((e) => util.failToast(e))
   },
@@ -13,6 +13,7 @@ Page({
     wx.navigateTo({ url: '/pages/guard/contacts?pick=sos' })
   },
   async remove(e) {
+    if (this.data.busy) return
     if (this.data.list.length <= 1) {
       util.toast('至少保留 1 名紧急联系人')
       return
@@ -21,12 +22,13 @@ Page({
     if (!ok) return
     const id = e.currentTarget.dataset.id
     const ids = this.data.list.map((x) => x.id).filter((x) => x !== id)
+    this.setData({ busy: true })
     api.saveSos(ids).then((t) => {
       this.setData({ task: t })
       return util.pollTask(t.id, { onUpdate: (x) => this.setData({ task: x }) })
     }).then((x) => {
       util.toast(x.message)
       return api.getSos()
-    }).then((list) => this.setData({ list })).catch((e) => util.failToast(e))
+    }).then((list) => this.setData({ list })).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
   }
 })

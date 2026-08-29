@@ -3,6 +3,7 @@ const CHILD_KEY = 'ailab.currentChildId'
 const SCENARIO_KEY = 'ailab.mock.scenario'
 const TASK_KEY = 'ailab.tasks'
 const FOLLOW_KEY = 'ailab.follows'
+const DATA_KEY = 'ailab.demo.data'
 
 function read(key, fallback) {
   try {
@@ -20,8 +21,12 @@ function write(key, value) {
 const listeners = []
 
 function emit(type, payload) {
-  listeners.forEach((fn) => {
-    try { fn(type, payload) } catch (e) {}
+  listeners.slice().forEach((fn) => {
+    try {
+      fn(type, payload)
+    } catch (e) {
+      console.warn('[AILab store] listener failed:', type, e && e.message ? e.message : e)
+    }
   })
 }
 
@@ -65,8 +70,12 @@ const store = {
   },
 
   setCurrentChildId(id) {
+    const previousId = this.getCurrentChildId()
+    if (!id || id === previousId) return previousId
+    emit('clear', { previousId, nextId: id })
     write(CHILD_KEY, id)
-    emit('child', id)
+    emit('child', { id, previousId })
+    return id
   },
 
   getScenario() {
@@ -91,6 +100,20 @@ const store = {
 
   getFollows() {
     return read(FOLLOW_KEY, {})
+  },
+
+  getDemoData(key, fallback) {
+    const all = read(DATA_KEY, {})
+    if (!Object.prototype.hasOwnProperty.call(all, key)) return fallback
+    return all[key]
+  },
+
+  setDemoData(key, value) {
+    const all = read(DATA_KEY, {})
+    all[key] = value
+    write(DATA_KEY, all)
+    emit('demo-data', { key, value })
+    return value
   },
 
   toggleFollow(id) {
@@ -134,12 +157,14 @@ const store = {
     write(KEY, defaultSession())
     write(CHILD_KEY, 'child-xiaoman')
     write(TASK_KEY, {})
+    write(FOLLOW_KEY, {})
     write(SOS_KEY, ['c1', 'c2'])
     write(INVITE_KEY, { u3: 'pending' })
+    write(DATA_KEY, {})
   },
 
-  clearSensitive() {
-    emit('clear', this.getCurrentChildId())
+  clearSensitive(nextId) {
+    emit('clear', { previousId: this.getCurrentChildId(), nextId: nextId || '' })
   }
 }
 

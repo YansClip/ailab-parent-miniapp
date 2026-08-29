@@ -18,6 +18,9 @@
 .art-img { width: 100%; height: 100%; }
 .actions { margin-top: auto; }
 .join {
+  width: 100%;
+  background: transparent;
+  line-height: 1.4;
   text-align: center;
   margin-top: 28rpx;
   color: #61758a;

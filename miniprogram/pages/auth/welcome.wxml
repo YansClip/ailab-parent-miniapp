@@ -5,10 +5,10 @@
     <text class="sub mt-12">陪伴动态、实时守护、成长记录与家庭管理。</text>
   </view>
   <view class="art">
-    <image class="art-img" src="/assets/images/hero.jpg" mode="aspectFill" />
+    <image class="art-img" src="/assets/images/hero.jpg" mode="aspectFill" aria-label="孩子与 Mini 设备的陪伴插画" />
   </view>
   <view class="actions">
     <button class="btn btn-primary" hover-class="pressed" bindtap="onStart">开始使用</button>
-    <view class="join" hover-class="pressed" bindtap="onJoin">或加入已有家庭</view>
+    <button class="join" hover-class="pressed" bindtap="onJoin">或加入已有家庭</button>
   </view>
 </view>

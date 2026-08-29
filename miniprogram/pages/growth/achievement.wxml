@@ -5,11 +5,11 @@
     <text class="sub mt-8">{{item.source}} · {{item.date}} · 孩子 {{item.childAlias}}</text>
     <view class="card card-p mt-20">
       <text class="h3">形成过程</text>
-      <text class="sub mt-8">{{item.process || '正式事件，可追溯原始记录。不以演示分数填充。'}}</text>
+      <text class="sub mt-8">{{item.process || '有效事件可追溯原始记录；当前为高保真演示。'}}</text>
     </view>
     <view class="card card-p mt-16">
       <text class="h3">证据</text>
-      <text class="sub mt-8">{{item.evidence || '来源场景与时间均来自后台正式数据。'}}</text>
+      <text class="sub mt-8">{{item.evidence || '正式产品由后台提供来源场景与时间。'}}</text>
     </view>
     <button class="btn btn-secondary mt-24" hover-class="pressed" bindtap="share">脱敏分享</button>
   </view>

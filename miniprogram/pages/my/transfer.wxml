@@ -3,7 +3,7 @@
   <view class="pad">
     <text class="h1">将主管理权转移给林屿</text>
     <text class="sub mt-12">转移前核验接收方身份和有效监护关系。成功后双方权限立即更新。</text>
-    <button class="btn btn-primary mt-24" loading="{{busy}}" hover-class="pressed" bindtap="go">二次确认并提交</button>
+    <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="go">二次确认并提交</button>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
   </view>
 </view>

@@ -1,12 +1,15 @@
 Component({
   properties: {
     title: { type: String, value: '暂时还没有内容' },
-    desc: { type: String, value: '有正式事件后会出现在这里，不会用模拟数据填充。' },
-    action: { type: String, value: '' }
+    desc: { type: String, value: '产生有效数据后会出现在这里，空状态不会自动补数。' },
+    action: { type: String, value: '' },
+    icon: { type: String, value: '·' },
+    tone: { type: String, value: 'lavender' },
+    busy: { type: Boolean, value: false }
   },
   methods: {
     onTap() {
-      this.triggerEvent('action')
+      if (!this.data.busy) this.triggerEvent('action')
     }
   }
 })

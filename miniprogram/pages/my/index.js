@@ -1,30 +1,69 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
-const store = require('../../services/store')
-
 Page({
   data: {
     statusBarHeight: 44,
     parent: {},
-    childName: '林小满',
-    menus: [
-      { title: '家庭管理', desc: '成员、邀请与主管理员', url: '/pages/my/family', color: '#8b78e6' },
-      { title: '设备中心', desc: '在线、电量与解绑', url: '/pages/my/device', color: '#40b352' },
-      { title: '玩机指南', desc: '绑定、守护与五项工具', url: '/pages/my/guide', color: '#68b8f7' },
-      { title: '消息中心', desc: '家庭、守护、成长与系统', url: '/pages/my/message', color: '#f2a84a' },
-      { title: '专属支持', desc: '客服、反馈与服务进度', url: '/pages/my/support', color: '#1ac7cc' },
-      { title: '我的账号', desc: '隐私、儿童信息与注销', url: '/pages/my/account', color: '#e85d69' },
-      { title: '关于我们', desc: '版本、协议与意见反馈', url: '/pages/my/about', color: '#829ab1' }
+    child: {},
+    children: [],
+    family: { members: [] },
+    device: {},
+    showSwitcher: false,
+    loading: true,
+    error: '',
+    groups: [
+      {
+        title: '家庭与设备',
+        items: [
+          { icon: '家', title: '家庭管理', desc: '家庭成员、孩子与管理员权限', url: '/pages/my/family', tone: 'lavender' },
+          { icon: 'M', title: '设备中心', desc: '设备状态、固件与解绑', url: '/pages/my/device', tone: 'sky' },
+          { icon: '?', title: '玩机指南', desc: '守护与设备工具使用说明', url: '/pages/my/guide', tone: 'mint' }
+        ]
+      },
+      {
+        title: '消息与服务',
+        items: [
+          { icon: '信', title: '消息中心', desc: '站内消息与微信订阅设置', url: '/pages/my/message', tone: 'butter' },
+          { icon: '服', title: '专属支持', desc: '常见问题、客服与反馈进度', url: '/pages/my/support', tone: 'coral' }
+        ]
+      },
+      {
+        title: '账号与关于',
+        items: [
+          { icon: '我', title: '我的账号', desc: '账号、隐私与儿童信息管理', url: '/pages/my/account', tone: 'lavender' },
+          { icon: 'i', title: '关于我们', desc: '版本、协议与意见反馈', url: '/pages/my/about', tone: 'neutral' }
+        ]
+      }
     ]
   },
   onShow() {
+    this.__disposed = false
     util.setTab(3)
     if (!util.guardAuth()) return
     this.setData({ statusBarHeight: util.statusBarHeight() })
-    api.getParent().then((parent) => {
-      const id = store.getCurrentChildId()
-      this.setData({ parent, childName: id === 'child-xinghe' ? '陈星河' : '林小满' })
-    }).catch((e) => util.failToast(e))
+    this.reload()
   },
-  go(e) { wx.navigateTo({ url: e.currentTarget.dataset.url }) }
+  reload() {
+    const version = util.beginRequest(this, 'my')
+    this.setData({ loading: true, error: '' })
+    Promise.all([api.getParent(), api.getChildren(), api.getFamily(), api.getDevices()]).then(([parent, children, family, devices]) => {
+      if (!util.isRequestCurrent(this, 'my', version)) return
+      const currentId = require('../../services/store').getCurrentChildId()
+      const child = children.find((item) => item.id === currentId) || children[0] || {}
+      const device = devices.find((item) => item.id === child.deviceId) || {}
+      this.setData({ parent, children, family, child, device, loading: false, error: '' })
+    }).catch((e) => {
+      if (!util.isRequestCurrent(this, 'my', version)) return
+      util.failToast(e)
+      this.setData({ loading: false, error: (e && e.message) || '账号信息加载失败' })
+    })
+  },
+  openSwitcher() { this.setData({ showSwitcher: true }) },
+  closeSwitcher() { this.setData({ showSwitcher: false }) },
+  onChildChange() {
+    this.setData({ loading: true, child: {}, device: {} })
+    this.reload()
+  },
+  go(e) { wx.navigateTo({ url: e.currentTarget.dataset.url }) },
+  onUnload() { util.disposePage(this) }
 })

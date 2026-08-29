@@ -2,7 +2,7 @@ const api = require('../../services/api')
 const util = require('../../utils/util')
 
 Page({
-  data: { list: [], pick: false, selected: {}, count: 0 },
+  data: { list: [], pick: false, selected: {}, count: 0, busy: false, task: null },
   onLoad(q) {
     this.setData({ pick: q.pick === 'sos' })
   },
@@ -47,6 +47,7 @@ Page({
     this.setData({ selected, list, count: Object.keys(selected).length })
   },
   confirmPick() {
+    if (this.data.busy) return
     const ids = Object.keys(this.data.selected)
     if (ids.length < 1) {
       util.toast('至少选择 1 名紧急联系人')
@@ -56,9 +57,13 @@ Page({
       util.toast('最多设置 3 名紧急联系人')
       return
     }
-    api.saveSos(ids).then((t) => util.pollTask(t.id)).then((x) => {
+    this.setData({ busy: true })
+    api.saveSos(ids).then((t) => {
+      this.setData({ task: t })
+      return util.pollTask(t.id, { page: this, onUpdate: (task) => this.setData({ task }) })
+    }).then((x) => {
       util.toast(x.message)
-      wx.navigateBack()
-    }).catch((e) => util.failToast(e))
+      if (x.status === 'success') wx.navigateBack()
+    }).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
   }
 })

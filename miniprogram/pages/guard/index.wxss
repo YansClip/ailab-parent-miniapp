@@ -8,6 +8,7 @@
 .scroll { flex: 1; height: 0; }
 .head { display: flex; justify-content: space-between; align-items: flex-start; padding-top: 8rpx; margin-bottom: 16rpx; }
 .head .h1 { font-size: 48rpx; }
+.device-pill { margin: 0; line-height: 1.2; }
 .map-wrap {
   height: 480rpx;
   border-radius: 48rpx;
@@ -34,10 +35,14 @@
   font-size: 24rpx;
   font-weight: 600;
   color: #40b352;
+  padding: 8rpx 0;
+  background: transparent;
+  text-align: left;
+  line-height: 1.2;
 }
 .tool-head { display: flex; justify-content: space-between; align-items: center; margin-top: 28rpx; }
 .tools { display: flex; justify-content: space-between; margin-top: 16rpx; }
-.tool { width: 120rpx; display: flex; flex-direction: column; align-items: center; font-size: 24rpx; font-weight: 500; }
+.tool { width: 120rpx; margin: 0; padding: 0; background: transparent; line-height: 1.2; display: flex; flex-direction: column; align-items: center; font-size: 24rpx; font-weight: 500; }
 .tool text { margin-top: 16rpx; }
 .ticon {
   width: 96rpx; height: 96rpx; border-radius: 32rpx;
@@ -57,3 +62,4 @@
 .s-col .sub { margin-top: 4rpx; }
 .s-num { font-size: 26rpx; font-weight: 700; }
 .pb { padding-bottom: calc(168rpx + env(safe-area-inset-bottom)); }
+.tools-skeleton { height: 176rpx; border-radius: 36rpx; margin-top: 32rpx; }

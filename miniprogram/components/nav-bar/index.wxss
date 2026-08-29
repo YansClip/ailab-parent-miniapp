@@ -1,11 +1,13 @@
 .nav {
-  position: sticky;
+  position: fixed;
+  left: 0;
+  right: 0;
   top: 0;
   z-index: 20;
   background: #fff9f1;
 }
 .inner {
-  height: 88rpx;
+  min-height: 88rpx;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,7 +18,12 @@
   height: 88rpx;
   display: flex;
   align-items: center;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  line-height: 1;
 }
+.side[disabled] { opacity: 1; }
 .side.right {
   justify-content: flex-end;
 }

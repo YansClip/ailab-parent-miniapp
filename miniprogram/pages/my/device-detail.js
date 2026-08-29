@@ -14,6 +14,9 @@ Page({
     api.submitTask('device-unbind', { id: this.data.dev.id }).then((t) => {
       this.setData({ task: t, confirm: false })
       return util.pollTask(t.id, { onUpdate: (x) => this.setData({ task: x }) })
-    }).then((x) => util.toast(x.message)).catch((e) => util.failToast(e)).finally(() => this.setData({ busy: false }))
+    }).then((x) => {
+      util.toast(x.message)
+      if (x.status === 'success') setTimeout(() => wx.navigateBack(), 500)
+    }).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
   }
 })

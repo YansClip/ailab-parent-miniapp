@@ -1,0 +1,11 @@
+{
+  "name": "ailab-parent-miniapp-demo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AILab 微信小程序家长端高保真演示版",
+  "scripts": {
+    "check": "node scripts/quality-check.js",
+    "test": "node --test tests/*.test.js",
+    "verify": "npm run check && npm test"
+  }
+}

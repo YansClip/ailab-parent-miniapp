@@ -1,9 +1,14 @@
 <view class="page page-tab home" style="padding-top: {{statusBarHeight}}px;">
-  <view wx:if="{{loading}}" class="pad loading">加载中，正在切换当前孩子的数据…</view>
+  <view wx:if="{{loading}}" class="pad loading" role="status" aria-label="正在加载当前孩子的数据">
+    <view class="sk-line skeleton"></view>
+    <view class="sk-hero skeleton"></view>
+    <view class="sk-card skeleton"></view>
+    <view class="sk-line short skeleton"></view>
+  </view>
 
   <view wx:elif="{{error && !home.child.id}}" class="pad loading">
     <text>{{error}}</text>
-    <view class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</view>
+    <button class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</button>
   </view>
 
   <block wx:elif="{{home.empty}}">
@@ -12,9 +17,9 @@
         <text class="h1">{{home.greeting}}，{{parent.name}}</text>
         <text class="sub">还没有陪伴动态</text>
       </view>
-      <view class="pill pill-lavender" hover-class="pressed" bindtap="openSwitcher">{{home.child.shortName}} · {{home.child.deviceName}}</view>
+      <button class="pill pill-lavender child-pill" hover-class="pressed" bindtap="openSwitcher" aria-label="切换孩子与设备">{{home.child.shortName}} · {{home.child.deviceName}}</button>
     </view>
-    <empty-state title="今天还没有新的陪伴动态" desc="兴趣足迹来自正式互动事件。没有数据时不会生成虚构内容。" action="查看玩机指南" bind:action="goGuide" />
+    <empty-state title="今天还没有新的陪伴动态" desc="正式产品由互动事件生成兴趣足迹；空状态不会自动补数。" action="查看玩机指南" bind:action="goGuide" />
     <view class="pb"></view>
   </block>
 
@@ -24,12 +29,12 @@
         <text class="h1">{{home.greeting}}，{{parent.name}}</text>
         <text class="sub">陪伴{{home.child.name}}的第 {{home.child.days}} 天</text>
       </view>
-      <view class="pill pill-lavender" hover-class="pressed" bindtap="openSwitcher">{{home.child.shortName}} · {{home.child.deviceName}}</view>
+      <button class="pill pill-lavender child-pill" hover-class="pressed" bindtap="openSwitcher" aria-label="切换孩子与设备">{{home.child.shortName}} · {{home.child.deviceName}}</button>
     </view>
 
     <view class="pad">
       <view class="hero">
-        <image class="hero-img" src="{{home.hero.image}}" mode="aspectFill" />
+        <image class="hero-img" src="{{home.hero.image}}" mode="aspectFill" aria-label="孩子与 Mini 设备的陪伴插画" />
         <view class="hero-mask"></view>
         <view class="hero-copy">
           <text class="hero-title">{{home.hero.title}}</text>
@@ -63,7 +68,7 @@
 
     <view class="pad section-row mt-20">
       <text class="section-title">今天发生了什么</text>
-          <text class="link" hover-class="pressed" bindtap="goFeed">查看全部</text>
+          <button class="link inline-action" hover-class="pressed" bindtap="goFeed">查看全部</button>
     </view>
 
     <view class="pad" wx:if="{{home.photoCard}}">
@@ -74,7 +79,7 @@
           <text class="sub">{{home.photoCard.time}}</text>
         </view>
         <view class="photos">
-          <image wx:for="{{home.photos}}" wx:key="src" class="photo" src="{{item.src}}" mode="aspectFill" />
+          <image wx:for="{{home.photos}}" wx:key="src" class="photo" src="{{item.src}}" mode="aspectFill" aria-label="成果照片 {{index + 1}}" />
         </view>
         <text class="sub">{{home.photoCard.desc}}</text>
       </view>
@@ -82,7 +87,7 @@
 
     <view class="pad mt-12">
       <view class="dyn" wx:for="{{home.dynamics}}" wx:key="id">
-        <image class="dyn-icon" src="{{item.icon}}" mode="aspectFill" />
+        <image class="dyn-icon" src="{{item.icon}}" mode="aspectFill" aria-label="{{item.title}}" />
         <view class="dyn-copy">
           <text class="dyn-title">{{item.title}}</text>
           <text class="sub">{{item.desc}}</text>
@@ -94,29 +99,29 @@
     <view class="pad mt-20">
       <text class="section-title">互动与项目成果</text>
       <view class="ach-row mt-12">
-        <view class="ach {{item.tone}}" wx:for="{{home.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch">
+        <button class="ach {{item.tone}}" wx:for="{{home.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch" aria-label="查看成果{{item.title}}">
           <view class="pill pill-white">{{item.type}}</view>
           <text class="ach-title">{{item.title}}</text>
           <text class="sub">{{item.extra}}</text>
           <text class="ach-link">查看详情 →</text>
-        </view>
+        </button>
       </view>
     </view>
 
     <view class="pad mt-20">
       <view class="section-row">
         <text class="section-title">兴趣足迹</text>
-        <view class="all-btn" hover-class="pressed" bindtap="goFootprint" data-id="fp1">查看全部  ›</view>
+        <button class="all-btn" hover-class="pressed" bindtap="goFootprint" data-id="fp1">查看最新  ›</button>
       </view>
       <text class="sub mt-8">记录孩子主动发问、发现新概念与表达观点的过程，仅供家庭陪伴查看。</text>
-      <view class="fp fp-{{item.tone}}" wx:for="{{home.footprints}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goFootprint">
+      <button class="fp fp-{{item.tone}}" wx:for="{{home.footprints}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goFootprint" aria-label="查看兴趣足迹：{{item.title}}">
         <view class="between">
           <text class="sub">{{item.date}}</text>
           <view class="pill pill-white {{item.tagTone}}">{{item.tag}}</view>
         </view>
         <text class="fp-title">{{item.title}}</text>
         <text class="sub">{{item.desc}}   查看详情 ›</text>
-      </view>
+      </button>
     </view>
 
     <view class="pad mt-16" wx:if="{{home.suggestion}}">
@@ -132,22 +137,22 @@
     <view class="pad mt-20">
       <text class="section-title">待办与提醒</text>
       <view class="todo-row mt-12">
-        <view class="todo t-{{item.tone}}" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="goUrl">
+        <button class="todo t-{{item.tone}}" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="goUrl" aria-label="处理待办：{{item.title}}">
           <text class="todo-title">{{item.title}}</text>
           <text class="sub">{{item.desc}}</text>
           <text class="todo-link">{{item.action}}</text>
-        </view>
+        </button>
       </view>
     </view>
 
     <view class="pad mt-16 pb">
-      <view class="guide between" hover-class="pressed" bindtap="goGuide">
+      <button class="guide between" hover-class="pressed" bindtap="goGuide" aria-label="打开玩机指南">
         <view class="col">
           <text class="h3">玩机指南</text>
           <text class="sub">3 分钟了解守护与设备工具</text>
         </view>
         <view class="pill pill-lavender">开始查看</view>
-      </view>
+      </button>
     </view>
   </scroll-view>
 

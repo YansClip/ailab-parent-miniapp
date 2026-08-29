@@ -1,4 +1,5 @@
 const store = require('./store')
+let taskSequence = 0
 
 function delay(ms) {
   const scenario = store.getScenario()
@@ -45,9 +46,94 @@ const SCIENCE_CENTER = {
   accuracy: 18
 }
 
+const DEFAULT_CONTACTS = [
+  { id: 'c1', name: '陈然', relation: '妈妈', phone: '138****2160', deviceCall: true },
+  { id: 'c2', name: '林屿', relation: '爸爸', phone: '139****8801', deviceCall: true },
+  { id: 'c3', name: '周老师', relation: '班主任', phone: '137****4412', deviceCall: false }
+]
+
+const DEFAULT_ALARMS = [
+  { id: 'al1', time: '07:20', label: '起床', repeat: '周一至周五', enabled: true, synced: true },
+  { id: 'al2', time: '21:00', label: '晚安', repeat: '每天', enabled: true, synced: true }
+]
+
+function contactsData() {
+  return store.getDemoData('contacts', DEFAULT_CONTACTS).map((item) => Object.assign({}, item))
+}
+
+function alarmsData() {
+  return store.getDemoData('alarms', DEFAULT_ALARMS).map((item) => Object.assign({}, item))
+}
+
+function activeChildren() {
+  const hidden = store.getDemoData('unboundChildren', [])
+  return CHILDREN.filter((item) => hidden.indexOf(item.id) < 0)
+}
+
+function isDeviceBound(child) {
+  return store.getDemoData('unboundDevices', []).indexOf(child.deviceId) < 0
+}
+
+function applyTaskMutation(type, payload) {
+  if (type === 'contact-sync') {
+    const list = contactsData()
+    const next = {
+      id: payload.id || 'c' + Date.now(),
+      name: payload.name,
+      relation: payload.relation,
+      phone: payload.phone,
+      deviceCall: !!payload.deviceCall
+    }
+    const index = list.findIndex((item) => item.id === next.id)
+    if (index >= 0) list[index] = next
+    else list.push(next)
+    store.setDemoData('contacts', list)
+  }
+  if (type === 'contact-delete') {
+    store.setDemoData('contacts', contactsData().filter((item) => item.id !== payload.id))
+  }
+  if (type === 'alarm-save') {
+    const list = alarmsData()
+    const next = {
+      id: payload.id || 'al' + Date.now(),
+      time: payload.time,
+      label: payload.label,
+      repeat: payload.repeat || '仅一次',
+      enabled: !!payload.enabled,
+      synced: true
+    }
+    const index = list.findIndex((item) => item.id === next.id)
+    if (index >= 0) list[index] = next
+    else list.push(next)
+    store.setDemoData('alarms', list)
+  }
+  if (type === 'alarm-delete') {
+    store.setDemoData('alarms', alarmsData().filter((item) => item.id !== payload.id))
+  }
+  if (type === 'admin-transfer') {
+    store.setSession({ role: '普通成员' })
+  }
+  if (type === 'invite-accept') store.setInvite(payload.id, 'accepted')
+  if (type === 'invite-reject') store.setInvite(payload.id, 'rejected')
+  if (type === 'sos-update') store.setSosIds((payload.ids || []).slice(0, 3))
+  if (type === 'device-unbind') {
+    const ids = store.getDemoData('unboundDevices', [])
+    if (ids.indexOf(payload.id) < 0) store.setDemoData('unboundDevices', ids.concat(payload.id))
+  }
+  if (type === 'child-unbind') {
+    const ids = store.getDemoData('unboundChildren', [])
+    const next = ids.indexOf(payload.id) < 0 ? ids.concat(payload.id) : ids
+    store.setDemoData('unboundChildren', next)
+    const remaining = CHILDREN.filter((item) => next.indexOf(item.id) < 0)
+    if (store.getCurrentChildId() === payload.id && remaining[0]) store.setCurrentChildId(remaining[0].id)
+  }
+  if (type === 'subscription-update') store.setDemoData('subscriptionEnabled', !!payload.enabled)
+}
+
 function currentChild() {
   const id = store.getCurrentChildId()
-  return CHILDREN.find((c) => c.id === id) || CHILDREN[0]
+  const list = activeChildren()
+  return list.find((c) => c.id === id) || list[0] || CHILDREN[0]
 }
 
 function greeting() {
@@ -71,18 +157,20 @@ const mock = {
   },
 
   getChildren() {
-    return wrap(CHILDREN)
+    return wrap(activeChildren())
   },
 
   getHome() {
     const scenario = store.getScenario()
     const child = currentChild()
+    const deviceBound = isDeviceBound(child)
+    const deviceOnline = deviceBound && child.online
     if (scenario === 'empty') {
       return wrap({
         child,
         greeting: greeting(),
         empty: true,
-        summary: { dynamics: 0, onlineMinutes: 0, todos: 0, deviceOnline: child.online },
+        summary: { dynamics: 0, onlineMinutes: 0, todos: 0, deviceOnline },
         dynamics: [],
         photos: [],
         footprints: [],
@@ -100,13 +188,13 @@ const mock = {
       hero: {
         image: '/assets/images/hero.jpg',
         title: '今天，也在好好长大',
-        subtitle: isXinghe ? '设备当前离线 · 成长记录仍可查看' : '新增 3 条陪伴动态 · 1 项待处理'
+        subtitle: !deviceBound ? '尚未绑定设备 · 陪伴记录仍可查看' : isXinghe ? '设备当前离线 · 成长记录仍可查看' : '新增 3 条陪伴动态 · 1 项待处理'
       },
       summary: {
         dynamics: isXinghe ? 1 : 3,
         onlineMinutes: isXinghe ? 0 : 26,
         todos: isXinghe ? 1 : 1,
-        deviceOnline: child.online
+        deviceOnline
       },
       photos: isXinghe ? [] : [
         { src: '/assets/photos/photo1.jpg' },
@@ -118,7 +206,11 @@ const mock = {
         time: '17:28',
         desc: '小满完成波形挑战后，设备自动生成了这条陪伴记录。'
       },
-      dynamics: isXinghe
+      dynamics: !deviceBound
+        ? [
+            { id: 'd-unbound', icon: '/assets/icons/dot-coral.png', title: 'Mini 设备已解绑', desc: '守护工具暂不可用，可前往设备中心重新绑定', time: '刚刚', tone: 'coral' }
+          ]
+        : isXinghe
         ? [
             { id: 'd4', icon: '/assets/icons/dot-coral.png', title: 'Mini 02 已离线', desc: '守护工具暂不可用', time: '12:08', tone: 'coral' }
           ]
@@ -142,7 +234,9 @@ const mock = {
       },
       todos: (function () {
         const list = []
-        if (!child.online) {
+        if (!deviceBound) {
+          list.push({ id: 't-bind', title: '设备未绑定', desc: '当前孩子尚未绑定 Mini 设备', action: '前往设备中心 →', tone: 'coral', url: '/pages/my/device' })
+        } else if (!child.online) {
           list.push({ id: 't-off', title: '设备离线', desc: child.deviceName + ' 暂无实时位置', action: '查看守护', tone: 'coral', url: '/pages/guard/index' })
         } else if (child.battery < 20) {
           list.push({ id: 't-bat', title: '电量较低', desc: child.deviceName + ' 剩余 ' + child.battery + '%', action: '今晚充电 →', tone: 'butter', url: '/pages/my/device' })
@@ -170,18 +264,18 @@ const mock = {
         summary: '小满从推进器火焰方向开始提问，并连续追问了三次：燃料用完怎么办、没有空气怎么推、转向会不会把自己推偏。',
         concepts: ['反作用力', '矢量', '推进'],
         follow: '随后用积木模拟了“喷气方向改变运动方向”。',
-        source: 'Web 互动实验 · 正式事件 #E-0825-03'
+        source: '互动探索 · 演示事件 #E-0825-03'
       },
       fp2: {
         id: 'fp2',
         date: '2026 年 8 月 24 日',
         type: '概念发现',
         title: 'orbit / 轨道',
-        scene: '行星运动课包',
+        scene: '行星运动主题探索',
         summary: '小满第一次使用“轨道”这个词，并用“绕着转、不会掉下去”解释自己的理解。',
         concepts: ['轨道', '圆周运动'],
         follow: '把轨道画成一条闭合的线，而不是直线冲出去。',
-        source: '项目实践 · 正式事件 #E-0824-11'
+        source: '项目实践 · 演示事件 #E-0824-11'
       },
       fp3: {
         id: 'fp3',
@@ -192,7 +286,7 @@ const mock = {
         summary: '小满提出：如果机械臂不先看看周围，就容易撞到积木。她用两次对比实验说明理由。',
         concepts: ['观察', '安全', '计划'],
         follow: '在演示中加入了“先扫描再抓取”的步骤。',
-        source: '项目成果 · 正式事件 #E-0823-07'
+        source: '项目成果 · 演示事件 #E-0823-07'
       }
     }
     const item = map[id] || map.fp1
@@ -203,6 +297,18 @@ const mock = {
   getLocation() {
     const scenario = store.getScenario()
     const child = currentChild()
+    if (!isDeviceBound(child)) {
+      return wrap({
+        child,
+        status: 'unbound',
+        point: null,
+        label: '尚未绑定设备',
+        hint: '绑定 Mini 设备后才能查看当前实时位置和使用守护工具。',
+        updatedAt: null,
+        battery: null,
+        online: false
+      })
+    }
     if (scenario === 'offline' || !child.online) {
       return wrap({
         child,
@@ -244,6 +350,9 @@ const mock = {
 
   refreshLocation() {
     const child = currentChild()
+    if (!isDeviceBound(child)) {
+      return wrap({ ok: false, message: '尚未绑定设备，无法刷新位置' }, 400)
+    }
     if (!child.online) {
       return wrap({ ok: false, message: '设备离线，无法刷新位置' }, 400)
     }
@@ -258,11 +367,7 @@ const mock = {
 
   getContacts() {
     const sos = store.getSosIds()
-    return wrap([
-      { id: 'c1', name: '陈然', relation: '妈妈', phone: '138****2160', deviceCall: true, sos: sos.indexOf('c1') >= 0 },
-      { id: 'c2', name: '林屿', relation: '爸爸', phone: '139****8801', deviceCall: true, sos: sos.indexOf('c2') >= 0 },
-      { id: 'c3', name: '周老师', relation: '班主任', phone: '137****4412', deviceCall: false, sos: sos.indexOf('c3') >= 0 }
-    ])
+    return wrap(contactsData().map((item) => Object.assign({}, item, { sos: sos.indexOf(item.id) >= 0 })))
   },
 
   getContact(id) {
@@ -274,10 +379,7 @@ const mock = {
   },
 
   getAlarms() {
-    return wrap([
-      { id: 'al1', time: '07:20', label: '起床', repeat: '周一至周五', enabled: true, synced: true },
-      { id: 'al2', time: '21:00', label: '晚安', repeat: '每天', enabled: true, synced: true }
-    ])
+    return wrap(alarmsData())
   },
 
   getAlarm(id) {
@@ -296,7 +398,6 @@ const mock = {
 
   saveSos(ids) {
     const next = (ids || []).slice(0, 3)
-    store.setSosIds(next)
     return this.submitTask('sos-update', { ids: next })
   },
 
@@ -406,7 +507,7 @@ const mock = {
       sufficiency: '数据充分',
       sections: weekly
         ? [
-            { title: '本周变化', body: '观察稳定性与主动追问次数上升。结论来自 11 次正式提问事件与 2 项项目成果。' },
+            { title: '本周变化', body: '观察稳定性与主动追问次数上升。演示结论来自 11 次提问事件与 2 项项目成果。' },
             { title: '代表足迹', body: '「为什么火箭能在太空中改变方向？」连续追问 3 次，并完成一次主动验证。' },
             { title: '陪伴建议', body: '请孩子用自己的话复述推进方向，不评价对错，只确认表达是否完整。' }
           ]
@@ -423,9 +524,10 @@ const mock = {
     const invites = store.getInvites()
     const pending = invites.u3 === 'pending'
     const accepted = invites.u3 === 'accepted'
+    const transferred = s.role !== '主管理员'
     const members = [
-      { id: 'u1', name: '陈然', role: '主管理员', relation: s.relation || '妈妈', status: '已加入' },
-      { id: 'u2', name: '林屿', role: '普通成员', relation: '爸爸', status: '已加入' }
+      { id: 'u1', name: '陈然', role: transferred ? '普通成员' : '主管理员', relation: s.relation || '妈妈', status: '已加入' },
+      { id: 'u2', name: '林屿', role: transferred ? '主管理员' : '普通成员', relation: '爸爸', status: '已加入' }
     ]
     if (pending) {
       members.push({ id: 'u3', name: '周屿', role: '待确认', relation: '监护人', status: '邀请待处理', pending: true })
@@ -434,24 +536,23 @@ const mock = {
     }
     return wrap({
       name: s.familyName || '林小满的家庭',
-      admin: '陈然',
+      admin: transferred ? '林屿' : '陈然',
       members,
-      children: CHILDREN
+      children: activeChildren()
     })
   },
 
   acceptInvite(id) {
-    store.setInvite(id, 'accepted')
     return this.submitTask('invite-accept', { id })
   },
 
   rejectInvite(id) {
-    store.setInvite(id, 'rejected')
     return this.submitTask('invite-reject', { id })
   },
 
   getDevices() {
-    return wrap(CHILDREN.map((c) => ({
+    const hidden = store.getDemoData('unboundDevices', [])
+    return wrap(activeChildren().filter((c) => hidden.indexOf(c.deviceId) < 0).map((c) => ({
       id: c.deviceId,
       name: c.deviceName,
       childName: c.name,
@@ -498,7 +599,7 @@ const mock = {
         source: 'Web 互动实验',
         date: '8 月 25 日',
         childAlias: child.shortName,
-        process: '完成波形挑战后形成「细心观察」互动成果。来源为正式事件，不以演示分数填充。',
+        process: '完成波形挑战后形成「细心观察」互动成果。当前为可追溯的演示事件。',
         evidence: '观察稳定性相关事件 1 条'
       },
       a2: {
@@ -523,7 +624,7 @@ const mock = {
       title: '成长周报（脱敏）',
       childAlias: child.shortName,
       range: '本周',
-      body: '观察与表达更稳定。依据正式提问与项目成果，规则 v2.4。',
+      body: '观察与表达更稳定。依据演示提问与项目成果，规则 v2.4。',
       hidden: ['全名', '位置', '设备 ID', '精确时刻']
     })
   },
@@ -533,7 +634,8 @@ const mock = {
   },
 
   submitTask(type, payload) {
-    const id = 'task-' + Date.now()
+    taskSequence += 1
+    const id = 'task-' + Date.now() + '-' + taskSequence
     const task = {
       id,
       type,
@@ -549,9 +651,11 @@ const mock = {
     setTimeout(() => {
       const fail = store.getScenario() === 'fail'
       const timeout = store.getScenario() === 'timeout'
+      const finalStatus = fail ? 'failed' : timeout ? 'timeout' : 'success'
+      if (finalStatus === 'success') applyTaskMutation(type, payload || {})
       store.setTask(id, Object.assign({}, task, {
-        status: fail ? 'failed' : timeout ? 'timeout' : 'success',
-        message: fail ? '同步失败，可重试' : timeout ? '等待超时，可查询最终状态' : '设备已确认完成',
+        status: finalStatus,
+        message: fail ? '同步失败，可重试' : timeout ? '等待超时，可查询最终状态' : '演示设备已确认完成',
         finishedAt: Date.now()
       }))
     }, 1800)

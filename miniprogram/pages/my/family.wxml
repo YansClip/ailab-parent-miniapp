@@ -11,8 +11,8 @@
         </view>
       </view>
       <view class="invite-actions" wx:if="{{item.pending}}">
-        <button class="btn btn-primary" loading="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="accept">同意</button>
-        <button class="btn btn-secondary mt-12" loading="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="reject">拒绝</button>
+        <button class="btn btn-primary" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="accept">同意</button>
+        <button class="btn btn-secondary mt-12" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="reject">拒绝</button>
       </view>
     </view>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>

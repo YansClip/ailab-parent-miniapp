@@ -2,7 +2,7 @@
   <nav-bar title="{{pick ? '选择紧急联系人' : '通讯录'}}" action="{{pick ? '' : '新增'}}" bind:action="add" />
   <view class="pad">
     <text class="sub" wx:if="{{pick}}">从已授权联系人中选择，至少 1 名、最多 3 名。已选 {{count}} 人。</text>
-    <view class="item" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="edit">
+    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="edit" aria-label="{{pick ? '选择' : '编辑'}}联系人{{item.name}}">
       <view class="between">
         <view>
           <text class="h3">{{item.name}}</text>
@@ -11,9 +11,9 @@
         <text class="status" wx:if="{{pick}}">{{item.picked ? '已选' : '选择'}}</text>
         <text class="status" wx:else>{{item.deviceCall ? '可通话' : '仅保存'}}</text>
       </view>
-    </view>
+    </button>
   </view>
   <view class="page-fixed-footer" wx:if="{{pick}}">
-    <button class="btn btn-primary" hover-class="pressed" bindtap="confirmPick">确认紧急联系人</button>
+    <button class="btn btn-primary" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="confirmPick">确认紧急联系人</button>
   </view>
 </view>

@@ -5,12 +5,23 @@
         <text class="h1">安心守护</text>
         <text class="sub">已连续守护 {{loc.child.days || 126}} 天</text>
       </view>
-      <view class="pill {{loc.online ? 'pill-mint' : 'pill-coral'}}" hover-class="pressed" bindtap="openSwitcher">
-        {{loc.online ? '在线' : '离线'}} · {{loc.battery}}%
+      <button class="pill device-pill {{loc.online ? 'pill-mint' : 'pill-coral'}}" hover-class="pressed" bindtap="openSwitcher" aria-label="切换孩子与设备">
+        {{loc.online ? '在线' : '离线'}} · {{loc.battery || '—'}}%
+      </button>
+    </view>
+
+    <view class="pad" wx:if="{{loading}}" role="status" aria-label="正在加载守护位置">
+      <view class="map-wrap skeleton"></view>
+      <view class="tools-skeleton skeleton"></view>
+    </view>
+
+    <view class="pad" wx:elif="{{error}}">
+      <view class="map-wrap empty-map">
+        <empty-state title="守护数据暂时不可用" desc="{{error}}" action="重新加载" icon="!" tone="coral" bind:action="reload" />
       </view>
     </view>
 
-    <view class="pad">
+    <view class="pad" wx:else>
       <view class="map-wrap" wx:if="{{loc.status === 'valid' && loc.point}}">
         <map
           class="map"
@@ -25,39 +36,40 @@
           <text class="loc-title">{{loc.label}}</text>
           <text class="sub">定位精度约 {{loc.accuracy}} 米 · 更新于 {{relative}}</text>
           <text class="loc-hint">仅显示当前实时位置，不保存历史轨迹</text>
-          <view class="refresh" hover-class="pressed" bindtap="onRefresh">{{refreshing ? '刷新中…' : '刷新位置'}}</view>
+          <button class="refresh" loading="{{refreshing}}" disabled="{{refreshing}}" hover-class="pressed" bindtap="onRefresh">{{refreshing ? '刷新中…' : '刷新位置'}}</button>
         </view>
       </view>
       <view class="map-wrap empty-map" wx:else>
-        <empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置失效后已清除坐标。'}}" action="刷新位置" bind:action="onRefresh" />
+        <empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置失效后已清除坐标。'}}" action="刷新位置" busy="{{refreshing}}" icon="⌖" tone="sky" bind:action="onRefresh" />
       </view>
     </view>
 
+    <block wx:if="{{!loading}}">
     <view class="pad tool-head">
       <text class="section-title">设备工具</text>
       <text class="sub">轻触即可操作</text>
     </view>
     <view class="pad tools">
-      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/call">
+      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/call" aria-label="打开语音通话">
         <view class="ticon t-yellow"><image src="/assets/icons/phone.png" /></view>
         <text>语音通话</text>
-      </view>
-      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/contacts">
+      </button>
+      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/contacts" aria-label="打开通讯录">
         <view class="ticon t-pink"><image src="/assets/icons/contact.png" /></view>
         <text>通讯录</text>
-      </view>
-      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/find">
+      </button>
+      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/find" aria-label="打开查找设备">
         <view class="ticon t-green"><image src="/assets/icons/search.png" /></view>
         <text>查找设备</text>
-      </view>
-      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/alarm">
+      </button>
+      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/alarm" aria-label="打开闹钟">
         <view class="ticon t-cyan"><image src="/assets/icons/alarm.png" /></view>
         <text>闹钟</text>
-      </view>
-      <view class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/sos">
+      </button>
+      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/sos" aria-label="打开紧急联系人">
         <view class="ticon t-red"><image src="/assets/icons/sos.png" /></view>
         <text>紧急联系人</text>
-      </view>
+      </button>
     </view>
 
     <view class="pad mt-16 pb">
@@ -82,7 +94,8 @@
         </view>
       </view>
     </view>
+    </block>
   </scroll-view>
 
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id}}" bind:close="closeSwitcher" bind:change="reload" />
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

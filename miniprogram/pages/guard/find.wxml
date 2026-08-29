@@ -7,10 +7,16 @@
       <text class="h3">设备响铃中</text>
       <text class="sub">剩余 {{left}} 秒，最长 60 秒。离开页面后任务仍由后台维护。</text>
     </view>
+    <view class="card card-p mt-24" wx:if="{{stage==='stopping'}}" role="status">
+      <text class="h3">{{task.message || '停止请求提交中'}}</text>
+      <text class="sub">请不要重复操作，结果以设备最终确认状态为准。</text>
+    </view>
+    <view class="demo-note mt-24">高保真演示：通过 Mock 任务模拟设备受理、执行和最终确认。</view>
   </view>
   <view class="footer">
     <button class="btn btn-primary" wx:if="{{stage==='start'}}" hover-class="pressed" bindtap="start">确认响铃查找</button>
     <button class="btn btn-secondary" wx:if="{{stage==='ringing'}}" hover-class="pressed" bindtap="stop">手动停止</button>
+    <button class="btn btn-disabled" wx:if="{{stage==='stopping'}}" disabled>正在确认停止结果…</button>
     <button class="btn btn-primary" wx:if="{{stage==='found' || stage==='timeout' || stage==='offline' || stage==='failed'}}" hover-class="pressed" bindtap="reset">再次查找</button>
   </view>
 </view>

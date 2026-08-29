@@ -14,7 +14,7 @@
     <view class="share-sheet" catchtap="noop">
       <text class="h3">确认解绑？</text>
       <text class="sub mt-8">解绑后清除相关位置与守护访问，需主管理员权限。</text>
-      <button class="btn btn-danger mt-16" loading="{{busy}}" hover-class="pressed" bindtap="ok">确认解绑</button>
+      <button class="btn btn-danger mt-16" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="ok">确认解绑</button>
       <button class="btn btn-ghost mt-12" bindtap="close">取消</button>
     </view>
   </view>
