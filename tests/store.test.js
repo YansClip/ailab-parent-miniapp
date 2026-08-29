@@ -37,3 +37,31 @@ test('退出登录会清除用户相关演示数据', () => {
   assert.deepEqual(store.getDemoData('contacts', []), [])
   assert.equal(store.getSession().loggedIn, false)
 })
+
+test('旧版联系人和闹钟缓存会迁移到当前孩子命名空间', () => {
+  const { storage } = createWxMock()
+  storage.set('ailab.local.version', 2)
+  storage.set('ailab.demo.data', {
+    contacts: [{ id: 'legacy-contact' }],
+    alarms: [{ id: 'legacy-alarm' }]
+  })
+  const store = fresh(storePath)
+  store.init()
+  assert.deepEqual(store.getDemoData('contacts.child-xiaoman', []), [{ id: 'legacy-contact' }])
+  assert.deepEqual(store.getDemoData('alarms.child-xiaoman', []), [{ id: 'legacy-alarm' }])
+  assert.equal(storage.get('ailab.local.version'), 3)
+})
+
+test('损坏的对象型缓存会回退为安全默认值', () => {
+  const { storage } = createWxMock()
+  storage.set('ailab.tasks', null)
+  storage.set('ailab.follows', 'invalid')
+  storage.set('ailab.demo.data', [])
+  storage.set('ailab.invites', null)
+  const store = fresh(storePath)
+  store.init()
+  assert.deepEqual(store.getTasks(), {})
+  assert.deepEqual(store.getFollows(), {})
+  assert.deepEqual(store.getDemoData('missing', {}), {})
+  assert.equal(store.getInvites().u3, 'pending')
+})

@@ -5,7 +5,10 @@ function createWxMock() {
     setStorageSync(key, value) { storage.set(key, value) },
     showToast() {},
     showModal(options) { if (options.success) options.success({ confirm: true }) },
-    login(options) { if (options.complete) options.complete({ code: 'mock-code' }) }
+    login(options) {
+      if (options.success) options.success({ code: 'mock-code' })
+      if (options.complete) options.complete({ code: 'mock-code' })
+    }
   }
   global.getCurrentPages = () => []
   global.getApp = () => ({ globalData: { statusBarHeight: 44 } })

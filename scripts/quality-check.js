@@ -58,6 +58,22 @@ files.filter((file) => file.endsWith('.wxml')).forEach((file) => {
     if (!methodPattern.test(js)) errors.push(`事件方法缺失：${rel(file)} -> ${handler}`)
   })
 
+  const pageJson = file.replace(/\.wxml$/, '.json')
+  const usingComponents = fs.existsSync(pageJson)
+    ? Object.keys((JSON.parse(fs.readFileSync(pageJson, 'utf8')).usingComponents || {}))
+    : []
+  ;['nav-bar', 'empty-state', 'child-switcher'].forEach((tag) => {
+    if (wxml.includes('<' + tag) && usingComponents.indexOf(tag) < 0) {
+      errors.push(`页面使用组件但未注册：${rel(file)} -> ${tag}`)
+    }
+  })
+
+  if (!file.endsWith(`${path.sep}my${path.sep}debug.wxml`)) {
+    ;['Mock', '高保真', '演示任务', '演示版', '规则 v', '错误追踪'].forEach((word) => {
+      if (wxml.includes(word)) errors.push(`普通用户界面包含技术文案：${rel(file)} -> ${word}`)
+    })
+  }
+
   for (const match of wxml.matchAll(/(?:data-url|url)="(\/pages\/[^"?]+)(?:\?[^\"]*)?"/g)) {
     const route = match[1].replace(/^\//, '')
     if (!pageSet.has(route)) errors.push(`跳转页面未注册：${rel(file)} -> ${match[1]}`)

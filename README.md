@@ -1,7 +1,7 @@
 # AILab 微信小程序家长端
 
-原生微信小程序（WXML / WXSS / JavaScript），以 Figma 当前可见 V3 页面为演示基准。
-四个一级入口：**首页｜守护｜成长｜我的**。数据层当前为 Mock，接口形状可替换为真实 SaaS。
+原生微信小程序（WXML / WXSS / JavaScript），以 Figma V3 的信息架构为基础，完成了面向家长的 V2 视觉与交互重构。
+四个一级入口：**首页｜守护｜成长｜我的**。当前版本使用本地场景数据；普通家长界面不会暴露技术调试信息，真实 SaaS、设备云、定位和语音能力可在后续按现有接口门面替换。
 
 ## 打开方式
 
@@ -18,12 +18,12 @@
 ```
 miniprogram/
   app.js / app.json / app.wxss
-  custom-tab-bar/          72px 自定义 Tab
-  assets/                  Figma 导出图标与插画
+  custom-tab-bar/          四入口自定义底部导航
+  assets/                  Lucide 图标与原创 AILab 插画
   components/              nav-bar、empty-state、child-switcher
   services/api.js          接口门面（接 SaaS 只改这里）
-  services/mock.js         演示数据与设备任务状态机
-  services/store.js        会话、当前孩子、演示场景
+  services/mock.js         本地场景数据与设备任务状态机
+  services/store.js        会话、当前孩子、场景与数据迁移
   pages/auth|family|home|guard|growth|my/
 ```
 
@@ -37,13 +37,13 @@ miniprogram/
 npm run verify
 ```
 
-该命令会检查 46 个页面的注册与四件套、JavaScript 语法、WXML 事件方法、路由、资源、疑似敏感信息和重复样式，并运行状态隔离、异步安全与 Mock 数据单元测试。完整评测记录见 [`docs/QUALITY-AUDIT.md`](docs/QUALITY-AUDIT.md)。
+该命令会检查 46 个页面的注册与四件套、JavaScript 语法、WXML 事件方法、路由、组件声明、资源、普通界面禁用词、疑似敏感信息和重复样式，并运行登录、主体隔离、异步安全、设备任务、隐私申请和缓存迁移单元测试。当前基线为 **0 错误、0 警告、20/20 测试通过**。完整评测记录见 [`docs/QUALITY-AUDIT-V2.md`](docs/QUALITY-AUDIT-V2.md)，开发者工具截图见 [`output/qa-v2/README.md`](output/qa-v2/README.md)。
 
-孩子或设备切换时会先清空旧主体数据；轮询任务在离开页面后停止 UI 更新。联系人、闹钟、紧急联系人、家庭邀请等演示操作会写入本地存储，可通过退出登录或清除开发者工具缓存复位。
+孩子或设备切换时会先清空旧主体数据；轮询任务在离开页面后停止 UI 更新。联系人、闹钟、紧急联系人、家庭邀请、消息已读等操作会按当前孩子写入本地存储。
 
-## Mock 场景
+## 隐藏 QA 场景
 
-登录后：**我的 → 关于我们 → 演示场景**。
+登录后：**我的 → 关于我们**，连续点击版本号 5 次进入隐藏 QA 页面。该入口只用于开发与测试，不应作为正式产品页面展示。
 
 | 场景 | 效果 |
 |---|---|
@@ -55,7 +55,7 @@ npm run verify
 | 设备任务失败 / 超时 | 通话、查找、同步等终态 |
 | 报告生成中 | 周报/阶段报告生成中 |
 
-也可在调试器执行：
+隐藏 QA 页面支持切换场景和一键重置本地数据。也可在调试器执行：
 
 ```js
 wx.setStorageSync('ailab.mock.scenario', 'empty')
@@ -65,10 +65,17 @@ wx.setStorageSync('ailab.session.v1', {
 })
 ```
 
-绑定页演示异常码：`000000` 过期，`111111` 已使用。
+绑定页测试异常码：`000000` 过期，`111111` 已使用。
+
+## 视觉资产与许可
+
+- 原创 AILab 插画位于 `miniprogram/assets/illustrations/`，包含欢迎页、首页、成长、成果、mini 设备和空状态素材。
+- 统一功能图标位于 `miniprogram/assets/icons/lucide/`。
+- Lucide 图标许可见 [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md)。
+- 已按实际卡片比例裁切资源，避免使用文字、Emoji 或占位方框冒充图标和业务图片。
 
 ## 后续替换真实接口
 
 编辑 [`miniprogram/services/api.js`](miniprogram/services/api.js)，保持现有方法名与返回字段。页面不直接依赖 mock。设备任务需支持：已提交 → 执行中 → 成功/失败/超时 → 可再查询。
 
-本版本**未连接**真实 SaaS、设备网关、定位与语音能力。页面中的“任务提交、设备执行、报告生成、分享和订阅”均为高保真模拟，不能直接提审上线。
+本版本**未连接**真实 SaaS、设备网关、定位、语音、微信订阅或相册服务。设备指令、呼叫状态、报告生成、分享预览和订阅结果均为本地状态模拟；它们用于完整体验和前端联调，不能作为真实接口验收或直接提审上线。
