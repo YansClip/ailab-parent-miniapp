@@ -1,22 +1,27 @@
-<view class="page">
+<view class="page page-has-footer">
   <nav-bar title="{{id ? '编辑联系人' : '新增联系人'}}" />
   <view class="pad">
-    <view class="edit-hero"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><view><text class="h2">{{id ? '编辑联系人资料' : '添加设备联系人'}}</text><text class="sub">仅同步必要的姓名、关系和联系方式</text></view></view>
-    <text class="form-label">姓名</text>
-    <input class="input" placeholder="姓名" value="{{name}}" bindinput="setName" />
-    <text class="form-label mt-16">与孩子的关系</text>
-    <input class="input mt-12" placeholder="关系" value="{{relation}}" bindinput="setRel" />
-    <text class="form-label mt-16">手机号</text>
-    <input class="input mt-12" placeholder="手机号" value="{{phone}}" bindinput="setPhone" />
-    <button class="item toggle-row mt-16 between" bindtap="toggle" aria-label="{{deviceCall ? '关闭设备通话权限' : '开启设备通话权限'}}">
-      <text>允许设备通话</text>
-      <text class="status">{{deviceCall ? '开' : '关'}}</text>
-    </button>
-    <text class="sub mt-16">保存后会同步到孩子的 Mini 设备，设备离线时将在恢复连接后继续同步。</text>
-    <text class="status mt-8" wx:if="{{task}}">{{task.message}}</text>
+    <view class="edit-hero"><view class="icon-box icon-sky"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><view><text class="h2">联系，让家人更近</text><text class="sub">仅保存必要的姓名、关系和联系方式</text></view></view>
+    <view class="guard-loading" wx:if="{{loading}}" role="status">正在读取设备设置…</view>
+    <view class="guard-notice" wx:if="{{!loading && canManage === false}}">当前为查看权限，设备配置需由主管理员修改。</view>
+    <view class="guard-error" wx:if="{{error}}" role="alert">
+      <text>{{error}}</text>
+      <button wx:if="{{loadError}}" class="inline-action" bindtap="reload">重新加载</button>
+    </view>
+    <view class="guard-result" wx:if="{{result}}" role="status">{{result}}</view>
+    <view class="guard-progress" wx:if="{{task && !result}}">
+      <text>{{task.message || '正在等待处理结果'}}</text>
+      <button wx:if="{{!busy && task.status !== 'success' && task.status !== 'failed'}}" class="inline-action" bindtap="checkTask">查询最终结果</button>
+    </view>
+    <view wx:if="{{!loading}}">
+      <text class="form-label">姓名</text><input class="input mt-8" maxlength="20" disabled="{{busy || !canManage || saved}}" placeholder="请输入姓名，最多 20 字" value="{{name}}" bindinput="setName" />
+      <text class="form-label mt-16">与孩子的关系</text><input class="input mt-8" maxlength="12" disabled="{{busy || !canManage || saved}}" placeholder="例如：妈妈、爸爸、老师" value="{{relation}}" bindinput="setRel" />
+      <text class="form-label mt-16">手机号</text><input class="input mt-8" type="text" maxlength="11" disabled="{{busy || !canManage || saved}}" placeholder="11 位手机号" value="{{phone}}" bindinput="setPhone" />
+      <text class="caption mt-8">已有脱敏号码可原样保留；修改时请填写完整号码。</text>
+      <button class="item toggle-row between" disabled="{{busy || !canManage || saved || referenced}}" bindtap="toggle"><text>允许设备通话</text><text class="status">{{deviceCall ? '已开启' : '已关闭'}}</text></button>
+      <view class="guard-notice" wx:if="{{referenced}}">此联系人在 SOS 名单中，不可停用通话或删除。请先调整紧急联系人。</view>
+      <text class="caption mt-16">设备离线时只保存配置，不会显示同步成功。{{id && !synced ? '当前设置待同步。' : ''}}</text>
+    </view>
   </view>
-  <view class="footer">
-    <button class="btn btn-primary" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="save">保存并同步到设备</button>
-    <button class="btn btn-ghost mt-12" wx:if="{{id}}" bindtap="remove">删除</button>
-  </view>
+  <view class="footer"><button class="btn btn-primary" loading="{{busy}}" disabled="{{busy || loading || (!canManage && !saved)}}" bindtap="save">{{saved ? '完成，返回通讯录' : '保存联系人'}}</button><button class="btn btn-ghost danger mt-8" wx:if="{{id && !saved}}" disabled="{{busy || loading || !canManage || referenced}}" bindtap="remove">删除联系人</button></view>
 </view>

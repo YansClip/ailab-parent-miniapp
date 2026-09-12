@@ -1,0 +1,12 @@
+.demo-label{display:inline-block;padding:10rpx 18rpx;border:1rpx solid #d7e8f3;border-radius:12rpx;background:#edf6fc;color:#376381;font-size:21rpx;line-height:1.55}
+.guard-notice,.guard-error,.guard-result,.guard-progress{margin:22rpx 0;padding:22rpx 24rpx;border-radius:20rpx;font-size:24rpx;line-height:1.65;word-break:break-word}
+.guard-notice{background:#f4f8fc;color:#49667d;border:1rpx solid #e1eaf3}
+.guard-error{background:#fff1ee;color:#ac483d;border:1rpx solid #f4d9d2}
+.guard-result{background:#eaf5fc;color:#176799;border:1rpx solid #cde7f7}
+.guard-progress{background:#fff8e8;color:#8f6c2e}
+.guard-loading{height:112rpx;padding:36rpx 0;color:#56788e;font-size:26rpx}
+.guard-error .inline-action,.guard-progress .inline-action{font-size:24rpx;font-weight:600;color:inherit}
+.edit-hero,.section-intro,.alarm-hero{display:flex;align-items:center;gap:20rpx;margin:18rpx 0 30rpx}
+.form-label{display:block;font-size:24rpx;color:#49667d;font-weight:600}
+.toggle-row{width:100%!important;margin-left:0;margin-right:0;line-height:1.4}
+.page-has-footer{padding-bottom:calc(284rpx + env(safe-area-inset-bottom))}

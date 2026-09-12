@@ -1,97 +1,48 @@
 <view class="page page-tab guard" style="padding-top: {{statusBarHeight}}px;">
   <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
     <view class="pad head">
-      <view>
-        <text class="h1">安心守护</text>
-        <text class="sub">已连续守护 {{loc.child.days || 126}} 天</text>
-      </view>
-      <button class="pill device-pill {{loc.online ? 'pill-mint' : 'pill-coral'}}" hover-class="pressed" bindtap="openSwitcher" aria-label="切换孩子与设备">
-        {{loc.child.shortName || '孩子'}} · {{loc.online ? '在线' : '离线'}} · {{loc.battery || '—'}}%
-      </button>
+      <view><text class="eyebrow">FAMILY GUARD</text><text class="h1">安心守护</text><text class="sub">当前点位，一眼安心</text></view>
+      <button class="pill device-pill {{loc.online ? 'pill-sky' : 'pill-butter'}}" bindtap="openSwitcher" aria-label="切换孩子与设备">{{loc.child.shortName || '选择孩子'}} · {{loc.online ? '在线' : '离线'}} · {{batteryText}}<text class="switch-hint">切换⌄</text></button>
     </view>
-
-    <view class="pad" wx:if="{{loading}}" role="status" aria-label="正在加载守护位置">
-      <view class="map-wrap skeleton"></view>
-      <view class="tools-skeleton skeleton"></view>
-    </view>
-
-    <view class="pad" wx:elif="{{error}}">
-      <view class="map-wrap empty-map">
-        <empty-state title="守护数据暂时不可用" desc="{{error}}" action="重新加载" tone="coral" bind:action="reload" />
-      </view>
-    </view>
-
-    <view class="pad" wx:else>
-      <view class="map-wrap" wx:if="{{loc.status === 'valid' && loc.point}}">
-        <image class="map-visual" src="/assets/illustrations/guardian-map-v2.jpg" mode="aspectFill" aria-label="当前位置周边地图" />
-        <view class="location-marker" aria-label="{{loc.child.shortName}}的当前位置">
-          <view class="location-pulse"></view>
-          <view class="location-core"><image src="/assets/icons/lucide/online.png" mode="aspectFit" /></view>
+    <view class="pad"><text class="demo-label">演示数据 · 未采集孩子或手机的真实位置</text></view>
+    <view class="pad mt-12" wx:if="{{loading}}" role="status"><view class="map-wrap skeleton"></view></view>
+    <view class="pad mt-12" wx:elif="{{error}}"><view class="map-wrap empty-map"><empty-state title="守护数据暂时不可用" desc="{{error}}" action="重新加载" bind:action="reload" /></view></view>
+    <view class="pad mt-12" wx:else>
+      <view class="map-panel" wx:if="{{loc.point}}">
+        <view class="map-wrap">
+          <map wx:if="{{!mapError}}" id="guard-map" class="live-map" latitude="{{loc.point.latitude}}" longitude="{{loc.point.longitude}}" markers="{{markers}}" scale="16" show-location="{{false}}" enable-3D="{{false}}" enable-overlooking="{{false}}" binderror="onMapError" aria-label="演示点位地图" />
+          <view wx:else class="map-fallback"><text class="h3">地图暂未加载</text><text class="sub">网络或地图服务不可用，地址信息仍可查看。</text><button class="inline-action" bindtap="retryMap">重试加载地图</button></view>
         </view>
         <view class="loc-card">
-          <text class="loc-title">{{loc.label}}</text>
-          <text class="sub">定位精度约 {{loc.accuracy}} 米 · 更新于 {{relative}}</text>
-          <text class="loc-hint">仅显示当前实时位置，不保存历史轨迹</text>
-          <button class="refresh" loading="{{refreshing}}" disabled="{{refreshing}}" hover-class="pressed" bindtap="onRefresh">{{refreshing ? '刷新中…' : '刷新位置'}}</button>
+          <view class="between"><text class="loc-title">{{loc.label}}</text><text class="location-badge">模拟点位</text></view>
+          <text class="sub">精度约 {{loc.accuracy}} 米 · {{relative}}</text>
+          <text class="caption">更新时间 {{updatedText}}</text>
+          <text class="caption">坐标 {{loc.point.latitude}}, {{loc.point.longitude}}</text>
+          <button class="refresh" loading="{{refreshing}}" disabled="{{refreshing}}" bindtap="onRefresh">{{refreshing ? '正在刷新点位…' : '刷新位置'}}</button>
         </view>
       </view>
-      <view class="map-wrap empty-map" wx:else>
-        <empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置失效后已清除坐标。'}}" action="刷新位置" busy="{{refreshing}}" tone="sky" bind:action="onRefresh" />
-      </view>
+      <view class="map-wrap empty-map" wx:else><empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置已失效，坐标已清除。'}}" action="刷新位置" busy="{{refreshing}}" bind:action="onRefresh" /></view>
+      <view class="guard-error" wx:if="{{refreshError}}">{{refreshError}}</view>
+      <text class="caption location-policy">只显示当前有效点位，不提供历史轨迹；失效后不展示坐标。</text>
     </view>
-
-    <block wx:if="{{!loading}}">
-    <view class="pad tool-head">
-      <text class="section-title">设备工具</text>
-      <text class="sub">轻触即可操作</text>
-    </view>
+    <view class="pad tool-head"><text class="section-title">设备工具</text><text class="caption">为每一次安心</text></view>
     <view class="pad tools">
-      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/call" aria-label="打开语音通话">
-        <view class="ticon t-yellow"><image src="/assets/icons/lucide/phone.png" mode="aspectFit" /></view>
-        <text>语音通话</text>
-      </button>
-      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/contacts" aria-label="打开通讯录">
-        <view class="ticon t-pink"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view>
-        <text>通讯录</text>
-      </button>
-      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/find" aria-label="打开查找设备">
-        <view class="ticon t-green"><image src="/assets/icons/lucide/search.png" mode="aspectFit" /></view>
-        <text>查找设备</text>
-      </button>
-      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/alarm" aria-label="打开闹钟">
-        <view class="ticon t-cyan"><image src="/assets/icons/lucide/alarm.png" mode="aspectFit" /></view>
-        <text>闹钟</text>
-      </button>
-      <button class="tool" hover-class="pressed" bindtap="go" data-url="/pages/guard/sos" aria-label="打开紧急联系人">
-        <view class="ticon t-red"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view>
-        <text>紧急联系人</text>
-      </button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/call"><view class="ticon t-gold"><image src="/assets/icons/lucide/phone.png" mode="aspectFit" /></view><text>语音通话</text></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/contacts"><view class="ticon"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><text>通讯录</text></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/find"><view class="ticon"><image src="/assets/icons/lucide/search.png" mode="aspectFit" /></view><text>查找设备</text></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/alarm"><view class="ticon"><image src="/assets/icons/lucide/alarm.png" mode="aspectFit" /></view><text>闹钟</text></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/sos"><view class="ticon t-navy"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view><text>紧急联系人</text></button>
     </view>
-
-    <view class="pad mt-16 pb">
+    <view class="pad mt-16 pb" wx:if="{{!loading && !error}}">
       <view class="card safety">
-        <view class="between">
-          <text class="h3">守护状态</text>
-          <view class="pill {{loc.status === 'valid' ? 'pill-mint' : 'pill-butter'}}">{{loc.status === 'valid' ? '全部正常' : loc.label}}</view>
-        </view>
+        <view class="between"><text class="h3">守护状态</text><text class="pill pill-sky">{{loc.status === 'valid' ? '点位有效' : '暂无有效点位'}}</text></view>
         <view class="s-row">
-          <view class="s-col">
-            <text class="s-num">{{relative || '—'}}</text>
-            <text class="sub">位置更新</text>
-          </view>
-          <view class="s-col">
-            <text class="s-num">{{loc.sosCount || 0}} 人</text>
-            <text class="sub">紧急联系人</text>
-          </view>
-          <view class="s-col">
-            <text class="s-num">{{loc.nextAlarm || '—'}}</text>
-            <text class="sub">明天早晨</text>
-          </view>
+          <view class="s-col"><text class="s-num">{{relative || '—'}}</text><text class="caption">最近更新</text></view>
+          <view class="s-col"><text class="s-num">{{loc.sosCount || 0}} 人</text><text class="caption">{{loc.sosSynced === false ? 'SOS 待同步' : '紧急联系人'}}</text></view>
+          <view class="s-col"><text class="s-num">{{loc.nextAlarm || '—'}}</text><text class="caption">已设闹钟时间</text></view>
         </view>
       </view>
     </view>
-    </block>
   </scroll-view>
-
   <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

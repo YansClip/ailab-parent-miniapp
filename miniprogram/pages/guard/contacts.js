@@ -1,69 +1,42 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
-
+const helper = require('./helper')
 Page({
-  data: { list: [], pick: false, selected: {}, count: 0, busy: false, task: null },
-  onLoad(q) {
-    this.setData({ pick: q.pick === 'sos' })
-  },
-  onShow() {
-    this.reload()
-  },
+  data: { list: [], pick: false, selectedIds: [], count: 0, busy: false, loading: true, error: '', result: '', task: null, canManage: false },
+  onLoad(q) { helper.init(this); helper.set(this, { pick: q.pick === 'sos' }) },
+  onShow() { helper.show(this); this.reload() },
+  onHide() { helper.hide(this) },
+  onUnload() { helper.unload(this) },
   reload() {
-    Promise.all([api.getContacts(), api.getSos()]).then(([list, sos]) => {
-      const selected = {}
-      if (this.data.pick) {
-        (sos || []).forEach((s) => { selected[s.id] = true })
-      }
-      const mapped = (list || []).map((c) => Object.assign({}, c, { picked: !!selected[c.id] }))
-      this.setData({
-        list: mapped,
-        selected,
-        count: Object.keys(selected).length
-      })
-    }).catch((e) => util.failToast(e))
+    return helper.read(this, 'contacts', () => Promise.all([api.getContacts(), api.getSos(), api.getContext()]), ([list, sos, context]) => {
+      const selectedIds = this._selectionEdited ? this.data.selectedIds.filter((id) => list.some((c) => c.id === id && c.deviceCall)) : sos.map((s) => s.id)
+      helper.set(this, { list: list.map((c) => Object.assign({}, c, { picked: selectedIds.indexOf(c.id) >= 0 })), selectedIds, count: selectedIds.length, canManage: context.canManage })
+    })
   },
-  add() { wx.navigateTo({ url: '/pages/guard/contact-edit' }) },
+  add() { if (this.data.canManage && !this.data.busy) wx.navigateTo({ url: '/pages/guard/contact-edit' }) },
   edit(e) {
-    if (this.data.pick) {
-      this.toggle(e)
-      return
-    }
-    wx.navigateTo({ url: '/pages/guard/contact-edit?id=' + e.currentTarget.dataset.id })
+    if (this.data.busy) return
+    if (this.data.pick) return this.toggle(e)
+    wx.navigateTo({ url: '/pages/guard/contact-edit?id=' + encodeURIComponent(e.currentTarget.dataset.id) })
   },
   toggle(e) {
+    if (!this.data.canManage || this.data.busy) return
     const id = e.currentTarget.dataset.id
-    const selected = Object.assign({}, this.data.selected)
-    if (selected[id]) {
-      delete selected[id]
-    } else {
-      if (Object.keys(selected).length >= 3) {
-        util.toast('最多设置 3 名紧急联系人')
-        return
-      }
-      selected[id] = true
+    const contact = this.data.list.find((c) => c.id === id)
+    if (!contact || !contact.deviceCall) return util.toast('请先在联系人资料中允许设备通话')
+    let ids = this.data.selectedIds.slice()
+    if (ids.indexOf(id) >= 0) ids = ids.filter((x) => x !== id)
+    else {
+      if (ids.length >= 3) return util.toast('最多选择 3 名紧急联系人')
+      ids.push(id)
     }
-    const list = (this.data.list || []).map((c) => Object.assign({}, c, { picked: !!selected[c.id] }))
-    this.setData({ selected, list, count: Object.keys(selected).length })
+    this._selectionEdited = true
+    helper.set(this, { selectedIds: ids, count: ids.length, list: this.data.list.map((c) => Object.assign({}, c, { picked: ids.indexOf(c.id) >= 0 })) })
   },
   confirmPick() {
-    if (this.data.busy) return
-    const ids = Object.keys(this.data.selected)
-    if (ids.length < 1) {
-      util.toast('至少选择 1 名紧急联系人')
-      return
-    }
-    if (ids.length > 3) {
-      util.toast('最多设置 3 名紧急联系人')
-      return
-    }
-    this.setData({ busy: true })
-    api.saveSos(ids).then((t) => {
-      this.setData({ task: t })
-      return util.pollTask(t.id, { page: this, onUpdate: (task) => this.setData({ task }) })
-    }).then((x) => {
-      util.toast(x.message)
-      if (x.status === 'success') wx.navigateBack()
-    }).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
-  }
+    if (!this.data.canManage || this.data.loading || this.data.busy) return
+    if (this.data.selectedIds.length < 1 || this.data.selectedIds.length > 3) return util.toast('请选择 1 至 3 名紧急联系人')
+    helper.task(this, () => api.saveSos(this.data.selectedIds.slice()), () => { this._selectionEdited = false; return this.reload() })
+  },
+  checkTask() { helper.resume(this) }
 })

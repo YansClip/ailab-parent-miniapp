@@ -1,72 +1,59 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
-
+const helper = require('./helper')
 Page({
-  data: {
-    statusBarHeight: 44,
-    loc: { child: {}, point: null },
-    markers: [],
-    relative: '',
-    children: [],
-    showSwitcher: false,
-    refreshing: false,
-    loading: true,
-    error: ''
-  },
+  data: { statusBarHeight: 44, loc: { child: {}, point: null }, markers: [], relative: '', updatedText: '', batteryText: '—', children: [], showSwitcher: false, refreshing: false, loading: true, error: '', refreshError: '', mapError: false },
   onShow() {
-    this.__disposed = false
+    helper.show(this)
     util.setTab(1)
     if (!util.guardAuth()) return
-    this.setData({ statusBarHeight: util.statusBarHeight() })
+    helper.set(this, { statusBarHeight: util.statusBarHeight(), refreshing: false })
     this.reload()
+    this.locationTimer = setInterval(() => this.updateAge(), 10000)
+    this._networkListener = (res) => { this._mapNetworkOffline = !res.isConnected; if (!res.isConnected) helper.set(this, { mapError: true }) }
+    if (wx.onNetworkStatusChange) wx.onNetworkStatusChange(this._networkListener)
+    if (wx.getNetworkType) wx.getNetworkType({ success: (res) => { this._mapNetworkOffline = res.networkType === 'none'; if (this._mapNetworkOffline) helper.set(this, { mapError: true }) } })
   },
   reload() {
-    const version = util.beginRequest(this, 'guard')
-    this.setData({ loading: true, error: '' })
-    Promise.all([api.getLocation(), api.getChildren()]).then(([loc, children]) => {
-      if (!util.isRequestCurrent(this, 'guard', version)) return
-      const markers = loc.point ? [{
-        id: 1,
-        latitude: loc.point.latitude,
-        longitude: loc.point.longitude,
-        width: 28,
-        height: 28,
-        callout: { content: loc.child.shortName || '当前位置', display: 'ALWAYS', borderRadius: 8, padding: 6 }
-      }] : []
-      this.setData({
-        loc,
-        children,
-        markers,
-        relative: util.formatRelative(loc.updatedAt),
-        loading: false,
-        error: ''
+    return helper.read(this, 'guard', () => Promise.all([api.getLocation(), api.getChildren()]), ([loc, children]) => {
+      const point = loc.status === 'valid' && loc.point && Number.isFinite(loc.point.latitude) && Number.isFinite(loc.point.longitude) ? loc.point : null
+      loc.point = point
+      helper.set(this, {
+        loc, children,
+        markers: point ? [{ id: 1, latitude: point.latitude, longitude: point.longitude, iconPath: '/assets/icons/lucide/online.png', width: 32, height: 32, callout: { content: (loc.child.shortName || '孩子') + ' · 演示点位', display: 'ALWAYS', borderRadius: 8, padding: 8, color: '#123653', bgColor: '#ffffff' } }] : [],
+        relative: util.formatRelative(loc.updatedAt), updatedText: helper.time(loc.updatedAt), batteryText: loc.battery === 0 || loc.battery ? String(loc.battery) + '%' : '—', mapError: !!this._mapNetworkOffline
       })
-    }).catch((e) => {
-      if (!util.isRequestCurrent(this, 'guard', version)) return
-      util.failToast(e)
-      this.setData({ loading: false, error: (e && e.message) || '守护数据加载失败' })
     })
   },
   onRefresh() {
-    if (this.data.refreshing) return
-    this.setData({ refreshing: true })
+    if (this.data.refreshing || this.data.loading) return
+    const version = util.beginRequest(this, 'refresh')
+    helper.set(this, { refreshing: true, refreshError: '' })
     api.refreshLocation().then((res) => {
-      util.toast(res.message)
+      if (!util.isRequestCurrent(this, 'refresh', version) || this.__hidden) return
+      if (res && res.ok === false) throw { message: res.message || '刷新未成功，请重试' }
       return this.reload()
-    }).catch((e) => util.failToast(e)).finally(() => this.setData({ refreshing: false }))
+    }).catch((err) => {
+      if (util.isRequestCurrent(this, 'refresh', version)) helper.set(this, { refreshError: err.message || '位置刷新失败，请重试' })
+    }).finally(() => { if (util.isRequestCurrent(this, 'refresh', version)) helper.set(this, { refreshing: false }) })
   },
-  openSwitcher() { this.setData({ showSwitcher: true }) },
-  closeSwitcher() { this.setData({ showSwitcher: false }) },
+  onMapError() { helper.set(this, { mapError: true }) },
+  updateAge() {
+    if (this.__hidden || !this.data.loc.updatedAt) return
+    const loc = this.data.loc
+    helper.set(this, { relative: util.formatRelative(loc.updatedAt) })
+    if (loc.point && Date.now() - loc.updatedAt > 5 * 60000) helper.set(this, { loc: Object.assign({}, loc, { point: null, status: 'stale', label: '位置已过期', hint: '有效期为 5 分钟，旧坐标已清除，请刷新位置。' }), markers: [] })
+  },
+  retryMap() { helper.set(this, { mapError: false }) },
+  openSwitcher() { helper.set(this, { showSwitcher: true }) },
+  closeSwitcher() { helper.set(this, { showSwitcher: false }) },
   onChildChange() {
-    this.setData({
-      loading: true,
-      error: '',
-      loc: { child: {}, point: null },
-      markers: [],
-      relative: ''
-    })
+    util.beginRequest(this, 'refresh')
+    helper.set(this, { refreshing: false, refreshError: '', showSwitcher: false, loading: true, loc: { child: {}, point: null }, markers: [], relative: '', batteryText: '—' })
     this.reload()
   },
   go(e) { wx.navigateTo({ url: e.currentTarget.dataset.url }) },
-  onUnload() { util.disposePage(this) }
+  clear() { if (this.locationTimer) clearInterval(this.locationTimer); this.locationTimer = null; if (wx.offNetworkStatusChange && this._networkListener) wx.offNetworkStatusChange(this._networkListener); this._networkListener = null },
+  onHide() { this.clear(); helper.hide(this) },
+  onUnload() { this.clear(); helper.unload(this) }
 })

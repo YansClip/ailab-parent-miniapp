@@ -1,17 +1,25 @@
 <view class="page">
-  <nav-bar title="紧急联系人" action="添加" bind:action="add" />
+  <nav-bar title="紧急联系人" action="{{canManage ? '调整名单' : ''}}" bind:action="add" />
   <view class="pad">
-    <view class="sos-hero"><view class="sos-icon"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view><view><text class="h2">紧急时优先联系</text><text class="sub">按顺序尝试呼叫，确保至少一人可及时响应</text></view></view>
-    <text class="sub">至少 1 名、最多 3 名。仅可从已授权联系人中选择。</text>
-    <view class="item" wx:for="{{list}}" wx:key="id">
-      <view class="between">
-        <view class="contact-main"><view class="rank">{{index + 1}}</view><view>
-          <text class="h3">{{item.name}}</text>
-          <text class="sub">{{item.relation}}</text>
-        </view></view>
-        <button class="danger-inline" data-id="{{item.id}}" loading="{{busy}}" disabled="{{busy}}" catchtap="remove" aria-label="移除紧急联系人{{item.name}}">移除</button>
-      </view>
+    <view class="sos-hero"><view class="sos-icon"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view><view><text class="h2">把重要的人，放在前面</text><text class="sub">按顺序尝试呼叫 · 演示配置</text></view></view>
+    <view class="guard-loading" wx:if="{{loading}}" role="status">正在读取设备设置…</view>
+    <view class="guard-notice" wx:if="{{!loading && canManage === false}}">当前为查看权限，设备配置需由主管理员修改。</view>
+    <view class="guard-error" wx:if="{{error}}" role="alert">
+      <text>{{error}}</text>
+      <button wx:if="{{loadError}}" class="inline-action" bindtap="reload">重新加载</button>
     </view>
-    <text class="status mt-16" wx:if="{{task}}">{{task.message}}</text>
+    <view class="guard-result" wx:if="{{result}}" role="status">{{result}}</view>
+    <view class="guard-progress" wx:if="{{task && !result}}">
+      <text>{{task.message || '正在等待处理结果'}}</text>
+      <button wx:if="{{!busy && task.status !== 'success' && task.status !== 'failed'}}" class="inline-action" bindtap="checkTask">查询最终结果</button>
+    </view>
+    <text class="sub">至少 1 名、最多 3 名。用上下移动调整呼叫顺序，每次调整会保存。</text>
+    <view class="guard-notice" wx:if="{{!loading && !list.length}}">尚未设置紧急联系人，请先添加通讯录联系人，再调整名单。</view>
+    <view class="item" wx:for="{{list}}" wx:key="id">
+      <view class="between"><view class="contact-main"><view class="rank">{{index + 1}}</view><view><text class="h3">{{item.name}}</text><text class="sub">{{item.relation}} · {{item.phone}}</text><text class="caption">{{item.synced === false ? '已保存 · 待设备同步' : '设备已同步'}}</text></view></view></view>
+      <view class="sos-actions"><button class="order-button" data-index="{{index}}" data-direction="-1" disabled="{{busy || !canManage || index === 0}}" bindtap="move">上移</button><button class="order-button" data-index="{{index}}" data-direction="1" disabled="{{busy || !canManage || index === list.length - 1}}" bindtap="move">下移</button><button class="danger-inline" data-id="{{item.id}}" disabled="{{busy || !canManage || list.length === 1}}" bindtap="remove">移除</button></view>
+    </view>
+    <text class="caption mt-16">SOS 联系人必须允许设备通话。被引用联系人不可在通讯录直接删除或停用。</text>
+    <view class="guard-notice">此工具不代替紧急救援服务，真实紧急情况请及时联系当地救援机构。</view>
   </view>
 </view>

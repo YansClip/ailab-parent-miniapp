@@ -1,2 +1,2 @@
-@import "../../styles/detail.wxss";
-.section-intro{display:flex;align-items:center;gap:20rpx;margin-bottom:24rpx}.icon-pink{background:#fff0fb}.contact-main{display:flex;align-items:center;gap:18rpx}.contact-avatar{width:68rpx;height:68rpx;border-radius:22rpx;background:#fff0fb;display:flex;align-items:center;justify-content:center}.contact-avatar image{width:36rpx;height:36rpx}
+@import "./guard.wxss";
+.contact-main{display:flex;align-items:center;gap:18rpx;text-align:left}.contact-avatar{width:64rpx;height:68rpx;border-radius:20rpx;background:#e6f2fa;display:flex;align-items:center;justify-content:center;flex:none}.contact-avatar image{width:34rpx;height:34rpx}.selected-contact{border:2rpx solid #6daacb;background:#f4faff}.list-button .status{flex:none;margin-left:12rpx}.contact-main .caption{font-size:21rpx;margin-top:5rpx}

@@ -1,4 +1,2 @@
-@import "../../styles/detail.wxss";
-.toggle-row { width: 100% !important; margin-left: 0; margin-right: 0; line-height: 1.4; }
-.edit-hero{display:flex;align-items:center;gap:20rpx;margin-bottom:28rpx}.form-label{display:block;font-size:24rpx;color:#61758a;font-weight:600}.time-picker{height:164rpx;margin-top:12rpx;border-radius:36rpx;background:linear-gradient(145deg,#e9f8f2,#f8fffb);display:flex;flex-direction:column;align-items:center;justify-content:center}.time-picker text:first-child{font-size:72rpx;line-height:1;font-weight:700;color:#102a43}.time-picker .caption{margin-top:10rpx}
-.mini-chevron{width:30rpx;height:30rpx;opacity:.45;margin-left:6rpx}
+@import "./guard.wxss";
+.time-picker{height:168rpx;margin-top:12rpx;border-radius:30rpx;background:linear-gradient(145deg,#e2f1fa,#f8fbfe);border:1rpx solid #d3e7f4;display:flex;flex-direction:column;align-items:center;justify-content:center}.time-picker text:first-child{font-size:76rpx;line-height:1;font-weight:650;color:#183e59;font-variant-numeric:tabular-nums}.time-picker .caption{margin-top:12rpx}

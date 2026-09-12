@@ -1,25 +1,27 @@
 <view class="page">
   <nav-bar title="语音通话" />
   <view class="call-stage">
+    <text class="demo-label">演示模式 · 无真实音频连接</text>
     <view class="call-aura {{stage}}">
-      <view class="pulse p1" wx:if="{{stage==='calling'}}"></view>
-      <view class="pulse p2" wx:if="{{stage==='calling'}}"></view>
+      <view class="pulse p1" wx:if="{{stage === 'calling'}}"></view>
+      <view class="pulse p2" wx:if="{{stage === 'calling'}}"></view>
       <view class="avatar-lg"><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view>
     </view>
-    <text class="call-child">{{child}}的 Mini</text><text class="big mt-8">{{title}}</text>
+    <text class="call-child">{{child}}的 Mini · {{online ? '在线' : '离线'}}</text>
+    <text class="big mt-8">{{loading ? '正在读取通话状态' : title}}</text>
     <text class="sub mt-8">{{desc}}</text>
-    <text class="duration" wx:if="{{stage==='connected'}}">{{seconds}} 秒</text>
-    <view class="actions" wx:if="{{stage==='connected'}}">
-      <button class="fab {{muted ? 'on' : ''}}" hover-class="pressed" bindtap="toggleMute" aria-label="{{muted ? '取消静音' : '开启静音'}}"><image src="/assets/icons/lucide/mic.png" mode="aspectFit" /><text>{{muted ? '已静音' : '静音'}}</text></button>
-      <button class="fab cyan {{speaker ? 'on' : ''}}" hover-class="pressed" bindtap="toggleSpk" aria-label="{{speaker ? '关闭扬声器' : '开启扬声器'}}"><image src="/assets/icons/lucide/volume.png" mode="aspectFit" /><text>{{speaker ? '扬声器开' : '扬声器'}}</text></button>
-      <button class="fab purple {{nr ? 'on' : ''}}" hover-class="pressed" bindtap="toggleNr" aria-label="{{nr ? '关闭智能降噪' : '开启智能降噪'}}"><image src="/assets/icons/lucide/magic.png" mode="aspectFit" /><text>{{nr ? '降噪开' : '降噪'}}</text></button>
+    <text class="duration" wx:if="{{stage === 'connected' || (terminal && duration !== '00:00')}}">{{duration}}</text>
+    <view class="guard-error" wx:if="{{error}}"><text>{{error}}</text><button class="inline-action" bindtap="reload">重新查询状态</button></view>
+    <view class="actions" wx:if="{{stage === 'connected'}}">
+      <button class="fab {{muted ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="muted" aria-label="{{muted ? '取消静音' : '开启静音'}}"><image src="/assets/icons/lucide/mic.png" mode="aspectFit" /><text>{{muted ? '已静音' : '静音'}}</text></button>
+      <button class="fab {{speaker ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="speaker" aria-label="{{speaker ? '关闭扬声器' : '开启扬声器'}}"><image src="/assets/icons/lucide/volume.png" mode="aspectFit" /><text>{{speaker ? '扬声器开' : '扬声器'}}</text></button>
+      <button class="fab {{nr ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="nr" aria-label="{{nr ? '关闭降噪' : '开启降噪'}}"><image src="/assets/icons/lucide/magic.png" mode="aspectFit" /><text>{{nr ? '降噪开' : '降噪'}}</text></button>
     </view>
-    <view class="privacy-note mt-24"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /><text>通话内容不会保存，结束后仅记录通话状态。</text></view>
+    <view class="privacy-note mt-24"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /><text>不采集麦克风、录音或摄像头。离开页面不会自动挂断，可返回继续操作。</text></view>
   </view>
   <view class="page-fixed-footer">
-    <button class="btn btn-primary" wx:if="{{stage==='ready'}}" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="startCall">呼叫 Mini</button>
-    <button class="btn btn-danger" wx:if="{{stage==='calling' || stage==='connected'}}" hover-class="pressed" bindtap="hang">结束通话</button>
-    <button class="btn btn-secondary" wx:if="{{stage==='failed'}}" hover-class="pressed" bindtap="retry">失败重试</button>
-    <text class="sub mt-12 note">不启用摄像头，不保存通话内容。</text>
+    <button class="btn btn-primary" wx:if="{{stage === 'ready' || terminal}}" loading="{{busy}}" disabled="{{busy || loading}}" bindtap="startCall">{{terminal ? '重新呼叫 Mini' : '呼叫 Mini'}}</button>
+    <button class="btn btn-danger" wx:if="{{stage === 'calling' || stage === 'connected'}}" loading="{{busy}}" disabled="{{busy}}" bindtap="hang">结束通话</button>
+    <text class="sub mt-8 note">所有通话结果均为演示会话状态</text>
   </view>
 </view>
