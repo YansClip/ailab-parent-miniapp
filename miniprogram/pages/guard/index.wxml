@@ -44,5 +44,5 @@
       </view>
     </view>
   </scroll-view>
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id || ''}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

@@ -1,7 +1,7 @@
-<view class="page">
+<view class="page page-has-footer" style="padding-bottom: calc(390rpx + env(safe-area-inset-bottom));">
   <nav-bar title="隐私保护说明" />
   <view class="pad body">
-    <text class="h1">我们如何保护家庭与儿童信息</text>
+    <text class="qa-note">演示数据 · 当前不采集真实位置或连接设备，以下为功能说明，正式协议由运营主体提供。</text><text class="h1 mt-16">我们如何保护家庭与儿童信息</text>
     <text class="sub mt-16">AILab 家长端用于帮助您查看陪伴动态、确认 mini 设备当前实时位置、使用家庭守护工具，以及管理家庭与儿童信息。我们仅处理完成上述服务所必要的账号、家庭关系和儿童相关数据。</text>
     <view class="card block mt-24">
       <text class="h3">您可以随时</text>
@@ -16,7 +16,7 @@
     </view>
   </view>
   <view class="footer">
-    <button class="btn btn-primary" bindtap="onAgree">同意并继续</button>
+    <button class="btn btn-primary" bindtap="onAgree" disabled="{{busy}}" loading="{{busy}}">同意并继续</button>
     <button class="btn btn-secondary mt-12" bindtap="openPolicy" data-type="privacy">查看完整隐私政策</button>
     <button class="decline" bindtap="onDecline">暂不同意</button>
   </view>

@@ -4,7 +4,7 @@
   right: 0;
   top: 0;
   z-index: 20;
-  background: #fff9f1;
+  background: #f3f9fd;
 }
 .inner {
   min-height: 88rpx;
@@ -14,7 +14,7 @@
   padding: 0 16rpx;
 }
 .side {
-  width: 120rpx !important;
+  width: 88rpx !important;
   flex: none;
   height: 88rpx;
   display: flex;
@@ -24,7 +24,6 @@
   background: transparent;
   line-height: 1;
 }
-.side[disabled] { opacity: 1; }
 .side.right {
   justify-content: flex-end;
 }
@@ -33,6 +32,8 @@
   flex: 1;
   min-width: 0;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   text-align: center;
   font-size: 32rpx;
   font-weight: 600;
@@ -40,6 +41,6 @@
 }
 .action {
   font-size: 26rpx;
-  color: #8b78e6;
+  color: #197da9;
   padding-right: 12rpx;
 }

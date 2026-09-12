@@ -48,9 +48,9 @@
     "pages/my/debug"
   ],
   "window": {
-    "backgroundColor": "#FFF9F1",
+    "backgroundColor": "#F3F9FD",
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#FFF9F1",
+    "navigationBarBackgroundColor": "#F3F9FD",
     "navigationBarTitleText": "AILab 家长端",
     "navigationBarTextStyle": "black",
     "navigationStyle": "custom"
@@ -58,7 +58,7 @@
   "tabBar": {
     "custom": true,
     "color": "#829AB1",
-    "selectedColor": "#40B352",
+    "selectedColor": "#157EAF",
     "backgroundColor": "#FFFFFF",
     "borderStyle": "white",
     "list": [

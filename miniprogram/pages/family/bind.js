@@ -8,7 +8,8 @@ Page({
     wx.scanCode({
       onlyFromCamera: false,
       success: (result) => {
-        const matched = String(result.result || '').match(/(\d{6})/)
+        if (!util.pageMounted(this)) return
+        const matched = String(result.result || '').trim().match(/^(?:ailab:bind:)?(\d{6})$/)
         if (!matched) {
           this.setData({ error: '没有识别到有效的 6 位绑定码，请改为手动输入。' })
           return
@@ -16,6 +17,7 @@ Page({
         this.setData({ code: matched[1], error: '' })
       },
       fail: (error) => {
+        if (!util.pageMounted(this)) return
         if (error && /cancel/i.test(error.errMsg || '')) return
         this.setData({ error: '扫码未完成，请检查相机权限或手动输入绑定码。' })
       }
@@ -38,10 +40,12 @@ Page({
     }
     this.setData({ loading: true, error: '' })
     api.bindChild({ code }).then((t) => {
+      if (!util.pageMounted(this)) return
       wx.redirectTo({ url: '/pages/family/waiting?taskId=' + t.id })
     }).catch((e) => {
       util.failToast(e)
-      this.setData({ error: (e && e.message) || '提交失败，请重试' })
-    }).finally(() => this.setData({ loading: false }))
-  }
+      util.safeSetData(this, { error: (e && e.message) || '提交失败，请重试' })
+    }).finally(() => util.safeSetData(this, { loading: false }))
+  },
+  onUnload() { util.disposePage(this) }
 })

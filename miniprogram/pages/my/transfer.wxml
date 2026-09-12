@@ -1,10 +1,13 @@
-<view class="page">
-  <nav-bar title="转移主管理员" />
-  <view class="pad">
-    <view class="transfer-hero"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/family.png" mode="aspectFit" /></view><text class="h1">将主管理权转移给林屿</text><text class="sub">转移后，林屿将负责家庭成员、设备与儿童信息的重要操作。</text></view>
-    <text class="sub mt-12">转移前核验接收方身份和有效监护关系。成功后双方权限立即更新。</text>
-    <view class="card card-p mt-20"><text class="h3">你的权限将变为</text><text class="sub mt-8">普通家庭成员，可继续查看成长内容和设备状态，但不能解绑孩子、设备或管理其他成员。</text></view>
-    <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="go">二次确认并提交</button>
-    <view class="task-state mt-16 {{task.status==='success' ? 'success' : task.status==='failed' ? 'failed' : ''}}" wx:if="{{task}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">转移进度</text><text class="sub">{{task.message}}</text></view></view>
-  </view>
-</view>
+<view class="page"><nav-bar title="转移主管理员" /><view class="pad">
+  <text class="h1">选择新的主管理员</text><text class="sub mt-12">只能转移给已接受邀请的家庭成员。转移成功后，双方权限立即更新。</text>
+  <text class="qa-note mt-12" wx:if="{{loading}}">正在读取家庭成员…</text>
+  <view wx:if="{{error}}" class="card card-p"><text class="danger">{{error}}</text><button class="btn btn-secondary mt-12" bindtap="reload">重试</button></view>
+  <view wx:if="{{done}}" class="card card-p mt-20"><text class="h2">主管理权已转移</text><text class="sub mt-12">你现在是普通成员，可继续查看已授权的孩子信息。</text></view>
+  <block wx:elif="{{!loading && !error && isAdmin}}">
+    <button class="item list-button" wx:for="{{members}}" wx:key="id" data-id="{{item.id}}" bindtap="select" disabled="{{busy}}"><view class="between"><text class="h3">{{item.name}} · {{item.relation}}</text><text class="pill {{selectedId===item.id ? 'pill-sky' : ''}}">{{selectedId===item.id ? '已选择' : '选择'}}</text></view></button>
+    <text class="sub mt-12" wx:if="{{!members.length}}">暂无可接任成员，请先在家庭管理中处理成员邀请。</text>
+    <button class="btn btn-primary mt-24" bindtap="go" disabled="{{busy || !selectedId}}" loading="{{busy}}">确认转移</button>
+  </block>
+  <text wx:elif="{{!loading && !error}}" class="qa-note mt-20">仅主管理员可转移管理权。</text>
+  <view class="task-state mt-16" wx:if="{{task}}"><text class="sub">{{task.message}}</text></view>
+</view></view>

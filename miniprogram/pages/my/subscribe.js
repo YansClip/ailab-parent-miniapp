@@ -1,20 +1,15 @@
 const api = require('../../services/api')
-const store = require('../../services/store')
 const util = require('../../utils/util')
-
+const helper = require('./helper')
 Page({
-  data: { enabled: false, busy: false, task: null },
-  onShow() { this.setData({ enabled: !!store.getDemoData('subscriptionEnabled', false) }) },
-  ask() {
+  data: { enabled: false, busy: false, loading: true, error: '', task: null },
+  onShow() { this.reload() },
+  reload() { return helper.load(this, () => api.getSubscription(), (value) => ({ enabled: typeof value === 'boolean' ? value : !!value.enabled })) },
+  async ask() {
     if (this.data.busy) return
     const enabled = !this.data.enabled
-    this.setData({ busy: true })
-    api.submitTask('subscription-update', { enabled }).then((task) => {
-      this.setData({ task })
-      return util.pollTask(task.id, { page: this, onUpdate: (x) => this.setData({ task: x }) })
-    }).then((result) => {
-      if (result.status === 'success') this.setData({ enabled })
-      util.toast(result.message)
-    }).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
-  }
+    if (enabled && !await util.confirm('开启示例订阅状态', '仅保存本地偏好，不会向微信申请真实订阅或发送通知。取消后仍可查看站内消息。')) return
+    await helper.task(this, 'subscription-update', { enabled }, () => this.reload())
+  },
+  onUnload() { util.disposePage(this) }
 })

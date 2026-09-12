@@ -9,13 +9,13 @@
   width: 260rpx;
   height: 176rpx;
   border-radius: 36rpx;
-  background: linear-gradient(145deg,#f1edff,#edf8f4);
+  background: linear-gradient(145deg,#e8f6ff,#edf9fa);
   margin-bottom: 16rpx;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.dot image { width: 230rpx; height: 160rpx; }
+.empty-image { width: 230rpx; height: 160rpx; }
 .tone-mint { background: #e9f8f2; color: #40b352; }
 .tone-coral { background: #fff0ef; color: #e85d69; }
 .tone-sky { background: #eaf6ff; color: #3a8fd4; }
@@ -33,7 +33,7 @@
 }
 .btn {
   margin-top: 28rpx;
-  background: #40b352;
+  background: #1487b8;
   color: #fff;
   padding: 16rpx 36rpx;
   border-radius: 999rpx;

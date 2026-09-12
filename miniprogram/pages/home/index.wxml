@@ -2,7 +2,7 @@
   <scroll-view class="scroll" scroll-y enhanced show-scrollbar="{{false}}" scroll-into-view="{{scrollTarget}}" scroll-with-animation>
     <view style="height: {{statusBarHeight + 44}}px"></view>
     <view class="pad">
-      <view class="head"><view><text class="caption">AILAB · 家庭陪伴</text><text class="h1">{{parent.greeting || '你好'}}，{{parent.name || '家长'}}</text></view><button class="switch-button" bindtap="openSwitcher">切换孩子⌄</button></view>
+      <view class="head"><view><text class="caption">AILAB · 家庭陪伴 · 演示数据</text><text class="h1">{{parent.greeting || '你好'}}，{{parent.name || '家长'}}</text></view><button class="switch-button" bindtap="openSwitcher">切换孩子⌄</button></view>
       <view wx:if="{{loading}}" class="loading"><view class="skeleton sk-hero"></view><view class="skeleton sk-card"></view></view>
       <view wx:elif="{{error}}" class="card state-wrap"><text class="h2">首页暂时无法加载</text><text class="sub">{{error}}</text><button class="btn btn-primary mt-24" bindtap="reload">重新加载</button></view>
       <block wx:else>
@@ -12,7 +12,7 @@
           <view class="hero-copy"><text class="hero-title">{{home.child.shortName || home.child.name}}</text><text class="hero-sub">{{home.hero.subtitle}}</text><button class="hero-device" data-url="/pages/my/device" bindtap="goUrl">{{home.child.deviceName || '设备中心'}} · {{home.child.battery === undefined ? '查看设备' : '电量 ' + home.child.battery + '%'}} ›</button></view>
         </view>
         <view class="summary card">
-          <view class="between"><text class="h3">今日陪伴摘要</text><text class="caption">点击查看详情</text></view>
+          <view class="between"><text class="h3">陪伴概览</text><text class="caption">最近动态 · 累计探索</text></view>
           <view class="metrics">
             <button class="metric" bindtap="goFeed"><text class="metric-num">{{home.summary.dynamics}}</text><text class="caption">条动态 ›</text></button>
             <button class="metric" data-url="/pages/growth/index" bindtap="goUrl"><text class="metric-num">{{home.summary.completed === undefined ? '—' : home.summary.completed}}</text><text class="caption">项探索完成 ›</text></button>
@@ -49,5 +49,5 @@
       <view class="bottom-space"></view>
     </view>
   </scroll-view>
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" session="{{session}}" current-id="{{home.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" session="{{session}}" current-id="{{home.child.id || ''}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

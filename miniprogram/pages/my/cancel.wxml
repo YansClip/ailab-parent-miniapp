@@ -2,8 +2,10 @@
   <nav-bar title="账号注销" />
   <view class="pad">
     <view class="risk-hero"><view class="risk-icon"><image src="/assets/icons/lucide/logout.png" mode="aspectFit" /></view><text class="h1">注销 AILab 账号</text><text class="sub">注销会影响当前账号下的全部家庭关系</text></view>
-    <view class="card card-p mt-20"><text class="h3">注销前请完成</text><view class="impact-row"><text>将主管理员身份转移给其他家庭成员</text></view><view class="impact-row"><text>确认设备与儿童信息的处理方式</text></view><view class="impact-row"><text>在冷静期内仍可撤销本次申请</text></view></view>
+    <view class="card card-p mt-20"><text class="h3">注销前请完成</text><view class="impact-row"><text>将主管理员身份转移给其他家庭成员</text></view><view class="impact-row"><text>确认设备与儿童信息的处理方式</text></view><view class="impact-row"><text>本地示例注销立即生效，可在体验设置重置；不声称已注销真实账号</text></view></view>
     <button class="btn btn-danger mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">申请注销</button>
     <view class="task-state mt-16 {{task.status==='success' ? 'success' : task.status==='failed' ? 'failed' : ''}}" wx:if="{{task}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">注销进度</text><text class="sub">{{task.message}}</text></view></view>
+    <button wx:if="{{task.status==='timeout'}}" class="btn btn-secondary mt-16" bindtap="queryTask" disabled="{{busy}}">查询最终状态</button>
+    <button wx:if="{{task.status==='success'}}" class="btn btn-secondary mt-16" bindtap="finish">返回欢迎页</button>
   </view>
 </view>

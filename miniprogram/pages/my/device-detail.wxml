@@ -1,6 +1,10 @@
 <view class="page">
   <nav-bar title="设备详情" />
   <view class="pad">
+    <text wx:if="{{loading}}" class="qa-note" role="status">正在获取信息…</text>
+    <view wx:if="{{error}}" class="card card-p"><text class="danger">{{error}}</text><button class="btn btn-secondary mt-12" bindtap="reload">重新加载</button></view>
+    <view wx:if="{{removed}}" class="card card-p"><text class="h2">设备已解绑</text><text class="sub mt-8">该孩子的守护位置和设备工具已停止显示。</text><button class="btn btn-secondary mt-16" bindtap="back">返回设备中心</button></view>
+    <block wx:if="{{dev.id && !removed && !error}}">
     <view class="device-detail-hero"><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /><view><text class="h1">{{dev.name}}</text><text class="pill {{dev.online ? 'pill-mint' : 'pill-coral'}}">{{dev.online ? '设备在线' : '设备离线'}}</text></view></view>
     <view class="card card-p mt-20">
       <text class="h3">设备信息</text>
@@ -8,8 +12,10 @@
       <text class="sub">固件 {{dev.firmware}} · {{dev.locate}}</text>
       <text class="sub">电量 {{dev.battery}}% · 更新于 {{dev.updatedAt}}</text>
     </view>
-    <button class="btn btn-danger mt-24" hover-class="pressed" bindtap="unbind">解绑设备</button>
+    <button wx:if="{{isAdmin}}" class="btn btn-danger mt-24" hover-class="pressed" bindtap="unbind" disabled="{{busy}}">解绑设备</button>
+    <text wx:else class="sub mt-12">普通成员仅可查看，解绑需主管理员操作。</text>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+    </block>
   </view>
   <view class="share-mask" wx:if="{{confirm}}" bindtap="close">
     <view class="share-sheet" catchtap="noop">

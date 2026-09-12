@@ -1,15 +1,20 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
+const helper = require('./helper')
 Page({
-  data: { task: null, busy: false },
+  data: { task: null, busy: false, loading: true, error: '', members: [], selectedId: '', isAdmin: false, done: false },
+  onShow() { this.reload() },
+  reload() { return helper.load(this, () => Promise.all([api.getFamily(), api.getParent()]), ([family, parent]) => ({
+    isAdmin: parent.role === '主管理员',
+    members: family.members.filter((m) => !m.pending && m.role !== '主管理员' && m.name !== parent.name)
+  })) },
+  select(e) { if (!this.data.busy) this.setData({ selectedId: e.currentTarget.dataset.id }) },
   async go() {
-    const ok = await util.confirm('确认转移', '你将失去主管理员权限。此操作不可仅以前端成功结束。')
-    if (!ok) return
-    if (this.data.busy) return
-    this.setData({ busy: true })
-    api.submitTask('admin-transfer', {}).then((t) => {
-      this.setData({ task: t })
-      return util.pollTask(t.id, { onUpdate: (x) => this.setData({ task: x }) })
-    }).then((x) => util.toast(x.message)).catch((e) => util.failToast(e)).finally(() => this.setData({ busy: false }))
-  }
+    if (!this.data.isAdmin || this.data.busy) return
+    const member = this.data.members.find((m) => m.id === this.data.selectedId)
+    if (!member) return util.toast('请先选择一位已加入的家庭成员')
+    if (!await util.confirm('转移给' + member.name, '完成后你将成为普通成员，不能再管理成员或解绑设备。请确认对方具备有效监护关系。')) return
+    await helper.task(this, 'admin-transfer', { memberId: member.id }, () => util.safeSetData(this, { done: true, isAdmin: false }))
+  },
+  onUnload() { util.disposePage(this) }
 })

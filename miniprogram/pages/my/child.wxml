@@ -1,11 +1,15 @@
 <view class="page">
   <nav-bar title="孩子管理" />
   <view class="pad">
+    <text wx:if="{{loading}}" class="qa-note" role="status">正在获取信息…</text>
+    <view wx:if="{{error}}" class="card card-p"><text class="danger">{{error}}</text><button class="btn btn-secondary mt-12" bindtap="reload">重新加载</button></view>
     <view class="child-hero"><view class="icon-box icon-sky"><image src="/assets/icons/lucide/child.png" mode="aspectFit" /></view><view><text class="h1">家庭中的孩子</text><text class="sub">每个孩子的数据与设备状态相互隔离</text></view></view>
     <view class="item" wx:for="{{list}}" wx:key="id">
       <view class="child-card-head"><view class="child-avatar" style="background:{{item.avatarColor}}">{{item.avatarText}}</view><view><text class="h3">{{item.name}}</text><text class="sub">{{item.deviceName}} · 陪伴 {{item.days}} 天</text></view><text class="pill {{item.online ? 'pill-mint' : 'pill-coral'}}">{{item.online ? '在线' : '离线'}}</text></view>
-      <button class="btn btn-danger mt-16" loading="{{busyId === item.id}}" disabled="{{busyId !== ''}}" hover-class="pressed" data-id="{{item.id}}" data-name="{{item.name}}" bindtap="unbind">解除孩子关系</button>
+      <button wx:if="{{isAdmin}}" class="btn btn-danger mt-16" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" data-id="{{item.id}}" bindtap="unbind">解除孩子关系</button>
     </view>
     <text class="status mt-12" wx:if="{{task}}">{{task.message}}</text>
+    <text class="sub mt-12" wx:if="{{!isAdmin}}">普通成员可查看已关联孩子，关系变更由主管理员处理。</text>
+    <button wx:if="{{isAdmin}}" class="btn btn-secondary mt-20" bindtap="bind">绑定孩子</button>
   </view>
 </view>

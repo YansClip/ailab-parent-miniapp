@@ -5,9 +5,10 @@
     </button>
     <view class="side" wx:else></view>
     <text class="title">{{title}}</text>
-    <button class="side right" hover-class="pressed" bindtap="onAction" disabled="{{!action}}" aria-label="{{action || '无操作'}}">
-      <text class="action" wx:if="{{action}}">{{action}}</text>
+    <button wx:if="{{action}}" class="side right" hover-class="pressed" bindtap="onAction" aria-label="{{action}}">
+      <text class="action">{{action}}</text>
     </button>
+    <view wx:else class="side"></view>
   </view>
 </view>
 <view style="height: {{navHeight}}px;"></view>

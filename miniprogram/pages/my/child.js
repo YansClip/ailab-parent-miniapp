@@ -1,28 +1,19 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
+const helper = require('./helper')
 Page({
-  data: { list: [], task: null, busyId: '' },
-  onShow() {
-    api.getChildren().then((list) => this.setData({ list })).catch((e) => util.failToast(e))
-  },
+  data: { list: [], loading: true, error: '', task: null, busy: false, isAdmin: false },
+  onShow() { this.reload() },
+  reload() { return helper.load(this, () => Promise.all([api.getChildren(), api.getParent()]), ([list, p]) => ({ list, isAdmin: p.role === '主管理员' })) },
+  bind() { util.navigate('/pages/family/bind') },
   async unbind(e) {
-    if (this.data.list.length <= 1) {
-      util.toast('家庭中至少需要保留一名孩子')
-      return
-    }
+    if (!this.data.isAdmin) return util.toast('此操作仅限主管理员')
+    if (this.data.busy) return
     const id = e.currentTarget.dataset.id
-    const name = e.currentTarget.dataset.name
-    const ok = await util.confirm('解除关系', '将停止对' + (name || '该孩子') + '的位置、成长与设备访问。不会误删其他家庭的合法数据。')
-    if (!ok) return
-    if (this.data.busyId) return
-    this.setData({ busyId: id })
-    api.submitTask('child-unbind', { id }).then((t) => {
-      this.setData({ task: t })
-      return util.pollTask(t.id, { onUpdate: (x) => this.setData({ task: x }) })
-    }).then((x) => {
-      util.toast(x.message)
-      if (x.status === 'success') return api.getChildren().then((list) => this.setData({ list }))
-      return null
-    }).catch((err) => util.failToast(err)).finally(() => util.safeSetData(this, { busyId: '' }))
-  }
+    const child = this.data.list.find((c) => c.id === id)
+    if (!child) return
+    if (!await util.confirm('解除孩子关系', '解除与' + child.name + '的关联后，将停止查看其成长、设备与位置。其他孩子的数据不受影响。')) return
+    await helper.task(this, 'child-unbind', { id }, () => this.reload())
+  },
+  onUnload() { util.disposePage(this) }
 })

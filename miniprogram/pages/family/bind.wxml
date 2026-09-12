@@ -8,7 +8,7 @@
     <view class="divider"><view></view><text>或手动输入</text><view></view></view>
     <input class="input code-input" type="number" value="{{code}}" bindinput="onCode" placeholder="输入 6 位绑定码" maxlength="6" />
     <view class="tips mt-20">
-      <text class="sub">请输入孩子端生成的一次性绑定码，或使用微信扫码完成关联。</text>
+      <text class="sub">演示数据：输入 222222 关联小满，333333 关联星河。000000 可体验过期提示。真实绑定需由孩子端确认。</text>
     </view>
     <view class="err" wx:if="{{error}}">{{error}}</view>
   </view>

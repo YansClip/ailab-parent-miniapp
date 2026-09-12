@@ -1,5 +1,6 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
+const helper = require('./helper')
 Page({
   data: { task: null, busy: false },
   onLoad() {
@@ -8,10 +9,12 @@ Page({
     }).catch(() => {})
   },
   async submit() {
-    const ok = await util.confirm('申请删除', '删除范围、影响和保留期限将写入处理单。')
+    const ok = await util.confirm('确认处理', '仅删除当前孩子的本地互动、报告、成果与关注记录。保留家庭和设备关联，其他孩子不受影响。')
     if (!ok) return
-    util.runTask(this, 'data-delete', {}).catch(() => {})
+    helper.task(this, 'data-delete', {}).catch(() => {})
   },
+  queryTask() { return helper.query(this) },
+  finish() { wx.reLaunch({ url: '/pages/auth/welcome' }) },
   onUnload() {
     util.disposePage(this)
   }

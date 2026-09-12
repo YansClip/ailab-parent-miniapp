@@ -2,7 +2,7 @@
   <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
     <view class="pad title-row">
       <text class="h1">我的</text>
-      <view class="notice-pill">家庭与设备管理</view>
+      <view class="notice-pill">演示数据</view>
     </view>
 
     <view class="pad" wx:if="{{loading}}" role="status" aria-label="正在加载账号与家庭信息">
@@ -35,7 +35,7 @@
           <view class="between guardian-head">
             <view class="guardian-copy">
               <text class="guardian-title">{{!device.id ? 'Mini 设备尚未绑定' : device.online ? '家庭守护运行正常' : '家庭守护需要关注'}}</text>
-              <text class="sub">{{!device.id ? '完成设备绑定后可使用实时守护工具' : device.online ? '设备在线 · 定位更新正常' : '设备离线 · 守护工具暂不可用'}}</text>
+              <text class="sub">{{!device.id ? '完成设备绑定后可使用实时守护工具' : device.online ? '设备在线 · 定位时效请查看守护页' : '设备离线 · 守护工具暂不可用'}}</text>
             </view>
             <view class="pill {{device.online ? 'pill-mint' : 'pill-coral'}}">{{!device.id ? '未绑定' : device.online ? '正常' : '离线'}}</view>
           </view>
@@ -67,5 +67,5 @@
     </block>
   </scroll-view>
 
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{child.id || ''}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

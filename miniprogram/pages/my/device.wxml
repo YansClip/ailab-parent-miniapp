@@ -1,8 +1,10 @@
 <view class="page">
   <nav-bar title="设备中心" />
   <view class="pad">
+    <text wx:if="{{loading}}" class="qa-note" role="status">正在获取信息…</text>
+    <view wx:if="{{error}}" class="card card-p"><text class="danger">{{error}}</text><button class="btn btn-secondary mt-12" bindtap="reload">重新加载</button></view>
     <view class="device-hero"><view><text class="h1">Mini 设备中心</text><text class="sub">查看设备状态、绑定关系与系统信息</text></view><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view>
-    <empty-state wx:if="{{!list.length}}" title="还没有绑定设备" desc="完成绑定后可使用实时守护与设备工具。" />
+    <empty-state wx:if="{{!loading && !error && !list.length}}" title="还没有绑定设备" desc="完成绑定后可使用实时守护与设备工具。" />
     <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="detail" aria-label="查看设备{{item.name}}详情">
       <view class="between">
         <view class="device-main"><view class="mini-thumb"><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view><view>
@@ -12,5 +14,8 @@
         <view class="device-state {{item.online ? 'online' : ''}}"><view></view><text>{{item.online ? '在线' : '离线'}} · {{item.battery}}%</text></view>
       </view>
     </button>
+    <button class="btn btn-secondary mt-20" bindtap="bind" loading="{{busy}}" disabled="{{busy || loading}}">为当前孩子绑定设备</button>
+    <text class="sub mt-12" wx:if="{{task}}">{{task.message}}</text>
+    <text class="caption mt-12">演示数据 · 绑定仅作用于本机示例设备</text>
   </view>
 </view>

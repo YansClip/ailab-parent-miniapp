@@ -13,11 +13,13 @@ Page({
     if (this.bindPoll && this.bindPoll.cancel) this.bindPoll.cancel()
     this.bindPoll = util.pollTask(id, {
       page: this,
-      onUpdate: (t) => this.setData({ statusText: t.message || '处理中' })
+      onUpdate: (t) => util.safeSetData(this, { statusText: t.message || '处理中' })
     })
     this.bindPoll.then((t) => {
+      if (!util.pageMounted(this) || t.status === 'cancelled') return
       if (t.status === 'success') {
-        return api.completeBind().then(() => {
+        return api.completeBind(id).then(() => {
+          if (!util.pageMounted(this)) return
           wx.redirectTo({ url: '/pages/family/success' })
         })
       }
@@ -28,7 +30,7 @@ Page({
       })
     }).catch((e) => {
       util.failToast(e)
-      this.setData({ statusText: '查询失败，可重试', failed: true, polling: false })
+      util.safeSetData(this, { statusText: e.message || '查询失败，可重试', failed: true, polling: false })
     })
   },
   refresh() {

@@ -1,4 +1,4 @@
-<view class="page"><nav-bar title="好奇成长简报" />
+<view class="page"><nav-bar title="成长启思简报" />
   <view class="pad" wx:if="{{loading}}"><view class="skeleton detail-skeleton"></view></view>
   <view class="pad" wx:elif="{{error}}"><view class="card card-p"><text class="h2">暂时无法查看</text><text class="sub mt-12">{{error}}</text><button class="btn btn-secondary mt-24" bindtap="load">重新加载</button></view></view>
   <view class="pad" wx:elif="{{entries.length}}">
@@ -6,7 +6,7 @@
     <view class="skeleton detail-skeleton" wx:if="{{detailLoading}}"></view>
     <view class="card card-p" wx:elif="{{detailError}}"><text class="sub">{{detailError}}</text><button class="btn btn-secondary mt-20" bindtap="reloadEntry">重试这一期</button></view>
     <block wx:else>
-      <view class="curiosity-head"><text class="caption">好奇成长简报 · {{item.date}}</text><view class="editorial-rule"></view><text class="h1">{{item.title}}</text><text class="brief-theme mt-16">{{item.scene}} · {{item.courseId}}</text><view class="editorial-rule"></view><text class="brief-summary">{{item.summary || '已记录这次提问，暂未补充事件摘要。'}}</text></view>
+      <view class="curiosity-head"><text class="caption">成长启思简报 · {{item.date}}</text><view class="editorial-rule"></view><text class="h1">{{item.title}}</text><text class="brief-theme mt-16">{{item.scene}} · {{item.courseId}}</text><view class="editorial-rule"></view><text class="brief-summary">{{item.summary || '已记录这次提问，暂未补充事件摘要。'}}</text></view>
       <view class="card card-p mt-20"><text class="h3">这次探索的记录</text><text class="sub mt-12">{{item.summary || '尚无更完整的过程描述。'}}</text><text class="sub mt-16">{{item.follow || '尚未留下后续验证记录。'}}</text></view>
       <view class="card card-p mt-16"><text class="h3">关联概念</text><view class="concepts mt-12"><text class="pill pill-sky" wx:for="{{item.concepts}}" wx:key="*this">{{item}}</text></view></view>
       <button class="related-event card mt-16" bindtap="openEvent"><view><text class="caption">关联事件 · {{item.source}}</text><text class="h3 mt-8">{{item.title}}</text><text class="source-link mt-12">查看完整互动记录与关注状态 ›</text></view></button>

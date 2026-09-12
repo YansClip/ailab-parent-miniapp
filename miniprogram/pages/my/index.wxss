@@ -1,14 +1,14 @@
 .me { height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
 .scroll { flex: 1; height: 0; }
-.title-row { display: flex; align-items: center; padding-top: 8rpx; padding-bottom: 20rpx; }
-.notice-pill { margin-left: 14rpx; padding: 8rpx 14rpx; border-radius: 999rpx; background: #fff0ef; color: #e85d69; font-size: 20rpx; }
+.title-row { display: flex; align-items: center; padding-top: 52px; padding-bottom: 20rpx; }
+.notice-pill { margin-left: 14rpx; padding: 8rpx 14rpx; border-radius: 999rpx; background: #e6f5fc; color: #197da9; font-size: 20rpx; }
 .profile { width: 100% !important; margin: 0; padding: 24rpx 28rpx; display: flex; align-items: center; background: #fff; text-align: left; line-height: 1.35; }
-.avatar { width: 104rpx; height: 104rpx; border-radius: 52rpx; background: #f0ebff; margin-right: 24rpx; border: 6rpx solid #f3efff; }
+.avatar { width: 104rpx; height: 104rpx; border-radius: 52rpx; background: #e9f4fd; margin-right: 24rpx; border: 6rpx solid #e9f4fd; }
 .meta { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 .meta .sub { margin-top: 4rpx; }
 .profile-name { font-size: 34rpx; font-weight: 700; color: #102a43; }
-.role-pill { margin-left: 12rpx; padding: 4rpx 10rpx; border-radius: 999rpx; background: #f3efff; color: #8b78e6; font-size: 18rpx; }
-.family-name { margin-top: 6rpx; font-size: 22rpx; color: #8b78e6; }
+.role-pill { margin-left: 12rpx; padding: 4rpx 10rpx; border-radius: 999rpx; background: #e9f4fd; color: #197ca9; font-size: 18rpx; }
+.family-name { margin-top: 6rpx; font-size: 22rpx; color: #197ca9; }
 .profile .chev { margin-left: auto; }
 .profile-chevron{width:36rpx;height:36rpx;opacity:.42;margin-left:auto;flex:none}
 .guardian-card { min-height:280rpx; padding: 30rpx 28rpx; border-radius: 40rpx; background: linear-gradient(135deg, #e9f5ff 0%, #edf8f4 100%); position:relative; overflow:hidden; box-shadow:0 12rpx 34rpx rgba(43,119,113,.09); }
@@ -23,17 +23,17 @@
 .menu { background: #fff; border-radius: 34rpx; overflow: hidden; box-shadow:0 10rpx 30rpx rgba(16,42,67,.055); }
 .menu-row { width: 100% !important; min-height:124rpx; margin: 0; display: flex; justify-content: space-between; align-items: center; padding: 22rpx 24rpx; border-bottom: 1rpx solid #f4eef6; background: #fff; text-align: left; line-height: 1.35; }
 .menu-row:last-child { border-bottom: none; }
-.left { display: flex; align-items: center; }
+.left { display: flex; align-items: center; flex:1; min-width:0; }
 .menu-icon { width: 70rpx; height: 70rpx; border-radius: 23rpx; margin-right: 20rpx; display: flex; align-items: center; justify-content: center; }
 .menu-icon image { width: 38rpx; height: 38rpx; }
 .menu-chev { width: 34rpx; height: 34rpx; opacity: .42; }
-.tone-lavender { background: #f0ebff; color: #8b78e6; }
+.tone-lavender { background: #e9f4fd; color: #197ca9; }
 .tone-sky { background: #eaf6ff; color: #3a8fd4; }
 .tone-mint { background: #e9f8f2; color: #40b352; }
 .tone-butter { background: #fff4cf; color: #c38127; }
 .tone-coral { background: #fff0ef; color: #e85d69; }
 .tone-neutral { background: #eef2f5; color: #61758a; }
-.menu-copy { display: flex; flex-direction: column; }
+.menu-copy { display: flex; flex-direction: column; flex:1; min-width:0; }
 .menu-copy .sub { margin-top: 4rpx; }
 .name { font-size: 28rpx; font-weight: 600; color: #102a43; }
 .chev { color: #829ab1; font-size: 36rpx; }

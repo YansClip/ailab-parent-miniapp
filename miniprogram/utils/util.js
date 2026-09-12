@@ -1,6 +1,6 @@
 function formatRelative(ts) {
   if (!ts) return ''
-  const diff = Date.now() - ts
+  const diff = Math.max(0, Date.now() - ts)
   const s = Math.floor(diff / 1000)
   if (s < 60) return s + ' 秒前'
   const m = Math.floor(s / 60)
@@ -15,7 +15,7 @@ function toast(title, icon) {
 }
 
 function failToast(err) {
-  if (err && err.code === 'CANCELLED') return
+  if (err && ['CANCELLED', 'STALE_CONTEXT'].indexOf(err.code) >= 0) return
   const msg = (err && (err.message || err.errMsg)) || '网络不可用，请稍后重试'
   toast(msg)
 }
@@ -25,8 +25,9 @@ function confirm(title, content) {
     wx.showModal({
       title,
       content,
-      confirmColor: '#40B352',
-      success: (res) => resolve(!!res.confirm)
+      confirmColor: '#157daf',
+      success: (res) => resolve(!!res.confirm),
+      fail: () => resolve(false)
     })
   })
 }
@@ -96,11 +97,18 @@ function beginRequest(page, key) {
   page.__requestVersions = page.__requestVersions || {}
   const next = (page.__requestVersions[name] || 0) + 1
   page.__requestVersions[name] = next
+  const store = require('../services/store')
+  page.__requestContexts = page.__requestContexts || {}
+  page.__requestContexts[name] = { child: store.getCurrentChildId(), epoch: store.getEpoch ? store.getEpoch() : 0 }
   return next
 }
 
 function isRequestCurrent(page, key, version) {
-  return pageMounted(page) && page.__requestVersions && page.__requestVersions[key || 'default'] === version
+  const name = key || 'default'
+  const store = require('../services/store')
+  const context = page.__requestContexts && page.__requestContexts[name]
+  return pageMounted(page) && page.__requestVersions && page.__requestVersions[name] === version &&
+    (!context || (context.child === store.getCurrentChildId() && context.epoch === (store.getEpoch ? store.getEpoch() : 0)))
 }
 
 function disposePage(page) {
@@ -121,30 +129,39 @@ function pollTask(id, opts) {
   const api = require('../services/api')
   let n = 0
   let timer = null
-  let cancelled = false
+  let settled = false
+  let finish
+  let fail
+  function cleanup() {
+    if (timer) clearTimeout(timer)
+    if (owner && owner.__cancelJobs) owner.__cancelJobs = owner.__cancelJobs.filter((fn) => fn !== promise.cancel)
+  }
   const promise = new Promise((resolve, reject) => {
+    finish = (value) => { if (settled) return; settled = true; cleanup(); resolve(value) }
+    fail = (error) => { if (settled) return; settled = true; cleanup(); reject(error) }
     function tick() {
-      if (cancelled || (owner && !pageMounted(owner))) return
+      if (settled) return
+      if (owner && !pageMounted(owner)) { promise.cancel(); return }
       api.getTask(id).then((t) => {
-        if (cancelled || (owner && !pageMounted(owner))) return
+        if (settled) return
+        if (owner && !pageMounted(owner)) { promise.cancel(); return }
         if (onUpdate) onUpdate(t)
-        if (t.status === 'success' || t.status === 'failed' || t.status === 'timeout' || t.status === 'unknown') {
-          resolve(t)
+        if (['success', 'failed', 'timeout', 'unknown', 'cancelled'].indexOf(t.status) >= 0) {
+          finish(t)
           return
         }
         n += 1
         if (n >= max) {
-          resolve(t)
+          finish(Object.assign({}, t, { status: 'timeout', message: '等待结果超时，请查询最终状态后再决定是否重试', awaitingFinal: true }))
           return
         }
         timer = setTimeout(tick, interval)
-      }).catch(reject)
+      }).catch(fail)
     }
     timer = setTimeout(tick, interval)
   })
   promise.cancel = function () {
-    cancelled = true
-    if (timer) clearTimeout(timer)
+    finish({ id, status: 'cancelled', message: '已停止页面查询，设备任务仍可重新查询' })
   }
   if (owner) {
     owner.__cancelJobs = owner.__cancelJobs || []
@@ -166,12 +183,12 @@ function runTask(page, type, payload) {
       }
     }).then((x) => {
       if (page) safeSetData(page, { task: x, busy: false })
-      toast(x.message)
+      if ((!page || pageMounted(page)) && x.status !== 'cancelled') toast(x.message)
       return x
     })
   }).catch((err) => {
     if (page) safeSetData(page, { busy: false })
-    failToast(err)
+    if (!page || pageMounted(page)) failToast(err)
     throw err
   })
 }
@@ -185,6 +202,32 @@ function acquire(page, key) {
 
 function release(page, key) {
   page[key || '_busy'] = false
+}
+
+// Secondary pages use the same loading/error/stale-response contract as the tabs.
+function loadPage(page, loader, mapper, key) {
+  const name = key || 'load'
+  const version = beginRequest(page, name)
+  safeSetData(page, { loading: true, error: '' })
+  return Promise.resolve().then(loader).then((result) => {
+    if (!isRequestCurrent(page, name, version)) return null
+    safeSetData(page, Object.assign({ loading: false, error: '' }, mapper ? mapper(result) : result))
+    return result
+  }).catch((error) => {
+    if (!isRequestCurrent(page, name, version)) return null
+    safeSetData(page, { loading: false, error: error.message || '暂时无法加载，请重试' })
+    failToast(error)
+    return null
+  })
+}
+
+function navigate(url) {
+  if (typeof url !== 'string' || !/^\/pages\/[a-z/-]+(?:\?.*)?$/.test(url)) { toast('暂无可查看的详情'); return }
+  const base = url.split('?')[0]
+  const tabs = ['/pages/home/index', '/pages/guard/index', '/pages/growth/index', '/pages/my/index']
+  const fail = () => toast('页面暂时无法打开，请返回重试')
+  if (tabs.indexOf(base) >= 0) wx.switchTab({ url: base, fail })
+  else wx.navigateTo({ url, fail })
 }
 
 module.exports = {
@@ -203,5 +246,8 @@ module.exports = {
   safeSetData,
   beginRequest,
   isRequestCurrent,
-  disposePage
+  disposePage,
+  loadPage,
+  navigate,
+  pageMounted
 }

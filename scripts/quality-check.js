@@ -50,6 +50,9 @@ const allText = textFiles.map((file) => fs.readFileSync(file, 'utf8')).join('\n'
 
 files.filter((file) => file.endsWith('.wxml')).forEach((file) => {
   const wxml = fs.readFileSync(file, 'utf8')
+  for (const binding of wxml.matchAll(/current-id="{{([^}]+)}}"/g)) {
+    if (!binding[1].includes("|| ''")) errors.push(`孩子选择组件需要空字符串回退，避免 null 属性告警：${rel(file)}`)
+  }
   const jsFile = file.replace(/\.wxml$/, '.js')
   const js = fs.existsSync(jsFile) ? fs.readFileSync(jsFile, 'utf8') : ''
   const handlers = [...wxml.matchAll(/(?:bind|catch)(?::)?(?:tap|change|input|submit|action|close|confirm|blur)="([A-Za-z_$][\w$]*)"/g)].map((match) => match[1])
@@ -119,6 +122,16 @@ assetFiles.forEach((file) => {
 })
 
 const styles = files.filter((file) => file.endsWith('.wxss'))
+styles.filter((file) => file.includes(`${path.sep}components${path.sep}`)).forEach((file) => {
+  const source = fs.readFileSync(file, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '')
+  for (const match of source.matchAll(/([^{}]+)\{/g)) {
+    const selector = match[1].trim()
+    if (selector.startsWith('@')) continue
+    if (/[\[\]#]/.test(selector) || /(?:^|[\s,>+~])(?:view|text|image|button|input)(?=[\s,.:[>+~]|$)/.test(selector)) {
+      errors.push(`自定义组件使用不受支持的标签、属性或 ID 选择器：${rel(file)} -> ${selector}`)
+    }
+  }
+})
 const hashes = new Map()
 styles.forEach((file) => {
   const content = fs.readFileSync(file)

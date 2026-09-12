@@ -1,11 +1,14 @@
 <view class="page">
   <nav-bar title="专属支持" />
   <view class="pad">
+    <text wx:if="{{loading}}" class="qa-note" role="status">正在获取信息…</text>
+    <view wx:if="{{error}}" class="card card-p"><text class="danger">{{error}}</text><button class="btn btn-secondary mt-12" bindtap="reload">重新加载</button></view>
     <view class="support-hero"><view class="icon-box icon-coral"><image src="/assets/icons/lucide/support.png" mode="aspectFit" /></view><text class="h1">需要帮助？</text><text class="sub">设备使用、家庭管理与账号问题都可以在这里反馈</text><button class="btn btn-primary mt-20" hover-class="pressed" bindtap="goFb">提交问题</button></view>
-    <view class="item">
-      <text class="h3">服务单 AIL-20260825-03</text>
-      <text class="sub">处理中 · 已关联 Mini 01</text><view class="progress-track mt-12"><view class="progress-fill" style="width: 68%"></view></view>
+    <view class="item" wx:for="{{feedbacks}}" wx:key="id">
+      <text class="h3">{{item.category || '问题反馈'}} · {{item.id}}</text>
+      <text class="sub mt-8">{{item.text}}</text><text class="status">本地已记录 · 尚未发送给客服</text>
     </view>
+    <text class="sub mt-12" wx:if="{{!feedbacks.length}}">暂无反馈记录。提交问题后可在这里查看。</text>
     <button class="item list-button" wx:for="{{faqs}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="toggle" aria-label="{{item.open ? '收起' : '展开'}}问题：{{item.q}}">
       <text class="h3">{{item.q}}</text>
       <text class="sub" wx:if="{{item.open}}">{{item.a}}</text>

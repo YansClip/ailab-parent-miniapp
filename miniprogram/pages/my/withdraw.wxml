@@ -5,5 +5,7 @@
     <view class="card card-p mt-20"><text class="h3">撤回后将发生</text><view class="impact-row"><text>停止新增位置、设备与成长相关数据</text></view><view class="impact-row"><text>部分守护与成长功能将无法继续使用</text></view><view class="impact-row"><text>依法需要保留的信息会说明范围与期限</text></view></view>
     <button class="btn btn-danger mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="submit">确认撤回</button>
     <view class="task-state mt-16 {{task.status==='success' ? 'success' : task.status==='failed' ? 'failed' : ''}}" wx:if="{{task}}"><view class="task-state-dot"></view><view class="task-state-copy"><text class="h3">申请进度</text><text class="sub">{{task.message}}</text></view></view>
+    <button wx:if="{{task.status==='timeout'}}" class="btn btn-secondary mt-16" bindtap="queryTask" disabled="{{busy}}">查询最终状态</button>
+    <button wx:if="{{task.status==='success'}}" class="btn btn-secondary mt-16" bindtap="finish">返回欢迎页</button>
   </view>
 </view>

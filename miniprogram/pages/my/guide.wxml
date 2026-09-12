@@ -1,9 +1,14 @@
 <view class="page">
   <nav-bar title="玩机指南" />
   <view class="pad">
+    <text wx:if="{{loading}}" class="qa-note" role="status">正在获取信息…</text>
+    <view wx:if="{{error}}" class="card card-p"><text class="danger">{{error}}</text><button class="btn btn-secondary mt-12" bindtap="reload">重新加载</button></view>
     <view class="guide-hero"><view class="icon-box icon-mint"><image src="/assets/icons/lucide/guide.png" mode="aspectFit" /></view><view><text class="h1">轻松上手 Mini</text><text class="sub">从绑定设备到守护工具，一步一步完成设置</text></view></view>
-    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-url="{{item.url}}" hover-class="pressed" bindtap="open" aria-label="查看指南：{{item.title}}">
+    <view class="card mt-16" wx:for="{{list}}" wx:key="id">
+    <button class="item list-button" data-id="{{item.id}}" hover-class="pressed" bindtap="toggle" aria-label="{{expanded === item.id ? '收起' : '展开'}}指南：{{item.title}}">
       <view class="guide-row"><view class="guide-number">{{index + 1}}</view><view class="guide-copy"><text class="h3">{{item.title}}</text><text class="sub">{{item.desc}}</text><text class="status">{{item.status}}</text></view><image class="row-chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></view>
     </button>
+    <view class="guide-steps" wx:if="{{expanded === item.id}}"><text class="guide-step" wx:for="{{item.steps}}" wx:for-item="step" wx:for-index="stepIndex" wx:key="*this">{{stepIndex + 1}}. {{step}}</text><button class="btn btn-secondary mt-16" data-url="{{item.url}}" bindtap="open">前往体验</button></view>
+    </view>
   </view>
 </view>

@@ -5,7 +5,7 @@
     <text class="sub mt-12">陪伴动态、实时守护、成长记录与家庭管理。</text>
   </view>
   <view class="art">
-    <image class="art-img" src="/assets/illustrations/welcome-v2.jpg" mode="aspectFill" aria-label="孩子与 Mini 设备的陪伴插画" />
+    <image class="art-img" src="/assets/island/ocean-world.jpg" mode="aspectFill" aria-label="孩子与 Mini 设备的陪伴插画" />
     <view class="art-tag"><text>安心守护</text><text>温柔陪伴每一次成长</text></view>
   </view>
   <view class="actions">

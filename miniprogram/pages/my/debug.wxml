@@ -1,12 +1,6 @@
-<view class="page">
-  <nav-bar title="演示场景" />
-  <view class="pad">
-    <text class="sub">用于对照原型空/加载/离线/失败状态。不影响正式产品文案。</text>
-    <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="pick" aria-label="切换演示场景：{{item.name}}">
-      <text class="h3">{{item.name}}</text>
-      <text class="status" wx:if="{{item.id === current}}">当前</text>
-    </button>
-    <button class="btn btn-danger mt-24" bindtap="reset">重置全部本地数据</button>
-    <text class="sub mt-12">会恢复联系人、闹钟、家庭邀请、已读消息、设备绑定和当前孩子。</text>
-  </view>
-</view>
+<view class="page"><nav-bar title="体验设置" /><view class="pad">
+  <text class="h2">可重复验证的功能场景</text><text class="sub mt-12">当前孩子：{{childName}}。所有数据及设备操作仅保存在本机，不连接真实账号、硬件或定位。</text>
+  <view class="card card-p mt-20"><text class="h3">注入一条 Web 完成事件</text><text class="sub mt-8">可试用 B04 观察新增覆盖。B02 默认已完成，重复提交不重复增加；解锁不计完成。</text><input class="input mt-12" value="{{courseId}}" maxlength="3" bindinput="input" /><button class="btn btn-primary mt-12" bindtap="inject" disabled="{{busy}}">模拟完成</button><text class="sub mt-12">{{lastResult}}</text></view>
+  <button class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="pick" disabled="{{busy}}"><view class="between"><text class="h3">{{item.name}}</text><text class="pill pill-sky" wx:if="{{item.id===current}}">当前</text></view></button>
+  <button class="btn btn-danger mt-24" bindtap="reset">重置本地示例数据</button>
+</view></view>

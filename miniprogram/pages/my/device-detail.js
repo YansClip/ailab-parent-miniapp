@@ -1,22 +1,25 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
+const helper = require('./helper')
 Page({
-  data: { dev: {}, confirm: false, task: null, busy: false },
-  onLoad(q) {
-    api.getDevices().then((list) => this.setData({ dev: list.find((d) => d.id === q.id) || list[0] || {} })).catch((e) => util.failToast(e))
+  data: { dev: {}, loading: true, error: '', confirm: false, task: null, busy: false, isAdmin: false, removed: false },
+  onLoad(q) { this.deviceId = q.id || '' },
+  onShow() { this.reload() },
+  reload() {
+    return helper.load(this, () => Promise.all([api.getDevices(), api.getParent()]), ([list, p]) => {
+      const dev = list.find((d) => d.id === this.deviceId)
+      if (!dev) throw { message: '该设备已解绑或你没有查看权限，请返回设备中心。' }
+      return { dev, isAdmin: p.role === '主管理员' }
+    })
   },
-  unbind() { this.setData({ confirm: true }) },
-  close() { this.setData({ confirm: false }) },
+  unbind() { if (this.data.isAdmin) this.setData({ confirm: true }); else util.toast('仅主管理员可解绑设备') },
+  close() { if (!this.data.busy) this.setData({ confirm: false }) },
   noop() {},
-  ok() {
+  back() { util.navigate('/pages/my/device') },
+  async ok() {
     if (this.data.busy) return
-    this.setData({ busy: true })
-    api.submitTask('device-unbind', { id: this.data.dev.id }).then((t) => {
-      this.setData({ task: t, confirm: false })
-      return util.pollTask(t.id, { onUpdate: (x) => this.setData({ task: x }) })
-    }).then((x) => {
-      util.toast(x.message)
-      if (x.status === 'success') setTimeout(() => wx.navigateBack(), 500)
-    }).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
-  }
+    this.setData({ confirm: false })
+    await helper.task(this, 'device-unbind', { id: this.data.dev.id }, () => util.safeSetData(this, { removed: true, dev: {} }))
+  },
+  onUnload() { util.disposePage(this) }
 })

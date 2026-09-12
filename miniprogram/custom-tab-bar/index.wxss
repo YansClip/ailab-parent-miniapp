@@ -37,7 +37,7 @@
 }
 
 .icon-wrap.on {
-  background: rgba(64, 179, 82, 0.11);
+  background: rgba(21, 126, 175, .1);
 }
 
 .icon {
@@ -51,6 +51,6 @@
 }
 
 .label.on {
-  color: #40b352;
+  color: #157eaf;
   font-weight: 650;
 }

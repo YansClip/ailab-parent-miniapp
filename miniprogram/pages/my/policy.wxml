@@ -1,7 +1,7 @@
 <view class="page">
   <nav-bar title="{{title}}" />
   <view class="pad">
-    <text class="sub">版本 2026-08-25 · 生效日期以正文为准</text>
+    <view class="card card-p"><text class="h3">演示说明，非正式协议</text><text class="sub mt-12">当前仅使用本机模拟数据，不连接真实设备或业务后台。以下为功能范围说明，不能替代正式上线前由服务提供方确认的完整协议。</text></view>
     <text class="sub mt-16">{{body}}</text>
   </view>
 </view>
