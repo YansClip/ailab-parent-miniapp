@@ -1,0 +1,617 @@
+Date: 2026-09-12 Asia/Shanghai
+Functional commit: 1cfa04b
+Command: npm run verify
+Scope: local static checks and Node tests; not hardware or physical device certification.
+
+> ailab-parent-miniapp-demo@1.0.0 verify
+> npm run check && npm test
+
+
+> ailab-parent-miniapp-demo@1.0.0 check
+> node scripts/quality-check.js
+
+AILab MiniApp quality check: 46 pages, 257 files
+Result: 0 error(s), 0 warning(s)
+
+> ailab-parent-miniapp-demo@1.0.0 test
+> node --test tests/*.test.js
+
+TAP version 13
+# Subtest: 首次进入经隐私、登录到创建家庭，创建必须等待任务完成
+ok 1 - 首次进入经隐私、登录到创建家庭，创建必须等待任务完成
+  ---
+  duration_ms: 21.59775
+  type: 'test'
+  ...
+# Subtest: 隐私拒绝不会登录；登录失败与家庭创建失败不推进流程
+ok 2 - 隐私拒绝不会登录；登录失败与家庭创建失败不推进流程
+  ---
+  duration_ms: 7.793916
+  type: 'test'
+  ...
+# Subtest: 绑定码校验、扫码权限失败和设备拒绝不会假绑定成功
+ok 3 - 绑定码校验、扫码权限失败和设备拒绝不会假绑定成功
+  ---
+  duration_ms: 6.076083
+  type: 'test'
+  ...
+# Subtest: 绑定成功等待终态后选中目标孩子，并可查看成功页
+ok 4 - 绑定成功等待终态后选中目标孩子，并可查看成功页
+  ---
+  duration_ms: 18.89925
+  type: 'test'
+  ...
+# Subtest: 绑定等待页超时可查询同一任务到终态，不创建新绑定
+ok 5 - 绑定等待页超时可查询同一任务到终态，不创建新绑定
+  ---
+  duration_ms: 5.732208
+  type: 'test'
+  ...
+# Subtest: 扫码异步结果晚于页面卸载时不回写已销毁页面
+ok 6 - 扫码异步结果晚于页面卸载时不回写已销毁页面
+  ---
+  duration_ms: 0.832583
+  type: 'test'
+  ...
+# Subtest: 设备详情解绑与设备中心重绑以任务成功为准
+ok 7 - 设备详情解绑与设备中心重绑以任务成功为准
+  ---
+  duration_ms: 13.89475
+  type: 'test'
+  ...
+# Subtest: 家庭接受邀请、转移主管理员并撤销原管理员配置权限
+ok 8 - 家庭接受邀请、转移主管理员并撤销原管理员配置权限
+  ---
+  duration_ms: 5.966917
+  type: 'test'
+  ...
+# Subtest: 儿童资料查看后支持连续两次更正，不把处理记录当成未完成任务
+ok 9 - 儿童资料查看后支持连续两次更正，不把处理记录当成未完成任务
+  ---
+  duration_ms: 7.964166
+  type: 'test'
+  ...
+# Subtest: 儿童数据删除尊重取消确认，仅删除当前孩子的探索记录
+ok 10 - 儿童数据删除尊重取消确认，仅删除当前孩子的探索记录
+  ---
+  duration_ms: 7.758333
+  type: 'test'
+  ...
+# Subtest: 消息打开先标已读，tab 地址走 switchTab，详情地址走 navigateTo
+ok 11 - 消息打开先标已读，tab 地址走 switchTab，详情地址走 navigateTo
+  ---
+  duration_ms: 3.406875
+  type: 'test'
+  ...
+# Subtest: 订阅只保存本地偏好，不调用真实微信订阅
+ok 12 - 订阅只保存本地偏好，不调用真实微信订阅
+  ---
+  duration_ms: 2.810084
+  type: 'test'
+  ...
+# Subtest: 反馈校验、保存及支持页查询串联，不假称已发送客服
+ok 13 - 反馈校验、保存及支持页查询串联，不假称已发送客服
+  ---
+  duration_ms: 2.048084
+  type: 'test'
+  ...
+# Subtest: 撤回同意和本地注销显示终态并清除登录，允许返回欢迎页
+ok 14 - 撤回同意和本地注销显示终态并清除登录，允许返回欢迎页
+  ---
+  duration_ms: 2.294333
+  type: 'test'
+  ...
+# Subtest: 我的入口、指南、协议、关于与退出路径契约可用
+ok 15 - 我的入口、指南、协议、关于与退出路径契约可用
+  ---
+  duration_ms: 4.355583
+  type: 'test'
+  ...
+# Subtest: 拒绝家庭邀请尊重取消确认，已拒绝成员不再出现在列表
+ok 16 - 拒绝家庭邀请尊重取消确认，已拒绝成员不再出现在列表
+  ---
+  duration_ms: 1.558125
+  type: 'test'
+  ...
+# Subtest: 解除孩子关系只移除目标，不能移除家庭最后一名孩子
+ok 17 - 解除孩子关系只移除目标，不能移除家庭最后一名孩子
+  ---
+  duration_ms: 1.727875
+  type: 'test'
+  ...
+# Subtest: 体验设置可切换状态、注入去重记录并重置，读取失败可恢复
+ok 18 - 体验设置可切换状态、注入去重记录并重置，读取失败可恢复
+  ---
+  duration_ms: 10.628125
+  type: 'test'
+  ...
+# Subtest: 微信登录失败时不写入登录状态
+ok 19 - 微信登录失败时不写入登录状态
+  ---
+  duration_ms: 4.491916
+  type: 'test'
+  ...
+# Subtest: 微信登录成功且有 code、已同意隐私时才写入登录状态
+ok 20 - 微信登录成功且有 code、已同意隐私时才写入登录状态
+  ---
+  duration_ms: 0.816333
+  type: 'test'
+  ...
+# Subtest: 未同意隐私时即使微信返回 code 也不能登录
+ok 21 - 未同意隐私时即使微信返回 code 也不能登录
+  ---
+  duration_ms: 3.040125
+  type: 'test'
+  ...
+# Subtest: 微信登录成功回调缺少 code 时保持未登录
+ok 22 - 微信登录成功回调缺少 code 时保持未登录
+  ---
+  duration_ms: 0.443
+  type: 'test'
+  ...
+# Subtest: 消息已读状态按当前孩子保存
+ok 23 - 消息已读状态按当前孩子保存
+  ---
+  duration_ms: 15.022958
+  type: 'test'
+  ...
+# Subtest: 闹钟按孩子隔离，切换后不会串号
+ok 24 - 闹钟按孩子隔离，切换后不会串号
+  ---
+  duration_ms: 5.279208
+  type: 'test'
+  ...
+# Subtest: 联系人按当前孩子隔离
+ok 25 - 联系人按当前孩子隔离
+  ---
+  duration_ms: 1.905
+  type: 'test'
+  ...
+# Subtest: 设备任务区分成功、失败与暂时超时，超时可查到最终结果
+ok 26 - 设备任务区分成功、失败与暂时超时，超时可查到最终结果
+  ---
+  duration_ms: 2.924083
+  type: 'test'
+  ...
+# Subtest: 儿童数据删除立即执行本地新契约，并可查询处理记录
+ok 27 - 儿童数据删除立即执行本地新契约，并可查询处理记录
+  ---
+  duration_ms: 17.34575
+  type: 'test'
+  ...
+# Subtest: 真实异步乱序：旧孩子慢响应在新孩子快响应后必须拒绝
+ok 28 - 真实异步乱序：旧孩子慢响应在新孩子快响应后必须拒绝
+  ---
+  duration_ms: 1209.573167
+  type: 'test'
+  ...
+# Subtest: 真实异步登录回调：退出后迟到的旧登录不能覆盖新会话
+ok 29 - 真实异步登录回调：退出后迟到的旧登录不能覆盖新会话
+  ---
+  duration_ms: 31.920375
+  type: 'test'
+  ...
+# Subtest: 守护 V3：页面控制器与 API 的完整状态回归
+    # Subtest: 过期位置刷新恢复，5 分钟失效清除坐标，地图失败仍保留地址
+    ok 1 - 过期位置刷新恢复，5 分钟失效清除坐标，地图失败仍保留地址
+      ---
+      duration_ms: 25.645
+      type: 'test'
+      ...
+    # Subtest: 通话接通、控制、结束与重新进入恢复
+    ok 2 - 通话接通、控制、结束与重新进入恢复
+      ---
+      duration_ms: 8.336
+      type: 'test'
+      ...
+    # Subtest: 通话拒接、忙线、超时、失败和设备离线不会显示已接通
+    ok 3 - 通话拒接、忙线、超时、失败和设备离线不会显示已接通
+      ---
+      duration_ms: 7.389042
+      type: 'test'
+      ...
+    # Subtest: 查找按真实会话时间倒数，离页恢复、手停、自动到期
+    ok 4 - 查找按真实会话时间倒数，离页恢复、手停、自动到期
+      ---
+      duration_ms: 5.875625
+      type: 'test'
+      ...
+    # Subtest: 联系人校验、保存与 SOS 引用禁停用
+    ok 5 - 联系人校验、保存与 SOS 引用禁停用
+      ---
+      duration_ms: 5.411667
+      type: 'test'
+      ...
+    # Subtest: 离线保存闹钟明确待同步，失败不显示保存成功
+    ok 6 - 离线保存闹钟明确待同步，失败不显示保存成功
+      ---
+      duration_ms: 2.681542
+      type: 'test'
+      ...
+    # Subtest: SOS 排序保存，普通成员只读，任务离页不回写
+    ok 7 - SOS 排序保存，普通成员只读，任务离页不回写
+      ---
+      duration_ms: 5.453041
+      type: 'test'
+      ...
+    1..7
+ok 30 - 守护 V3：页面控制器与 API 的完整状态回归
+  ---
+  duration_ms: 66.866584
+  type: 'test'
+  ...
+# Subtest: 首页重进会更新待办，切换孩子后摘要和动态保持主体一致
+ok 31 - 首页重进会更新待办，切换孩子后摘要和动态保持主体一致
+  ---
+  duration_ms: 36.123167
+  type: 'test'
+  ...
+# Subtest: 成长进度使用服务映射，日期可读，缺数据雷达不绘制零点或填充
+ok 32 - 成长进度使用服务映射，日期可读，缺数据雷达不绘制零点或填充
+  ---
+  duration_ms: 6.2025
+  type: 'test'
+  ...
+# Subtest: 未知足迹展示错误，已知足迹关注经 API 保存且重进保留
+ok 33 - 未知足迹展示错误，已知足迹关注经 API 保存且重进保留
+  ---
+  duration_ms: 12.414625
+  type: 'test'
+  ...
+# Subtest: 简报日期选择使用精确事件，关联入口可返回完整足迹
+ok 34 - 简报日期选择使用精确事件，关联入口可返回完整足迹
+  ---
+  duration_ms: 5.956958
+  type: 'test'
+  ...
+# Subtest: 成果分享携带匹配 targetType、targetId 和 childId
+ok 35 - 成果分享携带匹配 targetType、targetId 和 childId
+  ---
+  duration_ms: 3.150083
+  type: 'test'
+  ...
+# Subtest: PNG 使用真实导出路径，拒绝相册权限不提示成功且保留预览
+ok 36 - PNG 使用真实导出路径，拒绝相册权限不提示成功且保留预览
+  ---
+  duration_ms: 4.746834
+  type: 'test'
+  ...
+# Subtest: 分享内容不匹配或无权限时不能导出；页面销毁后导出回调不写入
+ok 37 - 分享内容不匹配或无权限时不能导出；页面销毁后导出回调不写入
+  ---
+  duration_ms: 2.634166
+  type: 'test'
+  ...
+# Subtest: 报告重新进入会重读，生成成功轮询结束后再次读取而非伪造 ready
+ok 38 - 报告重新进入会重读，生成成功轮询结束后再次读取而非伪造 ready
+  ---
+  duration_ms: 1.28325
+  type: 'test'
+  ...
+# Subtest: 动态按日期分组且只使用有效提供的来源链接
+ok 39 - 动态按日期分组且只使用有效提供的来源链接
+  ---
+  duration_ms: 0.562
+  type: 'test'
+  ...
+# Subtest: 联系人保存任务成功后可重新读取，任务编号不重复
+ok 40 - 联系人保存任务成功后可重新读取，任务编号不重复
+  ---
+  duration_ms: 13.541542
+  type: 'test'
+  ...
+# Subtest: 闹钟保存和删除只在任务成功后更新演示数据
+ok 41 - 闹钟保存和删除只在任务成功后更新演示数据
+  ---
+  duration_ms: 3.01225
+  type: 'test'
+  ...
+# Subtest: 失败任务不会提前或最终改变家庭邀请状态
+ok 42 - 失败任务不会提前或最终改变家庭邀请状态
+  ---
+  duration_ms: 2.418083
+  type: 'test'
+  ...
+# Subtest: 设备解绑成功后守护位置进入未绑定状态
+ok 43 - 设备解绑成功后守护位置进入未绑定状态
+  ---
+  duration_ms: 10.864542
+  type: 'test'
+  ...
+# Subtest: 设备离线配置保存与上线同步分别生效
+ok 44 - 设备离线配置保存与上线同步分别生效
+  ---
+  duration_ms: 2.671333
+  type: 'test'
+  ...
+# Subtest: 所有页面、组件和 App 脚本均可完成注册
+ok 45 - 所有页面、组件和 App 脚本均可完成注册
+  ---
+  duration_ms: 28.685167
+  type: 'test'
+  ...
+# Subtest: 全部动态控制器按日期分组、按类型筛选并打开来源
+ok 46 - 全部动态控制器按日期分组、按类型筛选并打开来源
+  ---
+  duration_ms: 25.943291
+  type: 'test'
+  ...
+# Subtest: 闹钟列表控制器支持编辑入口、启停保存、离线待同步和普通成员只读
+ok 47 - 闹钟列表控制器支持编辑入口、启停保存、离线待同步和普通成员只读
+  ---
+  duration_ms: 12.694292
+  type: 'test'
+  ...
+# Subtest: 探索覆盖总览控制器读取同一服务口径，跳转维度并恢复加载错误
+ok 48 - 探索覆盖总览控制器读取同一服务口径，跳转维度并恢复加载错误
+  ---
+  duration_ms: 8.641667
+  type: 'test'
+  ...
+# Subtest: 维度详情控制器区分已知0与数据不足，未知维度展示错误
+ok 49 - 维度详情控制器区分已知0与数据不足，未知维度展示错误
+  ---
+  duration_ms: 5.615125
+  type: 'test'
+  ...
+# Subtest: 阶段报告控制器使用p1目标，再生成后重读且只允许ready分享
+ok 50 - 阶段报告控制器使用p1目标，再生成后重读且只允许ready分享
+  ---
+  duration_ms: 21.574916
+  type: 'test'
+  ...
+# Subtest: 阶段报告控制器未知目标不分享、跨主体重新读取自己的内容
+ok 51 - 阶段报告控制器未知目标不分享、跨主体重新读取自己的内容
+  ---
+  duration_ms: 3.351125
+  type: 'test'
+  ...
+# Subtest: 新增玩机指南步骤可展开折叠，入口继续匹配正确路由
+ok 52 - 新增玩机指南步骤可展开折叠，入口继续匹配正确路由
+  ---
+  duration_ms: 2.725375
+  type: 'test'
+  ...
+# Subtest: V3: 正式目录31课，按年龄固定28+1门计划，六维只算coverage>0
+ok 53 - V3: 正式目录31课，按年龄固定28+1门计划，六维只算coverage>0
+  ---
+  duration_ms: 18.245958
+  type: 'test'
+  ...
+# Subtest: V3: 首次完成去重，解锁不计完成，计划外综合任务拒绝
+ok 54 - V3: 首次完成去重，解锁不计完成，计划外综合任务拒绝
+  ---
+  duration_ms: 16.045833
+  type: 'test'
+  ...
+# Subtest: V3: 事件统一驱动首页、详情、成长和报告；不同孩子不共用足迹成果
+ok 55 - V3: 事件统一驱动首页、详情、成长和报告；不同孩子不共用足迹成果
+  ---
+  duration_ms: 37.032375
+  type: 'test'
+  ...
+# Subtest: V3: 空数据六维无证据、不生成报告，关注按孩子隔离
+ok 56 - V3: 空数据六维无证据、不生成报告，关注按孩子隔离
+  ---
+  duration_ms: 2.162709
+  type: 'test'
+  ...
+# Subtest: V3: 在途任务切换孩子仍只修改提交主体，另一孩子不可查询任务
+ok 57 - V3: 在途任务切换孩子仍只修改提交主体，另一孩子不可查询任务
+  ---
+  duration_ms: 2.316584
+  type: 'test'
+  ...
+# Subtest: V3: 退出后任务不复活，离线提交不落任务或业务数据
+ok 58 - V3: 退出后任务不复活，离线提交不落任务或业务数据
+  ---
+  duration_ms: 2.725458
+  type: 'test'
+  ...
+# Subtest: V3: 家庭创建失败不写成功状态，绑定码只成功消费一次
+ok 59 - V3: 家庭创建失败不写成功状态，绑定码只成功消费一次
+  ---
+  duration_ms: 2.621459
+  type: 'test'
+  ...
+# Subtest: V3: 设备解绑重绑闭环和普通成员权限
+ok 60 - V3: 设备解绑重绑闭环和普通成员权限
+  ---
+  duration_ms: 2.684708
+  type: 'test'
+  ...
+# Subtest: V3: 离线配置待同步，恢复在线后同步；SOS引用受保护
+ok 61 - V3: 离线配置待同步，恢复在线后同步；SOS引用受保护
+  ---
+  duration_ms: 1.579375
+  type: 'test'
+  ...
+# Subtest: V3: 位置刷新写入持久记录，超过有效期即清空坐标
+ok 62 - V3: 位置刷新写入持久记录，超过有效期即清空坐标
+  ---
+  duration_ms: 1.649333
+  type: 'test'
+  ...
+# Subtest: V3: 通话可恢复、控制与结束，重复发起不创建并行会话
+ok 63 - V3: 通话可恢复、控制与结束，重复发起不创建并行会话
+  ---
+  duration_ms: 2.03525
+  type: 'test'
+  ...
+# Subtest: V3: 呼叫拒接、忙线与掉线终态真实可复现
+ok 64 - V3: 呼叫拒接、忙线与掉线终态真实可复现
+  ---
+  duration_ms: 2.330208
+  type: 'test'
+  ...
+# Subtest: V3: 查找设备确认后持续响铃60秒，手动停止和重启恢复
+ok 65 - V3: 查找设备确认后持续响铃60秒，手动停止和重启恢复
+  ---
+  duration_ms: 1.212375
+  type: 'test'
+  ...
+# Subtest: V3: 报告生成任务推进到ready，失败可重试，超时可再查最终结果
+ok 66 - V3: 报告生成任务推进到ready，失败可重试，超时可再查最终结果
+  ---
+  duration_ms: 14.006166
+  type: 'test'
+  ...
+# Subtest: V3: 分享保持目标且脱敏，不允许跨孩子分享
+ok 67 - V3: 分享保持目标且脱敏，不允许跨孩子分享
+  ---
+  duration_ms: 3.191292
+  type: 'test'
+  ...
+# Subtest: V3: 删除记录使旧任务失效，删除与撤回终态仍可查询
+ok 68 - V3: 删除记录使旧任务失效，删除与撤回终态仍可查询
+  ---
+  duration_ms: 1.204417
+  type: 'test'
+  ...
+# Subtest: V3: 儿童资料查看/更正有真实本地结果；反馈仅本地待处理
+ok 69 - V3: 儿童资料查看/更正有真实本地结果；反馈仅本地待处理
+  ---
+  duration_ms: 0.923
+  type: 'test'
+  ...
+# Subtest: V3: 延迟响应在切换主体后拒绝旧数据
+ok 70 - V3: 延迟响应在切换主体后拒绝旧数据
+  ---
+  duration_ms: 1.029208
+  type: 'test'
+  ...
+# Subtest: V3: 普通成员注销只终止本机会话，不删除其他成员有效记录
+ok 71 - V3: 普通成员注销只终止本机会话，不删除其他成员有效记录
+  ---
+  duration_ms: 5.897917
+  type: 'test'
+  ...
+# Subtest: V3: 旧版无主体的在途任务迁移为取消，避免永远处理中
+ok 72 - V3: 旧版无主体的在途任务迁移为取消，避免永远处理中
+  ---
+  duration_ms: 0.208417
+  type: 'test'
+  ...
+# Subtest: V3: 存在B01完成记录时，不相关维度是已知0%，而非数据未知
+ok 73 - V3: 存在B01完成记录时，不相关维度是已知0%，而非数据未知
+  ---
+  duration_ms: 4.135542
+  type: 'test'
+  ...
+# Subtest: V3: 报告固定原事件、进度、六维和生成截点；重生成才更新快照版本
+ok 74 - V3: 报告固定原事件、进度、六维和生成截点；重生成才更新快照版本
+  ---
+  duration_ms: 12.973083
+  type: 'test'
+  ...
+# Subtest: V3: 旧版无快照报告明确迁移为新版本，不冒用旧生成时间
+ok 75 - V3: 旧版无快照报告明确迁移为新版本，不冒用旧生成时间
+  ---
+  duration_ms: 3.887083
+  type: 'test'
+  ...
+# Subtest: V3: 首页动态保留事件类型，真实动态页四类筛选均有对应记录
+ok 76 - V3: 首页动态保留事件类型，真实动态页四类筛选均有对应记录
+  ---
+  duration_ms: 3.483125
+  type: 'test'
+  ...
+# Subtest: V3: 已登录QA重置恢复默认主管理员和示例家庭，旧请求与任务被epoch隔离
+ok 77 - V3: 已登录QA重置恢复默认主管理员和示例家庭，旧请求与任务被epoch隔离
+  ---
+  duration_ms: 2.018417
+  type: 'test'
+  ...
+# Subtest: V3: 未登录重置恢复默认资料但不代替登录或隐私同意
+ok 78 - V3: 未登录重置恢复默认资料但不代替登录或隐私同意
+  ---
+  duration_ms: 0.347875
+  type: 'test'
+  ...
+# Subtest: V3: 旧版固定来源标签只在展示层兼容，不修改原始事件或自定义内容
+ok 79 - V3: 旧版固定来源标签只在展示层兼容，不修改原始事件或自定义内容
+  ---
+  duration_ms: 3.455166
+  type: 'test'
+  ...
+# Subtest: 切换孩子时先发出清理事件，再发出新主体事件
+ok 80 - 切换孩子时先发出清理事件，再发出新主体事件
+  ---
+  duration_ms: 1.384
+  type: 'test'
+  ...
+# Subtest: 演示业务数据按命名空间读写
+ok 81 - 演示业务数据按命名空间读写
+  ---
+  duration_ms: 0.285
+  type: 'test'
+  ...
+# Subtest: 退出登录会清除用户相关演示数据
+ok 82 - 退出登录会清除用户相关演示数据
+  ---
+  duration_ms: 0.210834
+  type: 'test'
+  ...
+# Subtest: 旧版联系人和闹钟缓存会迁移到当前孩子命名空间
+ok 83 - 旧版联系人和闹钟缓存会迁移到当前孩子命名空间
+  ---
+  duration_ms: 1.889625
+  type: 'test'
+  ...
+# Subtest: 损坏的对象型缓存会回退为安全默认值
+ok 84 - 损坏的对象型缓存会回退为安全默认值
+  ---
+  duration_ms: 0.568416
+  type: 'test'
+  ...
+# Subtest: 请求版本只允许最后一次请求更新页面
+ok 85 - 请求版本只允许最后一次请求更新页面
+  ---
+  duration_ms: 2.7355
+  type: 'test'
+  ...
+# Subtest: 页面销毁后 safeSetData 不再写入
+ok 86 - 页面销毁后 safeSetData 不再写入
+  ---
+  duration_ms: 0.615667
+  type: 'test'
+  ...
+# Subtest: 切换孩子或结束会话后，已有请求版本也不可回写
+ok 87 - 切换孩子或结束会话后，已有请求版本也不可回写
+  ---
+  duration_ms: 2.04725
+  type: 'test'
+  ...
+# Subtest: 取消轮询会结算 Promise 并移除清理句柄，不会永久 pending
+ok 88 - 取消轮询会结算 Promise 并移除清理句柄，不会永久 pending
+  ---
+  duration_ms: 3.85775
+  type: 'test'
+  ...
+# Subtest: 轮询耗尽不会将执行中的任务当成功
+ok 89 - 轮询耗尽不会将执行中的任务当成功
+  ---
+  duration_ms: 7.072834
+  type: 'test'
+  ...
+# Subtest: 通用加载的旧孩子慢响应不能覆盖新孩子结果
+ok 90 - 通用加载的旧孩子慢响应不能覆盖新孩子结果
+  ---
+  duration_ms: 25.955416
+  type: 'test'
+  ...
+# Subtest: 弹窗API失败会返回取消，不会悬挂操作
+ok 91 - 弹窗API失败会返回取消，不会悬挂操作
+  ---
+  duration_ms: 0.295583
+  type: 'test'
+  ...
+1..91
+# tests 98
+# suites 0
+# pass 98
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1356.802833
