@@ -44,7 +44,7 @@ function resume(page) {
       page._pendingTask = null
       set(page, { result: (task.message || '操作已完成') + (task.synced === false ? '；待设备上线同步，目前尚未在设备生效。' : '') })
       if (page._afterTask) return page._afterTask(task)
-    } else if (task.status === 'failed') {
+    } else if (task.status === 'failed' || task.status === 'cancelled') {
       page._pendingTask = null
       set(page, { error: task.message || '操作失败，原数据未改变，可重试。' })
     } else {
