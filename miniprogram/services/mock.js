@@ -92,7 +92,7 @@ function lesson(id) { return curriculum.courses.find((x) => x.id === id) }
 function plan(c) { return curriculum.planFor(c.child.age) }
 function sourceUrl(e) { return e.type === 'achievement' ? '/pages/growth/achievement?id=' + encodeURIComponent(e.id) : e.type === 'question' ? '/pages/home/footprint?id=' + encodeURIComponent(e.id) : '/pages/growth/index' }
 function eventTitle(e) { return e.title || (e.type === 'achievement' ? '探索成果 · ' : e.type === 'course-unlocked' ? '已解锁 · ' : '完成探索内容 · ') + ((lesson(e.courseId) || {}).title || e.courseId) }
-function evidence(e) { return meta({ id: e.id, type: e.type, title: eventTitle(e), date: date(e.occurredAt), occurredAt: e.occurredAt, courseId: e.courseId, source: e.source, url: sourceUrl(e), childId: e.childId }) }
+function evidence(e) { return meta({ id: e.id, type: e.type, title: eventTitle(e), date: date(e.occurredAt), occurredAt: e.occurredAt, courseId: e.courseId, source: e.source === '本地学习记录' ? '本地探索记录' : e.source, url: sourceUrl(e), childId: e.childId }) }
 function growth(c, options) {
   options = options || {}
   const at = options.at == null ? now() : options.at

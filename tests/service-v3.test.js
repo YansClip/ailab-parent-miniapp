@@ -436,3 +436,24 @@ test('V3: 未登录重置恢复默认资料但不代替登录或隐私同意', a
   assert.equal(session.familyReady, false)
   await assert.rejects(t.api.getContext(), { code: 'AUTH_REQUIRED' })
 })
+
+test('V3: 旧版固定来源标签只在展示层兼容，不修改原始事件或自定义内容', async () => {
+  const t = setup()
+  await t.api.getContext()
+  const db = t.store.getDemoData('v3.database', {})
+  const old = db.events['child-xiaoman'].find((e) => e.id === 'a1')
+  old.source = '本地学习记录'
+  old.title = '我的本地学习记录'
+  old.summary = '作品内容：本地学习记录'
+  db.events['child-xiaoman'].find((e) => e.id === 'a2').source = '自定义本地学习记录来源'
+  const original = JSON.parse(JSON.stringify(db.events['child-xiaoman']))
+  t.store.setDemoData('v3.database', db)
+  const item = await t.api.getAchievement('a1')
+  assert.equal(item.source, '本地探索记录')
+  assert.equal(item.title, old.title)
+  assert.equal(item.process, old.summary)
+  assert.equal((await t.api.getHome()).dynamics.find((e) => e.id === 'a1').source, '本地探索记录')
+  assert.equal((await t.api.getGrowth()).achievements.find((e) => e.id === 'a1').source, '本地探索记录')
+  assert.equal((await t.api.getAchievement('a2')).source, '自定义本地学习记录来源')
+  assert.deepEqual(t.store.getDemoData('v3.database', {}).events['child-xiaoman'], original)
+})
