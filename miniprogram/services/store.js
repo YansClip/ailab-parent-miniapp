@@ -228,7 +228,17 @@ const store = {
   },
 
   resetDemoData() {
+    const previous = this.getSession()
+    const authenticated = previous.loggedIn === true && previous.privacyAccepted === true
+    // Restore the seeded family without granting login or privacy consent.
+    const session = Object.assign(defaultSession(), {
+      loggedIn: previous.loggedIn === true,
+      privacyAccepted: previous.privacyAccepted === true,
+      familyCreated: authenticated,
+      familyReady: authenticated
+    })
     this.bumpEpoch()
+    write(KEY, session)
     write(CHILD_KEY, 'child-xiaoman')
     write(SCENARIO_KEY, 'default')
     write(TASK_KEY, {})

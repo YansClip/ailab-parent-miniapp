@@ -360,3 +360,79 @@ test('V3: 旧版无快照报告明确迁移为新版本，不冒用旧生成时�
   assert.equal(migrated.snapshot.cutoffAt, t.getTime())
   assert.deepEqual(await t.api.getReport('w1'), migrated)
 })
+
+test('V3: 首页动态保留事件类型，真实动态页四类筛选均有对应记录', async () => {
+  const t = setup()
+  await t.api.injectDemoEvent({ id: 'feed-unlock-b04', type: 'course-unlocked', courseId: 'B04' })
+  let definition
+  global.Page = (value) => { definition = value }
+  fresh(path.resolve(__dirname, '../miniprogram/pages/home/feed.js'))
+  const page = Object.assign({}, definition, { data: JSON.parse(JSON.stringify(definition.data)) })
+  page.setData = (patch) => Object.assign(page.data, patch)
+  global.getCurrentPages = () => [page]
+  await page.load()
+  assert.equal(page.data.error, '')
+  const expected = { 'course-completed': 4, 'course-unlocked': 1, question: 1, achievement: 2 }
+  assert.equal(page.events.length, 8)
+  page.data.filters.filter((item) => item.key !== 'all').forEach((filter) => {
+    page.chooseFilter({ currentTarget: { dataset: { type: filter.key } } })
+    const rows = page.data.groups.flatMap((group) => group.items)
+    assert.equal(rows.length, expected[filter.key], filter.name)
+    assert.ok(rows.every((event) => event.type === filter.key && event.typeLabel !== '陪伴记录'))
+    assert.ok(rows.every((event) => event.childId === 'child-xiaoman' && event.url))
+  })
+  page.chooseFilter({ currentTarget: { dataset: { type: 'all' } } })
+  assert.equal(page.data.groups.flatMap((group) => group.items).length, 8)
+  page.onUnload()
+})
+
+test('V3: 已登录QA重置恢复默认主管理员和示例家庭，旧请求与任务被epoch隔离', async () => {
+  const t = setup()
+  await t.finish(await t.api.submitTask('admin-transfer', { memberId: 'u2' }))
+  assert.equal((await t.api.getContext()).canManage, false)
+  t.store.setSession({ parentName: '临时家长', relation: '家长', familyName: '临时家庭' })
+  t.store.setCurrentChildId('child-xinghe')
+  await t.api.setDemoScenario('timeout')
+  const task = await t.api.submitTask('feedback', { text: '重置前的待处理反馈' })
+  const oldTask = t.store.getTasks()[task.id]
+  const epoch = t.store.getEpoch()
+  const oldRead = t.api.getGrowth()
+  const reset = t.api.resetDemo()
+  const [, context] = await Promise.all([assert.rejects(oldRead, { code: 'STALE_CONTEXT' }), reset])
+  assert.ok(context.epoch > epoch)
+  assert.equal(context.role, '主管理员')
+  assert.equal(context.canManage, true)
+  assert.equal(context.childId, 'child-xiaoman')
+  assert.equal(context.scenario, 'default')
+  assert.deepEqual(t.store.getSession(), {
+    privacyAccepted: true, loggedIn: true, familyCreated: true, familyReady: true,
+    familyName: '林小满的家庭', relation: '妈妈', parentName: '陈然', role: '主管理员',
+    phone: '138****2160', parentId: 'parent-chenran', familyId: 'family-demo'
+  })
+  assert.deepEqual(t.store.getTasks(), {})
+  assert.equal((await t.api.getTask(task.id)).status, 'unknown')
+  assert.deepEqual(await t.api.getFeedbacks(), [])
+  // A delayed persisted task from before reset must not write into the new demo.
+  t.store.setTask(task.id, oldTask)
+  t.advance(10000)
+  assert.deepEqual(await t.api.getFeedbacks(), [])
+  assert.equal(t.store.getTasks()[task.id].status, 'cancelled')
+  assert.equal((await t.finish(await t.api.submitTask('alarm-save', { id: 'after-reset', label: '提醒', time: '18:30', enabled: true }))).status, 'success')
+})
+
+test('V3: 未登录重置恢复默认资料但不代替登录或隐私同意', async () => {
+  const t = setup()
+  t.store.logout()
+  t.store.setSession({ role: '普通成员', parentName: '旧家长', familyReady: true })
+  const epoch = t.store.getEpoch()
+  t.store.resetDemoData()
+  const session = t.store.getSession()
+  assert.ok(t.store.getEpoch() > epoch)
+  assert.equal(session.role, '主管理员')
+  assert.equal(session.parentName, '陈然')
+  assert.equal(session.loggedIn, false)
+  assert.equal(session.privacyAccepted, false)
+  assert.equal(session.familyCreated, false)
+  assert.equal(session.familyReady, false)
+  await assert.rejects(t.api.getContext(), { code: 'AUTH_REQUIRED' })
+})
