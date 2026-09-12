@@ -6,6 +6,7 @@ const FOLLOW_KEY = 'ailab.follows'
 const DATA_KEY = 'ailab.demo.data'
 const DATA_VERSION_KEY = 'ailab.local.version'
 const DATA_VERSION = 3
+const EPOCH_KEY = 'ailab.session.epoch'
 
 function read(key, fallback) {
   try {
@@ -49,7 +50,9 @@ function defaultSession() {
     relation: '妈妈',
     parentName: '陈然',
     role: '主管理员',
-    phone: '138****2160'
+    phone: '138****2160',
+    parentId: 'parent-chenran',
+    familyId: 'family-demo'
   }
 }
 
@@ -75,6 +78,16 @@ const store = {
     write(DATA_VERSION_KEY, DATA_VERSION)
     const session = Object.assign(defaultSession(), read(KEY, {}))
     write(KEY, session)
+    const legacyTasks = asRecord(read(TASK_KEY, {}))
+    let tasksChanged = false
+    Object.keys(legacyTasks).forEach((id) => {
+      const task = legacyTasks[id]
+      if (task && !task.epoch && ['submitted', 'executing', 'timeout'].indexOf(task.status) >= 0) {
+        legacyTasks[id] = Object.assign({}, task, { status: 'cancelled', message: '旧版待处理操作已取消，请重新提交' })
+        tasksChanged = true
+      }
+    })
+    if (tasksChanged) write(TASK_KEY, legacyTasks)
     if (!read(CHILD_KEY, '')) write(CHILD_KEY, 'child-xiaoman')
   },
 
@@ -92,6 +105,9 @@ const store = {
   getCurrentChildId() {
     return read(CHILD_KEY, 'child-xiaoman')
   },
+
+  getEpoch() { return Number(read(EPOCH_KEY, 1)) || 1 },
+  bumpEpoch() { const next = this.getEpoch() + 1; write(EPOCH_KEY, next); return next },
 
   setCurrentChildId(id) {
     const previousId = this.getCurrentChildId()
@@ -155,30 +171,30 @@ const store = {
     }
   },
 
-  getSosIds() {
+  getSosIds(childId) {
     const value = read(SOS_KEY, {})
     if (Array.isArray(value)) return value
-    return asRecord(value)[this.getCurrentChildId()] || ['c1', 'c2']
+    return asRecord(value)[childId || this.getCurrentChildId()] || ['c1', 'c2']
   },
 
-  setSosIds(ids) {
+  setSosIds(ids, childId) {
     const value = read(SOS_KEY, {})
     const all = Array.isArray(value) ? { 'child-xiaoman': value } : asRecord(value)
-    all[this.getCurrentChildId()] = ids
+    all[childId || this.getCurrentChildId()] = ids
     write(SOS_KEY, all)
     emit('sos', ids)
     return ids
   },
 
-  getReadMessageIds() {
+  getReadMessageIds(childId) {
     const all = asRecord(this.getDemoData('messageReads', {}))
-    const ids = all[this.getCurrentChildId()]
+    const ids = all[childId || this.getCurrentChildId()]
     return Array.isArray(ids) ? ids : []
   },
 
-  markMessageRead(id) {
+  markMessageRead(id, selectedChildId) {
     const all = asRecord(this.getDemoData('messageReads', {}))
-    const childId = this.getCurrentChildId()
+    const childId = selectedChildId || this.getCurrentChildId()
     const ids = all[childId] || []
     if (ids.indexOf(id) < 0) all[childId] = ids.concat(id)
     this.setDemoData('messageReads', all)
@@ -198,6 +214,7 @@ const store = {
   },
 
   logout() {
+    this.bumpEpoch()
     write(KEY, defaultSession())
     write(CHILD_KEY, 'child-xiaoman')
     write(TASK_KEY, {})
@@ -206,9 +223,12 @@ const store = {
     write(INVITE_KEY, { u3: 'pending' })
     write(DATA_KEY, {})
     write(DATA_VERSION_KEY, DATA_VERSION)
+    write(SCENARIO_KEY, 'default')
+    emit('logout', {})
   },
 
   resetDemoData() {
+    this.bumpEpoch()
     write(CHILD_KEY, 'child-xiaoman')
     write(SCENARIO_KEY, 'default')
     write(TASK_KEY, {})
