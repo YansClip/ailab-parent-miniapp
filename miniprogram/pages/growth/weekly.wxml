@@ -1,22 +1,8 @@
-<view class="page">
-  <nav-bar title="{{report.title || '成长报告'}}" action="{{report.status==='ready' ? '分享' : ''}}" bind:action="share" />
-  <view class="pad" wx:if="{{loading}}" role="status"><view class="card card-p skeleton" style="height: 240rpx;"></view></view>
-  <view class="pad" wx:elif="{{error}}"><empty-state title="报告暂时无法加载" desc="{{error}}" action="重新加载" icon="!" tone="coral" bind:action="load" /></view>
-  <view class="pad" wx:elif="{{report.status === 'generating'}}">
-    <text class="h1">正在生成</text>
-    <text class="sub mt-12">长耗时任务异步进行，可离开后回来查询。</text>
-    <button class="btn btn-secondary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="load">刷新状态</button>
-  </view>
-  <view class="pad" wx:elif="{{report.status === 'failed'}}">
-    <text class="h1">生成失败</text>
-    <text class="sub mt-12">{{report.message}}</text>
-    <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" hover-class="pressed" bindtap="retry">重新生成</button>
-  </view>
-  <view class="pad" wx:else>
-    <view class="report-cover"><view class="report-cover-head"><view class="icon-box icon-mint"><image src="/assets/icons/lucide/document.png" mode="aspectFit" /></view><text class="pill pill-mint">{{report.sufficiency}}</text></view><text class="h1">{{report.title}}</text><text class="sub">{{report.range}}</text><text class="caption mt-8">生成于 {{report.generatedAt}}</text></view>
-    <view class="card card-p mt-20" wx:for="{{report.sections}}" wx:key="title">
-      <view class="report-section-title"><view class="section-number">{{index + 1}}</view><text class="h3">{{item.title}}</text></view>
-      <text class="sub mt-8">{{item.body}}</text>
-    </view>
-  </view>
+<view class="page"><nav-bar title="{{report.title || '成长报告'}}" action="{{!loading && !error && report.status === 'ready' ? '分享' : ''}}" bind:action="share" />
+  <view class="pad" wx:if="{{loading}}"><view class="skeleton detail-skeleton"></view></view>
+  <view class="pad" wx:elif="{{error}}"><view class="report-state"><text class="h2">报告暂时无法加载</text><text class="sub mt-12">{{error}}</text><button class="btn btn-secondary mt-24" bindtap="load">重新加载</button></view></view>
+  <view class="pad" wx:elif="{{report.status === 'generating'}}"><view class="report-state"><text class="state-icon">◌</text><text class="h1">正在整理成长记录</text><text class="sub mt-12">{{task.message || report.message || '生成期间可离开页面。再次进入时会查询最新状态。'}}</text><text class="caption mt-12" wx:if="{{busy}}">正在等待生成结果…</text><button class="btn btn-secondary mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="load">刷新生成状态</button></view></view>
+  <view class="pad" wx:elif="{{report.status === 'failed' || report.status === 'timeout'}}"><view class="report-state"><text class="h1">这次没能生成成功</text><text class="sub mt-12">{{report.message || '请检查网络后重试，已有成长记录不会丢失。'}}</text><button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="retry">重新生成</button></view></view>
+  <view class="pad" wx:elif="{{report.status === 'ready'}}"><view class="report-cover"><view class="report-cover-head"><view class="icon-box icon-sky"><image src="/assets/icons/lucide/document.png" mode="aspectFit" /></view><text class="pill pill-sky">{{report.sufficiency || '基于有效记录'}}</text></view><text class="h1">{{report.title}}</text><text class="sub">{{report.range}}</text><text class="caption mt-8">生成于 {{report.generatedAt}}</text><text class="caption mt-8">{{report.child.shortName}} · 家庭可见</text></view><view class="card card-p mt-20" wx:for="{{report.sections}}" wx:key="title"><view class="report-section-title"><view class="section-number">{{index + 1}}</view><text class="h3">{{item.title}}</text></view><text class="sub mt-12">{{item.body}}</text></view><view class="card card-p mt-20" wx:if="{{!report.sections.length}}"><text class="sub">本期暂无可展示的报告章节。</text></view><button class="btn btn-primary mt-24" bindtap="share">生成脱敏 PNG 长图</button></view>
+  <view class="pad" wx:else><view class="report-state"><text class="h2">暂无本期报告</text><text class="sub mt-12">{{report.message || '有效记录不足时，不生成没有依据的成长结论。'}}</text><button class="btn btn-secondary mt-24" bindtap="load">刷新记录</button></view></view>
 </view>

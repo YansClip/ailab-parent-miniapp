@@ -1,77 +1,53 @@
 <view class="home">
-  <scroll-view class="scroll" scroll-y enhanced show-scrollbar="{{false}}">
-    <view style="height: {{statusBarHeight}}px"></view>
-    <view wx:if="{{loading}}" class="pad loading">
-      <view class="skeleton sk-line"></view><view class="skeleton sk-hero"></view><view class="skeleton sk-card"></view><view class="skeleton sk-line short"></view><view class="skeleton sk-card"></view>
-    </view>
-    <view wx:elif="{{error}}" class="pad state-wrap">
-      <image class="state-art" src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" />
-      <text class="h2">暂时没能加载首页</text><text class="sub">{{error}}</text>
-      <button class="btn btn-primary state-btn" bindtap="reload" hover-class="pressed">重新加载</button>
-    </view>
-    <view wx:else class="pad pb">
-      <view class="head">
-        <view class="greet"><text class="caption">{{home.greeting || parent.greeting}}，{{parent.name}}</text><text class="h1">今天也一起陪伴成长</text></view>
-      </view>
-      <view class="hero">
-        <image class="hero-img" src="{{home.hero.image}}" mode="aspectFill" /><view class="hero-mask"></view>
-        <button class="child-pill hero-child" bindtap="openSwitcher" hover-class="pressed" aria-label="切换孩子">
-          <view class="child-avatar" style="background: {{home.child.avatarColor}}">{{home.child.avatarText}}</view>
-          <view class="child-pill-copy"><text class="child-name">{{home.child.shortName}}</text><text class="caption">切换</text></view>
-          <image class="chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" />
-        </button>
-        <view class="hero-copy"><text class="hero-kicker">AILab · 今日陪伴</text><text class="hero-title">{{home.hero.title}}</text><text class="hero-sub">{{home.hero.subtitle}}</text></view>
-      </view>
-      <view class="card summary">
-        <view class="between">
-          <view><text class="h3">今日陪伴摘要</text><text class="sub">用轻松的方式了解孩子今天的状态</text></view>
-          <view class="device-chip {{home.summary.deviceOnline ? 'online' : 'offline'}}"><view class="status-dot"></view><text>{{home.summary.deviceOnline ? '设备在线' : '设备离线'}}</text></view>
-        </view>
-        <view class="metrics">
-          <view class="metric"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/sparkles.png" mode="aspectFit" /></view><text class="num lavender">{{home.summary.dynamics}}</text><text class="caption">条新动态</text></view>
-          <view class="metric"><view class="icon-box icon-mint"><image src="/assets/icons/lucide/online.png" mode="aspectFit" /></view><text class="num green">{{home.summary.onlineMinutes}}</text><text class="caption">分钟陪伴</text></view>
-          <view class="metric"><view class="icon-box icon-butter"><image src="/assets/icons/lucide/notice.png" mode="aspectFit" /></view><text class="num butter">{{home.summary.todos}}</text><text class="caption">项待处理</text></view>
-        </view>
-      </view>
-      <view wx:if="{{home.empty}}" class="empty-home card">
-        <image src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" /><text class="h2">陪伴记录会从这里开始</text><text class="sub">完成设备绑定后，动态、兴趣足迹和成长内容会陆续出现。</text>
-        <button class="btn btn-primary" data-url="/pages/my/device" bindtap="goUrl" hover-class="pressed">前往设备中心</button>
-      </view>
+  <scroll-view class="scroll" scroll-y enhanced show-scrollbar="{{false}}" scroll-into-view="{{scrollTarget}}" scroll-with-animation>
+    <view style="height: {{statusBarHeight + 44}}px"></view>
+    <view class="pad">
+      <view class="head"><view><text class="caption">AILAB · 家庭陪伴</text><text class="h1">{{parent.greeting || '你好'}}，{{parent.name || '家长'}}</text></view><button class="switch-button" bindtap="openSwitcher">切换孩子⌄</button></view>
+      <view wx:if="{{loading}}" class="loading"><view class="skeleton sk-hero"></view><view class="skeleton sk-card"></view></view>
+      <view wx:elif="{{error}}" class="card state-wrap"><text class="h2">首页暂时无法加载</text><text class="sub">{{error}}</text><button class="btn btn-primary mt-24" bindtap="reload">重新加载</button></view>
       <block wx:else>
-        <view wx:if="{{home.photos.length}}" class="section-block">
-          <view class="section-lead"><view class="section-lead-copy"><text class="section-title">成果照片</text><text class="sub">记录孩子完成互动与项目的精彩瞬间</text></view><button class="inline-action link" bindtap="goFeed">查看全部</button></view>
-          <button class="photo-card card" bindtap="goFeed" hover-class="pressed">
-            <image class="photo-main" src="{{home.photos[0]}}" mode="aspectFill" /><view class="photo-side"><image class="photo-small" src="{{home.photos[1]}}" mode="aspectFill" /><image class="photo-small" src="{{home.photos[2]}}" mode="aspectFill" /></view>
-            <view class="photo-caption"><view><text class="photo-title">{{home.photoCard.title}}</text><text class="caption">{{home.photoCard.desc}}</text></view><view class="photo-arrow"><image src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></view></view>
-          </button>
+        <view class="hero">
+          <image class="hero-img" src="{{home.hero.image}}" mode="aspectFill" /><view class="hero-mask"></view>
+          <view class="hero-top"><text class="hero-label">当前陪伴 · {{home.child.age}} 岁</text><text class="hero-status">{{home.summary.deviceOnline ? '设备在线' : '设备离线 / 未绑定'}}</text></view>
+          <view class="hero-copy"><text class="hero-title">{{home.child.shortName || home.child.name}}</text><text class="hero-sub">{{home.hero.subtitle}}</text><button class="hero-device" data-url="/pages/my/device" bindtap="goUrl">{{home.child.deviceName || '设备中心'}} · {{home.child.battery === undefined ? '查看设备' : '电量 ' + home.child.battery + '%'}} ›</button></view>
         </view>
-        <view class="section-block">
-          <view class="section-lead"><view class="section-lead-copy"><text class="section-title">最近动态</text><text class="sub">来自互动、设备与家庭陪伴的最新记录</text></view></view>
-          <view class="timeline card">
-            <view class="dyn" wx:for="{{home.dynamics}}" wx:key="id">
-              <view class="timeline-rail"><view class="dyn-icon-wrap {{item.tone}}"><image class="dyn-icon" src="{{item.icon}}" mode="aspectFit" /></view><view wx:if="{{index < home.dynamics.length - 1}}" class="timeline-line"></view></view>
-              <view class="dyn-copy"><view class="between"><text class="dyn-title">{{item.title}}</text><text class="caption">{{item.time}}</text></view><text class="sub">{{item.desc}}</text></view>
-            </view>
+        <view class="summary card">
+          <view class="between"><text class="h3">今日陪伴摘要</text><text class="caption">点击查看详情</text></view>
+          <view class="metrics">
+            <button class="metric" bindtap="goFeed"><text class="metric-num">{{home.summary.dynamics}}</text><text class="caption">条动态 ›</text></button>
+            <button class="metric" data-url="/pages/growth/index" bindtap="goUrl"><text class="metric-num">{{home.summary.completed === undefined ? '—' : home.summary.completed}}</text><text class="caption">项探索完成 ›</text></button>
+            <button class="metric" bindtap="showTodos"><text class="metric-num gold">{{home.todos.length}}</text><text class="caption">项待处理 ↓</text></button>
           </view>
         </view>
-        <view wx:if="{{home.achievements.length}}" class="section-block">
-          <view class="section-lead"><view class="section-lead-copy"><text class="section-title">互动与项目成果</text><text class="sub">看见每一次动手、思考与表达</text></view><button class="inline-action link link-green" data-url="/pages/growth/index" bindtap="goUrl">更多成果</button></view>
-          <scroll-view class="ach-scroll" scroll-x enhanced show-scrollbar="{{false}}"><view class="ach-row">
-            <button class="ach card" wx:for="{{home.achievements}}" wx:key="id" data-id="{{item.id}}" bindtap="goAch" hover-class="pressed"><image class="ach-image" src="{{item.image}}" mode="aspectFill" /><view class="ach-copy"><text class="pill pill-{{item.tone}}">{{item.type}}</text><text class="ach-title">{{item.title}}</text><text class="sub">{{item.extra}}</text><text class="ach-link">查看详情</text></view></button>
-          </view></scroll-view>
+        <view class="section-block" id="home-todos">
+          <view class="section-lead"><text class="section-title">需要留意</text><text class="caption">{{home.todos.length ? '处理后返回自动更新' : '当前没有待处理事项'}}</text></view>
+          <button class="todo card" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl"><view class="todo-icon">!</view><view class="todo-copy"><text class="h3">{{item.title}}</text><text class="sub">{{item.desc}}</text></view><text class="arrow">›</text></button>
+          <view wx:if="{{!home.todos.length}}" class="all-clear"><text>✓ 一切已安排好，安心陪伴</text></view>
+        </view>
+        <view wx:if="{{home.empty}}" class="card state-wrap"><image class="empty-art" src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" /><text class="h2">陪伴记录会从这里开始</text><text class="sub">完成设备绑定并开始探索后，动态与成长记录会陆续出现。</text><button class="btn btn-primary mt-24" data-url="/pages/my/device" bindtap="goUrl">前往设备中心</button></view>
+        <view class="section-block" wx:if="{{!home.empty}}">
+          <view class="section-lead"><text class="section-title">最近动态</text><button class="inline-action link" bindtap="goFeed">全部动态 ›</button></view>
+          <view class="timeline card">
+            <block wx:for="{{groups}}" wx:key="date" wx:for-item="group">
+              <text class="date-heading">{{group.date}}</text>
+              <button class="dyn" wx:for="{{group.items}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl"><view class="dyn-icon-wrap"><image class="dyn-icon" src="{{item.icon}}" mode="aspectFit" /></view><view class="dyn-copy"><text class="dyn-title">{{item.title}}</text><text class="sub">{{item.desc}}</text><text class="caption">{{item.time}} · {{item.typeLabel}}</text></view><text class="arrow">›</text></button>
+            </block>
+            <text wx:if="{{!groups.length}}" class="sub">还没有动态，完成探索后会留下记录。</text>
+          </view>
         </view>
         <view wx:if="{{home.footprints.length}}" class="section-block">
-          <view class="section-lead"><view class="section-lead-copy"><text class="section-title">兴趣足迹</text><text class="sub">从日常好奇里，发现孩子正在靠近的世界</text></view></view>
-          <button class="fp fp-{{item.tone}}" wx:for="{{home.footprints}}" wx:key="id" data-id="{{item.id}}" bindtap="goFootprint" hover-class="pressed"><view class="between"><text class="pill pill-{{item.tagTone}}">{{item.tag}}</text><text class="caption">{{item.date}}</text></view><text class="fp-title">{{item.title}}</text><text class="sub">{{item.desc}}</text><view class="fp-foot"><text>查看这次发现</text><image src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></view></button>
+          <view class="section-lead"><view><text class="section-title">兴趣足迹</text><text class="sub">留住那些主动提问的瞬间</text></view></view>
+          <button class="fp card" wx:for="{{home.footprints}}" wx:key="id" data-id="{{item.id}}" bindtap="goFootprint"><view class="between"><text class="pill pill-sky">{{item.tag}}</text><text class="caption">{{item.date}}</text></view><text class="fp-title">{{item.title}}</text><text class="sub">{{item.desc}}</text><text class="fp-link">查看这次发现 ›</text></button>
         </view>
-        <view wx:if="{{home.suggestion}}" class="section-block"><view class="suggest"><view class="icon-box icon-sky"><image src="/assets/icons/lucide/care.png" mode="aspectFit" /></view><view class="suggest-copy"><text class="h3">{{home.suggestion.title}}</text><text class="sub">{{home.suggestion.text}}</text></view></view></view>
-        <view wx:if="{{home.todos.length}}" class="section-block">
-          <view class="section-lead"><view class="section-lead-copy"><text class="section-title">需要留意</text><text class="sub">处理后会自动从待办中移除</text></view></view>
-          <view class="todo-list"><button class="todo card-soft" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl" hover-class="pressed"><view class="icon-box icon-{{item.tone}}"><image src="/assets/icons/lucide/notice.png" mode="aspectFit" /></view><view class="todo-copy"><text class="todo-title">{{item.title}}</text><text class="sub">{{item.desc}}</text></view><image class="chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></button></view>
+        <view wx:if="{{home.achievements.length}}" class="section-block">
+          <view class="section-lead"><view><text class="section-title">探索成果</text><text class="sub">来自已完成探索内容与项目的记录</text></view><button class="inline-action link" data-url="/pages/growth/index" bindtap="goUrl">更多 ›</button></view>
+          <button class="achievement card" wx:for="{{home.achievements}}" wx:key="id" data-id="{{item.id}}" bindtap="goAch"><image src="{{item.image}}" mode="aspectFill" /><view><text class="caption">{{item.type}} · 只读记录</text><text class="h3">{{item.title}}</text><text class="sub">{{item.extra}}</text></view><text class="arrow">›</text></button>
         </view>
-        <view class="section-block"><button class="guide card" bindtap="goGuide" hover-class="pressed"><view class="icon-box icon-mint"><image src="/assets/icons/lucide/guide.png" mode="aspectFit" /></view><view class="guide-copy"><text class="h3">{{home.guide.title}}</text><text class="sub">{{home.guide.desc}}</text></view><text class="pill pill-mint">{{home.guide.status}}</text></button></view>
+        <view class="suggest" wx:if="{{home.suggestion}}"><text class="caption">给家长的一句话</text><text class="h3">{{home.suggestion.text}}</text></view>
+        <button class="guide card" data-url="/pages/my/guide" bindtap="goUrl"><view><text class="h3">玩机指南</text><text class="sub">了解设备连接与家庭陪伴</text></view><text class="arrow">›</text></button>
       </block>
+      <view class="bottom-space"></view>
     </view>
   </scroll-view>
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{home.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" session="{{session}}" current-id="{{home.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

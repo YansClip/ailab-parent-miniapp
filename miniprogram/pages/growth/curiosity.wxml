@@ -1,25 +1,19 @@
-<view class="page">
-  <nav-bar title="好奇成长简报" />
-  <view class="pad" wx:if="{{brief.status === 'ready'}}">
-    <view class="result-banner curiosity-cover"><image class="result-banner-image" src="/assets/illustrations/growth-insight-v2.jpg" mode="aspectFill" /><view class="result-banner-mask"></view><view class="result-banner-copy"><text class="pill pill-white">{{brief.date}}</text><text class="h2 mt-12">一次提问，打开新的思考</text><text class="sub mt-8">成长启思简报</text></view></view>
-    <text class="h1">{{brief.question}}</text>
-    <text class="sub mt-8">{{brief.date}} · 有效追问 {{brief.followups}} 次</text>
-    <view class="card card-p mt-20">
-      <text class="h3">关联概念</text>
-      <text class="sub mt-8">{{brief.concepts}}</text>
-    </view>
-    <view class="card card-p mt-16">
-      <text class="h3">主动验证</text>
-      <text class="sub mt-8">{{brief.verified ? '孩子用积木模拟了喷气方向改变运动方向。' : '今日尚未记录主动验证。'}}</text>
-    </view>
-    <view class="card card-p mt-16">
-      <text class="h3">家庭陪伴提示</text>
-      <text class="sub mt-8">{{brief.tip}}</text>
-    </view>
-    <text class="sub mt-16">简报不使用位置、出行或单一分数形成评价。</text>
+<view class="page"><nav-bar title="好奇成长简报" />
+  <view class="pad" wx:if="{{loading}}"><view class="skeleton detail-skeleton"></view></view>
+  <view class="pad" wx:elif="{{error}}"><view class="card card-p"><text class="h2">暂时无法查看</text><text class="sub mt-12">{{error}}</text><button class="btn btn-secondary mt-24" bindtap="load">重新加载</button></view></view>
+  <view class="pad" wx:elif="{{entries.length}}">
+    <view class="brief-identity"><text>{{growth.child.shortName}} · {{growth.child.age}} 岁</text><picker range="{{entries}}" range-key="label" value="{{selectedIndex}}" bindchange="changeDate"><view class="date-picker">{{entries[selectedIndex].date}} ⌄</view></picker></view>
+    <view class="skeleton detail-skeleton" wx:if="{{detailLoading}}"></view>
+    <view class="card card-p" wx:elif="{{detailError}}"><text class="sub">{{detailError}}</text><button class="btn btn-secondary mt-20" bindtap="reloadEntry">重试这一期</button></view>
+    <block wx:else>
+      <view class="curiosity-head"><text class="caption">好奇成长简报 · {{item.date}}</text><view class="editorial-rule"></view><text class="h1">{{item.title}}</text><text class="brief-theme mt-16">{{item.scene}} · {{item.courseId}}</text><view class="editorial-rule"></view><text class="brief-summary">{{item.summary || '已记录这次提问，暂未补充事件摘要。'}}</text></view>
+      <view class="card card-p mt-20"><text class="h3">这次探索的记录</text><text class="sub mt-12">{{item.summary || '尚无更完整的过程描述。'}}</text><text class="sub mt-16">{{item.follow || '尚未留下后续验证记录。'}}</text></view>
+      <view class="card card-p mt-16"><text class="h3">关联概念</text><view class="concepts mt-12"><text class="pill pill-sky" wx:for="{{item.concepts}}" wx:key="*this">{{item}}</text></view></view>
+      <button class="related-event card mt-16" bindtap="openEvent"><view><text class="caption">关联事件 · {{item.source}}</text><text class="h3 mt-8">{{item.title}}</text><text class="source-link mt-12">查看完整互动记录与关注状态 ›</text></view></button>
+      <view class="card card-p mt-16" wx:if="{{growth.brief.eventId === item.id}}"><text class="h3">家庭陪伴提示</text><text class="sub mt-12">{{growth.brief.tip || '听孩子讲讲这次发现，以及准备怎样继续探索。'}}</text></view>
+      <view class="report-choices mt-24" wx:if="{{growth.reports.length}}"><text class="h3">继续阅读成长报告</text><button class="report-choice" wx:for="{{growth.reports}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.type}}" bindtap="openReport"><view><text>{{item.title}}</text><text class="caption">{{item.range}}</text></view><text>›</text></button></view>
+      <text class="sub mt-20">简报依据具体事件整理，不使用位置、出行或单一分数形成评价。对外分享请在完整报告中生成脱敏长图。</text>
+    </block>
   </view>
-  <view class="pad" wx:else>
-    <text class="h1">今日数据不足</text>
-    <text class="sub mt-12">{{brief.reason || '缺少代表性提问或验证事件，不生成虚构结论。'}}</text>
-  </view>
+  <view class="pad" wx:else><view class="card card-p"><text class="h2">好奇的记录，还在积累</text><text class="sub mt-12">{{growth.brief.reason || '缺少代表性提问或验证记录，不生成结论。'}}</text></view></view>
 </view>

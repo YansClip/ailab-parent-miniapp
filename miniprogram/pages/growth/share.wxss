@@ -1,2 +1,2 @@
-@import "../../styles/detail.wxss";
-.share-option { width: 100% !important; margin-left: 0; margin-right: 0; text-align: left; line-height: 1.35; }
+@import "./detail-local.wxss";
+.preview-intro{padding:0 0 24rpx}.preview-intro .sub{font-size:23rpx}.share-image{display:block;width:100%;border-radius:24rpx;box-shadow:0 10rpx 30rpx rgba(18,58,99,.08)}.export-canvas{position:fixed;left:-9999px;top:0;pointer-events:none}.image-state{min-height:330rpx;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}.page-fixed-footer{display:flex;gap:18rpx}.page-fixed-footer .btn{flex:1;min-width:0;margin:0!important}.save-error{padding:22rpx;border-radius:24rpx;background:#fff6e8;color:#936f31;font-size:23rpx;line-height:1.6}

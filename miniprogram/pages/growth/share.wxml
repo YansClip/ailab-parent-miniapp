@@ -1,28 +1,15 @@
-<view class="page page-has-footer">
-  <nav-bar title="脱敏分享预览" />
-  <view class="pad" wx:if="{{preview.generating}}">
-    <text class="h1">正在生成</text>
-    <text class="sub mt-12">生成完成前不能分享。可稍后回来查看脱敏预览。</text>
-  </view>
+<view class="page page-has-footer"><nav-bar title="脱敏长图预览" />
+  <view class="pad" wx:if="{{loading}}"><view class="skeleton detail-skeleton"></view></view>
+  <view class="pad" wx:elif="{{error}}"><view class="card card-p"><text class="h2">暂时无法生成预览</text><text class="sub mt-12">{{error}}</text><button class="btn btn-secondary mt-24" bindtap="load">重新加载</button></view></view>
+  <view class="pad" wx:elif="{{!canShare}}"><view class="card card-p"><text class="h2">{{preview.generating ? '报告仍在生成中' : '这条记录暂不可分享'}}</text><text class="sub mt-12">仅完整且有权限查看的报告或成果，才能生成对应脱敏长图。</text><button class="btn btn-secondary mt-24" bindtap="load">刷新状态</button></view></view>
   <view class="pad" wx:else>
-    <view class="card card-p">
-      <text class="h3">{{preview.title || '成长周报（脱敏）'}}</text>
-      <text class="sub mt-8">孩子：{{preview.childAlias}}（已隐藏全名）</text>
-      <text class="sub" wx:if="{{hiddenText}}">已隐藏：{{hiddenText}}</text>
-      <text class="h3 mt-16">本周变化</text>
-      <text class="sub mt-8">{{preview.body}}</text>
-    </view>
-    <view class="privacy-tip mt-16"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /><text>分享内容已隐藏孩子全名、设备信息与家庭信息。</text></view>
+    <view class="preview-intro"><text class="h3">{{preview.targetType === 'achievement' ? '成果' : '报告'}} · PNG 图片</text><text class="sub mt-8">已隐藏：{{hiddenText || '全名、设备及家庭敏感信息'}}</text></view>
+    <view wx:if="{{generatingImage}}" class="card card-p image-state"><text class="h3">正在生成实际图片…</text><text class="sub mt-12">内容较多时需要稍候，完成后即可预览与保存。</text></view>
+    <view wx:elif="{{imageError}}" class="card card-p image-state"><text class="h3">图片暂未生成</text><text class="sub mt-12">{{imageError}}</text><button class="btn btn-secondary mt-20" bindtap="generate">重新生成图片</button></view>
+    <image wx:elif="{{filePath}}" class="share-image" src="{{filePath}}" mode="widthFix" bindtap="previewImage" aria-label="点击打开脱敏长图" />
+    <view class="privacy-tip mt-16"><text>请先检查内容再保存。保存成功后，可在相册中自主选择分享给谁。</text></view>
+    <view class="save-error mt-16" wx:if="{{saveError}}"><text>{{saveError}}</text></view>
   </view>
-  <view class="page-fixed-footer">
-    <button class="btn btn-primary {{canShare ? '' : 'btn-disabled'}}" disabled="{{!canShare}}" hover-class="pressed" bindtap="openShare">生成长图并分享</button>
-  </view>
-  <view class="share-mask" wx:if="{{sheet}}" bindtap="close">
-    <view class="share-sheet" catchtap="noop">
-      <text class="h3">分享到</text>
-      <button class="item share-option" hover-class="pressed" bindtap="doShare">微信好友 / 收藏</button>
-      <button class="item share-option" hover-class="pressed" bindtap="save">保存到相册</button>
-      <button class="item share-option" hover-class="pressed" bindtap="close">取消</button>
-    </view>
-  </view>
+  <canvas class="export-canvas" canvas-id="shareCanvas" style="width: 375px; height: {{canvasHeight}}px;"></canvas>
+  <view class="page-fixed-footer" wx:if="{{canShare && !error}}"><button class="btn btn-secondary" disabled="{{!filePath}}" bindtap="previewImage">打开图片</button><button class="btn btn-primary" disabled="{{!filePath || saving}}" loading="{{saving}}" bindtap="save">保存到相册</button></view>
 </view>

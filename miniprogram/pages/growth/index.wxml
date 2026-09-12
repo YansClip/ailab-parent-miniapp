@@ -1,107 +1,27 @@
-<view class="page page-tab growth" style="padding-top: {{statusBarHeight}}px;">
-  <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
-    <view class="pad head">
-      <view>
-        <text class="h1">成长观察</text>
-        <text class="sub">从互动、探索与项目成果中看见细微变化</text>
-      </view>
-    </view>
-
-    <view wx:if="{{loading}}" class="pad loading" role="status" aria-label="正在加载成长数据">
-      <view class="sk-growth-lead skeleton"></view>
-      <view class="sk-growth-card skeleton"></view>
-      <view class="sk-growth-card tall skeleton"></view>
-    </view>
-
-    <view wx:elif="{{error && !data.child.id}}" class="pad loading">
-      <text>{{error}}</text>
-      <button class="btn btn-secondary mt-16" hover-class="pressed" bindtap="reload">重新加载</button>
-    </view>
-
-    <empty-state wx:elif="{{empty}}" title="本周数据还不够" desc="好奇成长简报需要代表性提问与验证记录。数据不足时不会造数。" />
-
+<view class="page page-tab growth" style="padding-top: {{statusBarHeight + 44}}px;">
+  <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}"><view class="pad">
+    <view class="head"><view><text class="caption eyebrow">GROW WITH CURIOSITY</text><text class="h1">成长观察</text></view><button class="switch-button" bindtap="openSwitcher">{{data.child.shortName || '选择孩子'}}{{data.child.age ? ' · ' + data.child.age + '岁' : ''}}⌄</button></view>
+    <view wx:if="{{loading}}" class="loading"><view class="skeleton sk-growth-card"></view><view class="skeleton sk-growth-card tall"></view></view>
+    <view wx:elif="{{error}}" class="card card-p state"><text class="h2">成长记录暂时无法加载</text><text class="sub mt-12">{{error}}</text><button class="btn btn-primary mt-24" bindtap="reload">重新加载</button></view>
     <block wx:else>
-      <view class="pad mt-16">
-        <view class="growth-hero">
-          <image src="/assets/illustrations/growth-insight-v2.jpg" mode="aspectFill" />
-          <view class="growth-hero-mask"></view>
-          <button class="pill pill-white growth-child" hover-class="pressed" bindtap="openSwitcher" wx:if="{{data.child.shortName}}" aria-label="切换孩子">{{data.child.shortName}} · 切换</button>
-          <view class="growth-hero-copy"><text class="pill pill-white">本周成长观察</text><text class="hero-title">好奇正在长成自己的方向</text><text class="hero-sub">{{data.insight.range}}</text></view>
-        </view>
+      <view class="growth-hero"><image src="/assets/island/robot-island.jpg" mode="aspectFill" /><view class="growth-hero-mask"></view><view class="growth-hero-copy"><text class="hero-kicker">{{data.child.shortName}} · 探索足迹</text><view class="hero-title"><text>每一次发现</text><text>都算数</text></view><text class="hero-sub">{{data.insight.range || '从探索内容与真实记录出发'}}</text></view></view>
+      <view class="progress-card card mt-20">
+        <view class="between"><view><text class="h3">探索进度</text><text class="sub">按已完成探索内容去重统计</text></view><text class="progress-number">{{data.progress.completed || 0}}<text> / {{data.progress.total || 29}}</text></text></view>
+        <view class="progress-track"><view style="width: {{data.progress.percent || 0}}%"></view></view>
+        <view class="between progress-meta"><text class="caption">已解锁不计为完成</text><text class="caption">{{data.progress.percent || 0}}% 已完成{{data.progress.delta > 0 ? ' · 本周新增 ' + data.progress.delta + ' 节' : ''}}</text></view>
+        <button class="plan-toggle" bindtap="togglePlan">{{planExpanded ? '收起' : '查看'}}探索计划 · 只读 {{planExpanded ? '⌃' : '⌄'}}</button>
+        <view wx:if="{{planExpanded}}" class="plan-list"><view class="lesson" wx:for="{{data.plan}}" wx:key="id"><text class="lesson-id">{{item.id}}</text><view class="lesson-copy"><text>{{item.title}}</text><text class="caption" wx:if="{{item.completedAt}}">{{item.completedAt}} 完成</text></view><text class="lesson-status {{item.status}}">{{item.statusText}}</text></view><text wx:if="{{!data.plan.length}}" class="sub">探索计划尚未提供。</text></view>
       </view>
-
-      <view class="pad mt-16">
-        <view class="card insight">
-          <view class="between">
-            <text class="h3">本周成长洞察</text>
-            <text class="sub">{{data.insight.range}}</text>
-          </view>
-          <text class="insight-lead mt-12">{{data.insight.change}}</text>
-          <view class="metrics">
-            <view class="m"><text class="n">{{data.insight.achievements}}</text><text class="sub">成果</text></view>
-            <view class="m"><text class="n">{{data.insight.activity}}</text><text class="sub">活跃度</text></view>
-            <view class="m"><text class="n">{{data.insight.questions}}</text><text class="sub">主动追问</text></view>
-          </view>
-        </view>
+      <view class="card radar mt-20">
+        <view class="between"><text class="h3">六维探索覆盖</text><text class="pill pill-sky">探索内容映射</text></view><text class="sub mt-8">看见接触过的知识与实践，不是能力分数或排名。</text>
+        <view class="radar-wrap"><canvas class="radar-canvas" canvas-id="growthRadar" aria-label="六维探索覆盖雷达图，详细数值在下方列表"></canvas></view>
+        <view class="dim-grid"><button class="dim-chip" wx:for="{{data.dimensions}}" wx:key="key" data-key="{{item.key}}" bindtap="goDim"><text class="dim-name">{{item.name}}</text><text class="dim-v">{{item.insufficient ? '数据不足' : item.value + '%'}}</text><text class="dim-count">{{item.completed}} / {{item.total}} 节 ›</text></button></view>
+        <text class="caption radar-note">未有足够记录的维度不画作 0，不形成能力结论。</text><button class="radar-more" data-url="/pages/growth/overview" bindtap="go">查看统计口径与全部维度 ›</button>
       </view>
-
-      <view class="pad mt-16">
-        <button class="brief" hover-class="pressed" bindtap="go" data-url="/pages/growth/curiosity" aria-label="查看好奇成长简报">
-          <view class="brief-top"><view class="icon-box icon-lavender"><image src="/assets/icons/lucide/magic.png" mode="aspectFit" /></view><view><text class="h3">成长启思简报</text><text class="caption">今日值得和孩子聊一聊的发现</text></view></view>
-          <block wx:if="{{data.brief.status === 'ready'}}">
-            <text class="h3 mt-12">{{data.brief.question}}</text>
-            <text class="sub mt-8">{{data.brief.date}} · 追问 {{data.brief.followups}} 次 · {{data.brief.verified ? '已主动验证' : '待验证'}}</text>
-          </block>
-          <block wx:else>
-            <text class="h3 mt-12">数据不足</text>
-            <text class="sub mt-8">{{data.brief.reason || '缺少代表性事件，不生成虚构结论。'}}</text>
-          </block>
-          <view class="brief-action"><text>查看完整简报</text><image src="/assets/icons/lucide/chevron.png" mode="aspectFit" /></view>
-        </button>
-      </view>
-
-      <view class="pad mt-16">
-        <view class="card radar">
-          <view class="between">
-            <text class="h3">六维能力</text>
-            <view class="pill pill-mint">本周 +5</view>
-          </view>
-          <view class="radar-wrap">
-            <canvas class="radar-canvas" canvas-id="growthRadar" aria-label="六维能力雷达图"></canvas>
-          </view>
-          <view class="dim-grid">
-            <button class="dim-chip" wx:for="{{data.dimensions}}" wx:key="key" data-key="{{item.key}}" bindtap="goDim" hover-class="pressed" aria-label="查看{{item.name}}维度详情">
-              <text class="dim-name">{{item.name}}</text>
-              <text class="dim-v">{{item.insufficient ? '数据不足' : item.value}}</text>
-            </button>
-          </view>
-          <button class="radar-more" bindtap="go" data-url="/pages/growth/overview">查看完整能力说明</button>
-        </view>
-      </view>
-
-      <view class="pad mt-16" wx:if="{{data.reports.length}}">
-        <text class="section-title">成长报告</text>
-        <button class="rep" wx:for="{{data.reports}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.type}}" hover-class="pressed" bindtap="goReport" aria-label="查看{{item.title}}">
-          <view class="report-icon icon-box {{item.type === 'phase' ? 'icon-lavender' : 'icon-mint'}}"><image src="/assets/icons/lucide/document.png" mode="aspectFit" /></view><view class="report-copy">
-            <text class="h3">{{item.title}}</text>
-            <text class="sub">{{item.range}}</text>
-          </view>
-          <image class="chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" />
-        </button>
-      </view>
-
-      <view class="pad mt-16 pb">
-        <text class="section-title">近期成果</text>
-        <view class="ach" wx:if="{{!data.achievements.length}}">
-          <text class="h3">暂无成果</text>
-          <text class="sub">没有有效事件时不会自动生成成果。</text>
-        </view>
-        <button class="ach" wx:for="{{data.achievements}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="goAch" aria-label="查看成果{{item.title}}">
-          <image class="ach-thumb" src="{{item.image}}" mode="aspectFill" /><view class="ach-meta"><text class="h3">{{item.title}}</text><text class="sub">{{item.time}} · {{item.source}}</text></view><image class="chevron" src="/assets/icons/lucide/chevron.png" mode="aspectFit" />
-        </button>
-      </view>
-    </block>
-  </scroll-view>
-
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{data.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+      <button class="brief mt-20" data-url="/pages/growth/curiosity" bindtap="go"><view class="between"><text class="h3">好奇成长简报</text><text class="brief-link">查看 ›</text></view><text class="brief-question">{{data.brief.status === 'ready' ? data.brief.question : '今天的好奇，还在积累'}}</text><text class="sub">{{data.brief.status === 'ready' ? data.brief.date + ' · 追问 ' + data.brief.followups + ' 次' : data.brief.reason || '尚无代表性提问与验证记录，不生成结论。'}}</text></button>
+      <view class="section-block"><view class="section-lead"><text class="section-title">成长报告</text><text class="caption">可以保存脱敏长图</text></view><button class="rep card" wx:for="{{data.reports}}" wx:key="id" data-id="{{item.id}}" data-type="{{item.type}}" bindtap="goReport"><view class="report-icon"><image src="/assets/icons/lucide/document.png" mode="aspectFit" /></view><view class="report-copy"><text class="h3">{{item.title}}</text><text class="sub">{{item.range}}</text></view><text class="report-status">{{item.status === 'generating' ? '生成中' : item.status === 'failed' ? '可重试' : '查看 ›'}}</text></button><view wx:if="{{!data.reports.length}}" class="card card-p"><text class="h3">报告记录尚未生成</text><text class="sub mt-8">有足够探索记录后，再呈现有依据的回顾。</text></view></view>
+      <view class="section-block"><view class="section-lead"><text class="section-title">近期成果</text><text class="caption">只读记录</text></view><button class="ach card" wx:for="{{data.achievements}}" wx:key="id" data-id="{{item.id}}" bindtap="goAch"><image class="ach-thumb" src="{{item.image}}" mode="aspectFill" /><view class="ach-meta"><text class="h3">{{item.title}}</text><text class="sub">{{item.time}} · {{item.source}}</text></view><text class="arrow">›</text></button><view wx:if="{{!data.achievements.length}}" class="card card-p"><text class="h3">每一次探索，都值得被记录</text><text class="sub mt-8">完成探索内容或项目后，这里会留下对应成果。</text></view></view>
+    </block><view class="bottom-space"></view>
+  </view></scroll-view>
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" session="{{session}}" current-id="{{data.child.id}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

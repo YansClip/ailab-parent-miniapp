@@ -1,17 +1,1 @@
-<view class="page">
-  <nav-bar title="成果详情" />
-  <view class="pad">
-    <image class="achievement-cover" src="{{item.image}}" mode="aspectFill" />
-    <text class="h1">{{item.title || '成果'}}</text>
-    <text class="sub mt-8">{{item.source}} · {{item.date}} · 孩子 {{item.childAlias}}</text>
-    <view class="card card-p mt-20">
-      <text class="h3">形成过程</text>
-      <text class="sub mt-8">{{item.process || '这项成果保留了形成过程与相关记录。'}}</text>
-    </view>
-    <view class="card card-p mt-16">
-      <text class="h3">证据</text>
-      <text class="sub mt-8">{{item.evidence || '可查看相关场景、时间与过程摘要。'}}</text>
-    </view>
-    <button class="btn btn-secondary mt-24" hover-class="pressed" bindtap="share">脱敏分享</button>
-  </view>
-</view>
+<view class="page"><nav-bar title="成果详情" /><view class="pad" wx:if="{{loading}}"><view class="skeleton detail-skeleton"></view></view><view class="pad" wx:elif="{{error}}"><view class="card card-p"><text class="h2">暂时无法查看</text><text class="sub mt-12">{{error}}</text><button class="btn btn-secondary mt-24" bindtap="load">重新加载</button></view></view><view class="pad" wx:else><image class="achievement-cover" wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFill" /><view class="between"><text class="pill pill-sky">只读成果记录</text><text class="caption">{{item.date}}</text></view><text class="h1 mt-16">{{item.title}}</text><text class="sub mt-8">{{item.source}} · {{item.childAlias || item.child.shortName}}</text><view class="card card-p mt-24"><text class="h3">形成过程</text><text class="sub mt-12">{{item.process || '还没有补充形成过程'}}</text></view><view class="card card-p mt-16"><text class="h3">探索内容对应的成果要求</text><text class="sub mt-12">{{item.evidence || '该记录暂未附加证据摘要'}}</text></view><text class="sub mt-20">来自探索内容与项目的过程记录，不进行排名或能力打分。</text><button class="btn btn-primary mt-24" bindtap="share">生成此成果的脱敏长图</button></view></view>

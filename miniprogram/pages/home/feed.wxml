@@ -1,35 +1,8 @@
-<view class="page">
-  <nav-bar title="全部动态" />
-  <view class="pad">
-    <view class="feed-head">
-      <text class="h1">陪伴动态</text>
-      <text class="sub">按时间整理孩子的互动、设备与家庭记录</text>
-    </view>
-    <view wx:if="{{loading}}" class="feed-skeleton">
-      <view class="skeleton sk-row" wx:for="{{[1,2,3]}}" wx:key="*this"></view>
-    </view>
-    <view wx:elif="{{error}}" class="card card-p feed-state">
-      <image src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" />
-      <text class="h3">暂时没能加载动态</text>
-      <text class="sub">{{error}}</text>
-      <button class="btn btn-secondary" bindtap="load" hover-class="pressed">重新加载</button>
-    </view>
-    <view wx:elif="{{!list.length}}" class="card card-p feed-state">
-      <image src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" />
-      <text class="h3">还没有新的动态</text>
-      <text class="sub">孩子完成互动或设备状态发生变化后，会在这里留下记录。</text>
-    </view>
-    <view wx:else class="feed-list">
-      <view class="feed-row" wx:for="{{list}}" wx:key="id">
-        <view class="feed-rail">
-          <view class="feed-icon icon-{{item.tone}}"><image src="{{item.icon}}" mode="aspectFit" /></view>
-          <view class="feed-line" wx:if="{{index < list.length - 1}}"></view>
-        </view>
-        <view class="feed-card card">
-          <view class="between"><text class="h3">{{item.title}}</text><text class="caption">{{item.time}}</text></view>
-          <text class="sub">{{item.desc}}</text>
-        </view>
-      </view>
-    </view>
-  </view>
-</view>
+<view class="page"><nav-bar title="全部动态" /><view class="pad">
+  <view class="feed-head"><text class="h1">{{child.shortName}}的探索动态</text><text class="sub">按日期记录探索内容、提问与成果，点击可查看来源</text></view>
+  <scroll-view scroll-x class="filters" show-scrollbar="{{false}}"><view class="filter-row"><button wx:for="{{filters}}" wx:key="key" class="filter {{selectedType === item.key ? 'selected' : ''}}" data-type="{{item.key}}" bindtap="chooseFilter">{{item.name}}</button></view></scroll-view>
+  <view wx:if="{{loading}}" class="skeleton sk-row"></view>
+  <view wx:elif="{{error}}" class="card card-p feed-state"><text class="h3">暂时没能加载动态</text><text class="sub">{{error}}</text><button class="btn btn-secondary" bindtap="load">重新加载</button></view>
+  <view wx:elif="{{!groups.length}}" class="card card-p feed-state"><image src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" /><text class="h3">还没有这类动态</text><text class="sub">后续探索会在这里留下记录，不会补造历史。</text></view>
+  <view wx:else class="feed-list"><view wx:for="{{groups}}" wx:key="date" wx:for-item="group"><text class="date-heading">{{group.date}}</text><button class="feed-card card" wx:for="{{group.items}}" wx:key="id" data-url="{{item.url}}" bindtap="go"><view class="between"><text class="pill pill-sky">{{item.typeLabel}}</text><text class="caption">{{item.time}}</text></view><text class="h3 mt-12">{{item.title}}</text><text class="sub">{{item.desc}}</text><text class="event-link" wx:if="{{item.url}}">查看来源 ›</text></button></view></view>
+</view></view>

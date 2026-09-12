@@ -1,95 +1,72 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
-
+const store = require('../../services/store')
+const shared = require('./page-utils')
+const blank = () => ({ child: {}, insight: {}, brief: {}, progress: {}, plan: [], dimensions: [], reports: [], achievements: [] })
 Page({
-  data: {
-    statusBarHeight: 44,
-    loading: true,
-    empty: false,
-    data: { insight: {}, brief: {}, dimensions: [], reports: [], achievements: [], child: {} },
-    children: [],
-    showSwitcher: false,
-    error: ''
-  },
+  data: { statusBarHeight: 44, loading: true, data: blank(), children: [], session: {}, showSwitcher: false, error: '', planExpanded: false },
   onShow() {
     this.__disposed = false
     util.setTab(2)
     if (!util.guardAuth()) return
-    this.setData({ statusBarHeight: util.statusBarHeight() })
+    util.safeSetData(this, { statusBarHeight: util.statusBarHeight(), session: store.getSession() })
     this.reload()
   },
   reload() {
     const version = util.beginRequest(this, 'growth')
-    this.setData({ loading: true, error: '' })
-    Promise.all([api.getGrowth(), api.getChildren()]).then(([data, children]) => {
+    util.safeSetData(this, { loading: true, error: '' })
+    return Promise.all([api.getGrowth(), api.getChildren()]).then(([data, children]) => {
       if (!util.isRequestCurrent(this, 'growth', version)) return
-      this.setData({ data, children, empty: !!data.empty, loading: false, error: '' }, () => {
-        if (!data.empty) this.drawRadar(data.dimensions || [])
-      })
+      data = Object.assign(blank(), data)
+      data.plan = (data.plan || []).map((lesson) => Object.assign({}, lesson, { completedAt: shared.displayDate(lesson.completedAt), statusText: lesson.status === 'completed' ? '已完成' : lesson.status === 'available' ? '已解锁' : '未解锁' }))
+      util.safeSetData(this, { data, children, loading: false, session: store.getSession() }, () => this.drawRadar(data.dimensions || []))
     }).catch((e) => {
-      if (!util.isRequestCurrent(this, 'growth', version)) return
-      util.failToast(e)
-      this.setData({ loading: false, error: (e && e.message) || '网络不可用，请稍后重试' })
+      if (util.isRequestCurrent(this, 'growth', version)) util.safeSetData(this, { loading: false, error: shared.errorText(e) })
     })
   },
-  openSwitcher() { this.setData({ showSwitcher: true }) },
-  closeSwitcher() { this.setData({ showSwitcher: false }) },
-  onChildChange() {
-    this.setData({
-      loading: true,
-      empty: false,
-      error: '',
-      data: { insight: {}, brief: {}, dimensions: [], reports: [], achievements: [], child: {} }
-    })
-    this.reload()
-  },
-  go(e) { wx.navigateTo({ url: e.currentTarget.dataset.url }) },
+  openSwitcher() { util.safeSetData(this, { showSwitcher: true }) },
+  closeSwitcher() { util.safeSetData(this, { showSwitcher: false }) },
+  onChildChange() { util.safeSetData(this, { data: blank(), showSwitcher: false, planExpanded: false }); this.reload() },
+  togglePlan() { util.safeSetData(this, { planExpanded: !this.data.planExpanded }) },
+  go(e) { shared.navigate(e.currentTarget.dataset.url) },
   goReport(e) {
-    const { id, type } = e.currentTarget.dataset
-    wx.navigateTo({ url: type === 'phase' ? '/pages/growth/phase?id=' + id : '/pages/growth/weekly?id=' + id })
+    const item = e.currentTarget.dataset
+    shared.navigate((item.type === 'phase' ? '/pages/growth/phase?id=' : '/pages/growth/weekly?id=') + encodeURIComponent(item.id))
   },
-  goAch(e) { wx.navigateTo({ url: '/pages/growth/achievement?id=' + e.currentTarget.dataset.id }) },
-  goDim(e) { wx.navigateTo({ url: '/pages/growth/dimension?key=' + e.currentTarget.dataset.key }) },
+  goAch(e) { shared.navigate('/pages/growth/achievement?id=' + encodeURIComponent(e.currentTarget.dataset.id)) },
+  goDim(e) { shared.navigate('/pages/growth/dimension?key=' + encodeURIComponent(e.currentTarget.dataset.key)) },
   drawRadar(dimensions) {
-    if (!dimensions || dimensions.length !== 6) return
+    if (dimensions.length !== 6 || this.__disposed) return
     const ctx = wx.createCanvasContext('growthRadar', this)
-    const cx = 150
-    const cy = 124
-    const radius = 88
-    const points = (r) => dimensions.map((_, index) => {
-      const angle = -Math.PI / 2 + index * Math.PI / 3
-      return [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r]
-    })
-    const path = (list) => {
-      ctx.beginPath()
-      list.forEach((p, index) => index ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]))
-      ctx.closePath()
-    }
+    const cx = 150, cy = 134, radius = 88
+    const point = (i, value) => [cx + Math.cos(-Math.PI / 2 + i * Math.PI / 3) * value, cy + Math.sin(-Math.PI / 2 + i * Math.PI / 3) * value]
+    const path = (points) => { ctx.beginPath(); points.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath() }
+    ctx.clearRect(0, 0, 300, 278)
     ctx.setLineWidth(1)
-    ;[1, .67, .34].forEach((scale) => {
-      path(points(radius * scale))
-      ctx.setStrokeStyle('rgba(139,120,230,.22)')
-      ctx.stroke()
+    ;[.25, .5, .75, 1].forEach((scale) => { path(dimensions.map((_, i) => point(i, radius * scale))); ctx.setStrokeStyle('#d6e8f3'); ctx.stroke() })
+    dimensions.forEach((_, i) => { const p = point(i, radius); ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(p[0], p[1]); ctx.setStrokeStyle('#e0edf4'); ctx.stroke() })
+    const hasValue = (d) => !d.insufficient && Number.isFinite(d.value)
+    // Unknown dimensions have no plotted point, and no filled polygon implies a zero.
+    if (dimensions.every(hasValue)) {
+      path(dimensions.map((d, i) => point(i, radius * Math.max(0, Math.min(100, d.value)) / 100)))
+      ctx.setFillStyle('rgba(30,156,188,.14)'); ctx.fill(); ctx.setStrokeStyle('#1596b6'); ctx.setLineWidth(2); ctx.stroke()
+    } else {
+      dimensions.forEach((d, i) => {
+        const next = (i + 1) % 6
+        if (!hasValue(d) || !hasValue(dimensions[next])) return
+        const a = point(i, radius * d.value / 100), b = point(next, radius * dimensions[next].value / 100)
+        ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.setStrokeStyle('#1596b6'); ctx.setLineWidth(2); ctx.stroke()
+      })
+    }
+    dimensions.forEach((d, i) => {
+      if (hasValue(d)) {
+        const p = point(i, radius * d.value / 100)
+        ctx.beginPath(); ctx.arc(p[0], p[1], 4, 0, Math.PI * 2); ctx.setFillStyle('#148db3'); ctx.fill()
+      }
+      const p = point(i, radius + 25)
+      ctx.setFontSize(11); ctx.setTextAlign('center'); ctx.setFillStyle('#426884'); ctx.fillText(d.name, p[0], p[1])
+      if (!hasValue(d)) { ctx.setFontSize(9); ctx.setFillStyle('#90a6b5'); ctx.fillText('数据不足', p[0], p[1] + 13) }
     })
-    points(radius).forEach((p) => {
-      ctx.beginPath()
-      ctx.moveTo(cx, cy)
-      ctx.lineTo(p[0], p[1])
-      ctx.setStrokeStyle('rgba(139,120,230,.13)')
-      ctx.stroke()
-    })
-    const values = dimensions.map((item, index) => {
-      const value = item.insufficient ? 0 : Math.max(0, Math.min(100, item.value || 0))
-      const angle = -Math.PI / 2 + index * Math.PI / 3
-      const r = radius * value / 100
-      return [cx + Math.cos(angle) * r, cy + Math.sin(angle) * r]
-    })
-    path(values)
-    ctx.setFillStyle('rgba(139,120,230,.18)')
-    ctx.fill()
-    ctx.setLineWidth(2)
-    ctx.setStrokeStyle('#8b78e6')
-    ctx.stroke()
     ctx.draw()
   },
   onUnload() { util.disposePage(this) }

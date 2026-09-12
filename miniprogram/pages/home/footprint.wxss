@@ -1,14 +1,2 @@
-.footer { padding: 24rpx 40rpx calc(24rpx + env(safe-area-inset-bottom)); }
-.card-p { padding: 32rpx; }
-.item { background:#fff; border-radius:32rpx; padding:28rpx; margin-top:16rpx; box-shadow: 0 8rpx 24rpx rgba(16,42,67,.06); }
-.danger { color:#e85d69; }
-.status { font-size:24rpx; color:#40b352; }
-.call-stage { text-align:center; padding:80rpx 40rpx; }
-.big { font-size:40rpx; font-weight:700; }
-.actions { display:flex; justify-content:center; margin-top:48rpx; }
-.actions > view { margin: 0 16rpx; }
-.fab { width:112rpx; height:112rpx; border-radius:40rpx; display:flex; align-items:center; justify-content:center; color:#fff; font-size:24rpx; }
-.share-mask { position:fixed; top:0; right:0; bottom:0; left:0; background:rgba(16,42,67,.4); display:flex; align-items:flex-end; }
-.share-sheet { width:100%; background:#fff; border-radius:32rpx 32rpx 0 0; padding:32rpx 32rpx calc(24rpx + env(safe-area-inset-bottom)); }
-.concepts { flex-wrap: wrap; }
-.concept { margin-right: 12rpx; margin-bottom: 12rpx; }
+@import "../growth/detail-local.wxss";
+.concepts{display:flex;flex-wrap:wrap;gap:12rpx}.follow-button{width:auto!important;margin:0!important;padding:14rpx 22rpx;border-radius:22rpx;color:#167fa5;background:#e9f6fc;line-height:1.4;font-size:23rpx}.follow-button.followed{background:#eef3f6;color:#728d9f}
