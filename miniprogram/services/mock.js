@@ -32,7 +32,7 @@ function seedEvents(childId) {
   const rows = childId === 'child-xiaoman'
     ? [['complete-B01', 'course-completed', 'B01', 12], ['complete-B02', 'course-completed', 'B02', 9], ['complete-B03', 'course-completed', 'B03', 3], ['complete-S01', 'course-completed', 'S01', 1], ['fp1', 'question', 'S01', 0], ['a1', 'achievement', 'B03', 2], ['a2', 'achievement', 'S01', 1]]
     : [['complete-B01', 'course-completed', 'B01', 2]]
-  return rows.map(([id, type, courseId, days]) => meta({ id, childId, type, courseId, occurredAt: base - days * DAY, source: '本地学习记录', title: type === 'question' ? '为什么轻轻触摸也能让机器人回应？' : '', summary: type === 'question' ? '比较了轻触和靠近两种输入，记录了触发条件。' : '', verified: type === 'question', verificationText: type === 'question' ? '对照了轻触、靠近两种输入，并记录各自的触发结果。' : '', followups: type === 'question' ? 2 : 0, concepts: type === 'question' ? ['电容触摸', '阈值'] : [] }))
+  return rows.map(([id, type, courseId, days]) => meta({ id, childId, type, courseId, occurredAt: base - days * DAY, source: '本地探索记录', title: type === 'question' ? '为什么轻轻触摸也能让机器人回应？' : '', summary: type === 'question' ? '比较了轻触和靠近两种输入，记录了触发条件。' : '', verified: type === 'question', verificationText: type === 'question' ? '对照了轻触、靠近两种输入，并记录各自的触发结果。' : '', followups: type === 'question' ? 2 : 0, concepts: type === 'question' ? ['电容触摸', '阈值'] : [] }))
 }
 function database() {
   let db = store.getDemoData(DB_KEY, null)
@@ -93,52 +93,77 @@ function plan(c) { return curriculum.planFor(c.child.age) }
 function sourceUrl(e) { return e.type === 'achievement' ? '/pages/growth/achievement?id=' + encodeURIComponent(e.id) : e.type === 'question' ? '/pages/home/footprint?id=' + encodeURIComponent(e.id) : '/pages/growth/index' }
 function eventTitle(e) { return e.title || (e.type === 'achievement' ? '探索成果 · ' : e.type === 'course-unlocked' ? '已解锁 · ' : '完成探索内容 · ') + ((lesson(e.courseId) || {}).title || e.courseId) }
 function evidence(e) { return meta({ id: e.id, title: eventTitle(e), date: date(e.occurredAt), occurredAt: e.occurredAt, courseId: e.courseId, source: e.source, url: sourceUrl(e), childId: e.childId }) }
-function growth(c) {
-  const list = events(c), lessons = plan(c)
+function growth(c, options) {
+  options = options || {}
+  const at = options.at == null ? now() : options.at
+  const list = options.events || events(c), lessons = plan(c)
   const completed = new Map()
   list.filter((e) => e.type === 'course-completed' && lessons.some((l) => l.id === e.courseId)).sort((a, b) => a.occurredAt - b.occurredAt).forEach((e) => { if (!completed.has(e.courseId)) completed.set(e.courseId, e) })
-  const boundary = now() - 7 * DAY
+  const boundary = at - 7 * DAY
   const recent = Array.from(completed.values()).filter((e) => e.occurredAt >= boundary)
   const unlocked = list.filter((e) => e.type === 'course-unlocked').map((e) => e.courseId)
   const dimensions = curriculum.dimensions.map((dim, i) => {
     const related = lessons.filter((l) => l.coverage[i] > 0)
     const done = related.filter((l) => completed.has(l.id))
     const week = done.filter((l) => completed.get(l.id).occurredAt >= boundary)
-    return meta(Object.assign({}, dim, { value: Math.round(done.length / related.length * 100), delta: Math.round(week.length / related.length * 100), insufficient: done.length === 0, completed: done.length, total: related.length, evidence: done.map((l) => evidence(completed.get(l.id))), description: '本演示学习计划中，与“' + dim.name + '”有关且已首次完成的探索内容 ' + done.length + ' 门 / 固定相关探索内容 ' + related.length + ' 门。覆盖率只反映探索内容参与进度，不代表能力测评。', relatedLessons: related.map((l) => ({ id: l.id, title: l.title, completed: completed.has(l.id), coverageLevel: l.coverage[i] })) }))
+    return meta(Object.assign({}, dim, { value: Math.round(done.length / related.length * 100), delta: Math.round(week.length / related.length * 100), insufficient: list.length === 0, completed: done.length, total: related.length, evidence: done.map((l) => evidence(completed.get(l.id))), description: '本演示探索内容目录中，与“' + dim.name + '”有关的内容已首次完成 ' + done.length + ' 项，共 ' + related.length + ' 项。覆盖率只反映探索内容参与进度，不代表能力测评。', relatedLessons: related.map((l) => ({ id: l.id, title: l.title, completed: completed.has(l.id), coverageLevel: l.coverage[i] })) }))
   })
   const questions = list.filter((e) => e.type === 'question').sort((a, b) => b.occurredAt - a.occurredAt)
   const achievements = list.filter((e) => e.type === 'achievement').map((e) => Object.assign(evidence(e), { time: date(e.occurredAt), image: imageFor(e.courseId) }))
-  const range = date(boundary) + ' – ' + date(now())
+  const range = date(boundary) + ' – ' + date(at)
   const last = questions[0]
   return meta({ child: c.child, childId: c.childId, empty: list.length === 0, progress: { completed: completed.size, total: lessons.length, percent: Math.round(completed.size / lessons.length * 100), delta: recent.length },
     plan: lessons.map((l) => meta({ id: l.id, courseId: l.id, title: l.title, module: l.module, webLevelId: l.webLevelId, status: completed.has(l.id) ? 'completed' : unlocked.includes(l.id) || l.prerequisites.every((id) => completed.has(id)) ? 'available' : 'locked', completedAt: completed.has(l.id) ? completed.get(l.id).occurredAt : null, relatedDimensions: curriculum.dimensions.filter((_, i) => l.coverage[i] > 0).map((d) => d.key) })),
-    dimensions, insight: { range, change: recent.length ? '近 7 天首次完成 ' + recent.length + ' 门探索内容' : '近 7 天暂无新增完成探索内容', achievements: achievements.length, activity: list.filter((e) => e.occurredAt >= boundary).length ? '有学习记录' : '暂无记录', questions: questions.filter((e) => e.occurredAt >= boundary).length },
+    dimensions, insight: { range, change: recent.length ? '近 7 天首次完成 ' + recent.length + ' 项探索内容' : '近 7 天暂无新增完成探索内容', achievements: achievements.length, activity: list.filter((e) => e.occurredAt >= boundary).length ? '有探索记录' : '暂无记录', questions: questions.filter((e) => e.occurredAt >= boundary).length },
     brief: last ? { status: 'ready', date: date(last.occurredAt), theme: (lesson(last.courseId) || {}).title || '', summary: last.summary || '', body: [last.summary, last.verificationText].filter(Boolean).join('\n'), relatedEvents: [evidence(last)], question: last.title, followups: last.followups || 0, concepts: last.concepts || [], verified: !!last.verified, verificationText: last.verificationText || '', tip: '可以请孩子说说这次记录中的观察与理由。', eventId: last.id } : { status: 'insufficient', reason: '还没有代表性提问记录，暂不生成成长简报。' },
     briefHistory: questions.map(evidence),
-    reports: list.length ? [{ id: 'w1', type: 'weekly', title: '成长周报', range, status: reportState(c, 'w1').status }, { id: 'p1', type: 'phase', title: '阶段成长报告', range: '当前演示学习计划', status: reportState(c, 'p1').status }] : [], achievements, timeline: list.slice().sort((a, b) => b.occurredAt - a.occurredAt).map(evidence)
+    reports: list.length && !options.withoutReports ? [{ id: 'w1', type: 'weekly', title: '成长周报', range }, { id: 'p1', type: 'phase', title: '阶段成长报告', range: '当前演示探索内容目录' }].map((item) => { const state = reportState(c, item.id); return Object.assign(item, { range: state.snapshot ? state.snapshot.range : item.range, status: state.status }) }) : [], achievements, timeline: list.slice().sort((a, b) => b.occurredAt - a.occurredAt).map(evidence)
   })
 }
 function imageFor(courseId) { return courseId && courseId[0] === 'S' ? '/assets/illustrations/result-sound-v2.jpg' : '/assets/illustrations/result-robot-arm-v2.jpg' }
+function buildReportSnapshot(c, id, cutoffAt) {
+  const sourceEvents = clone(events(c).filter((e) => e.occurredAt <= cutoffAt))
+  const g = growth(c, { withoutReports: true, events: sourceEvents, at: cutoffAt })
+  const periodRows = id === 'w1' ? sourceEvents.filter((e) => e.occurredAt >= cutoffAt - 7 * DAY) : sourceEvents
+  return meta({
+    schema: 1, id, childId: c.childId, child: clone(c.child), cutoffAt,
+    title: id === 'w1' ? '成长周报' : '阶段成长报告',
+    range: id === 'w1' ? g.insight.range : '当前演示探索内容目录 · ' + g.progress.total + ' 项',
+    sufficiency: periodRows.length ? '依据 ' + periodRows.length + ' 条探索记录' : '本期记录不足',
+    sourceEventIds: periodRows.map((e) => e.id), sourceEvents,
+    progress: clone(g.progress), dimensions: clone(g.dimensions),
+    sections: [
+      { title: '探索进度', body: '首次完成 ' + g.progress.completed + ' / ' + g.progress.total + ' 项探索内容，近 7 天新增 ' + g.progress.delta + ' 项。重复完成和解锁不重复计数。' },
+      { title: '代表记录', body: periodRows.length ? periodRows.slice(-3).map(eventTitle).join('；') : '本期暂无有效探索事件，不形成结论。' },
+      { title: '统计口径', body: '六维展示已完成探索内容的相关内容覆盖率，不是能力测评。探索内容目录 V3.1；本地目录和 Web 关卡映射仅用于演示。' }
+    ]
+  })
+}
 function reportState(c, id) {
   const db = database(), key = c.childId + '.' + id
-  if (db.reports[key]) return db.reports[key]
-  const state = { status: store.getScenario() === 'generating' ? 'generating' : 'ready', version: 1, generatedAt: now() }
-  if (state.status === 'ready') { db.reports[key] = state; save(db) }
+  const previous = db.reports[key]
+  if (previous && (previous.status !== 'ready' || previous.snapshot)) return previous
+  const state = previous ? Object.assign({}, previous) : { status: store.getScenario() === 'generating' ? 'generating' : 'ready', version: 1 }
+  if (state.status === 'ready') {
+    // Legacy ready records did not preserve their inputs. Create an explicit new
+    // snapshot revision instead of attaching new content to an old generation time.
+    if (previous) state.version = (previous.version || 1) + 1
+    state.generatedAt = now()
+    state.snapshot = buildReportSnapshot(c, id, state.generatedAt)
+    db.reports[key] = state
+    save(db)
+  }
   return state
 }
 function report(c, id) {
   if (!['w1', 'p1'].includes(id) || !events(c).length) error('NOT_FOUND', '当前孩子暂无这份报告')
   const state = reportState(c, id)
-  const g = growth(c)
-  const rows = id === 'w1' ? events(c).filter((e) => e.occurredAt >= now() - 7 * DAY) : events(c)
-  return meta(Object.assign({}, state, { id, childId: c.childId, child: c.child, title: id === 'w1' ? '成长周报' : '阶段成长报告', range: id === 'w1' ? g.insight.range : '当前演示学习计划 · ' + g.progress.total + ' 门', generatedAt: stamp(state.generatedAt || now()), sufficiency: rows.length ? '依据 ' + rows.length + ' 条学习记录' : '本期记录不足', sourceEventIds: rows.map((e) => e.id), sections: state.status !== 'ready' ? [] : [
-    { title: '学习进度', body: '首次完成 ' + g.progress.completed + ' / ' + g.progress.total + ' 门计划探索内容，近 7 天新增 ' + g.progress.delta + ' 门。重复完成和解锁不重复计数。' },
-    { title: '代表记录', body: rows.length ? rows.slice(-3).map(eventTitle).join('；') : '本期暂无有效学习事件，不形成结论。' },
-    { title: '统计口径', body: '六维展示已完成探索内容的相关内容覆盖率，不是能力测评。探索内容目录 V3.1；本地计划和 Web 关卡映射仅用于演示。' }
-  ] }))
+  const base = { id, childId: c.childId, child: c.child, title: id === 'w1' ? '成长周报' : '阶段成长报告', sections: [], sourceEventIds: [] }
+  const content = state.status === 'ready' ? clone(state.snapshot) : base
+  return meta(Object.assign({}, content, { status: state.status, version: state.version, taskId: state.taskId, message: state.message || '', generatedAt: state.generatedAt ? stamp(state.generatedAt) : '', snapshot: state.status === 'ready' ? clone(state.snapshot) : null }))
 }
 function itemEvent(c, id, type) { const e = events(c).find((x) => x.id === id && x.type === type); if (!e) error('NOT_FOUND', '当前孩子暂无这条记录'); return e }
-function achievement(c, id) { const e = itemEvent(c, id, 'achievement'); return meta(Object.assign(evidence(e), { child: c.child, childAlias: c.child.shortName, image: imageFor(e.courseId), process: e.summary || '已保存这门探索内容的探索成果，可回到对应学习记录核对。', evidence: (lesson(e.courseId) || {}).expectedEvidence || '', sourceEventIds: [e.id] })) }
+function achievement(c, id) { const e = itemEvent(c, id, 'achievement'); return meta(Object.assign(evidence(e), { child: c.child, childAlias: c.child.shortName, image: imageFor(e.courseId), process: e.summary || '已保存这项探索内容的探索成果，可回到对应探索记录核对。', evidence: (lesson(e.courseId) || {}).expectedEvidence || '', sourceEventIds: [e.id] })) }
 function currentLocation(c) {
   const db = database()
   let point = db.locations[c.childId]
@@ -244,7 +269,10 @@ function applyMutation(task) {
   if (type === 'invite-reject') store.setInvite(p.id, 'rejected')
   if (type === 'subscription-update') store.setDemoData('subscriptionEnabled', !!p.enabled)
   if (type === 'feedback') db.feedbacks.push(meta({ id: task.id, childId: c.childId, text: String(p.text || p.content).trim(), createdAt: now(), status: 'local-pending', message: '仅保存在本机，未发送真实客服' }))
-  if (type === 'report-regen') { const key = c.childId + '.' + (p.id || 'w1'); const old = db.reports[key] || {}; db.reports[key] = { status: 'ready', version: (old.version || 0) + 1, taskId: task.id, generatedAt: now() } }
+  if (type === 'report-regen') {
+    const rid = p.id || 'w1', key = c.childId + '.' + rid, old = db.reports[key] || {}, generatedAt = now()
+    db.reports[key] = { status: 'ready', version: (old.version || 0) + 1, taskId: task.id, generatedAt, snapshot: buildReportSnapshot(c, rid, generatedAt) }
+  }
   if (['child-data-request', 'data-delete', 'consent-withdraw', 'account-cancel'].includes(type)) {
     const request = meta({ id: task.id, childId: c.childId, type, status: 'accepted', requestedAt: now(), message: message(type, 'success') })
     db.requests[c.childId + '.' + type] = request
@@ -278,7 +306,7 @@ function reconcile() {
       if (elapsed < 500) return
       if (elapsed < 1800) { if (t.status !== 'executing') patch({ status: 'executing', message: message(t.type, 'executing') }); return }
       if (t.outcome === 'timeout' && elapsed < 5000) { if (t.status !== 'timeout') patch({ status: 'timeout', retryable: true, message: message(t.type, 'timeout') }); return }
-      if (t.outcome === 'fail') { patch({ status: 'failed', message: message(t.type, 'failed'), finishedAt: now() }); if (t.type === 'report-regen') { const db = database(); db.reports[t.childId + '.' + t.payload.id] = { status: 'failed', taskId: t.id, message: '生成失败，可重新提交', version: 1 }; save(db) }; return }
+      if (t.outcome === 'fail') { patch({ status: 'failed', message: message(t.type, 'failed'), finishedAt: now() }); if (t.type === 'report-regen') { const db = database(), key = t.childId + '.' + (t.payload.id || 'w1'); db.reports[key] = Object.assign({}, db.reports[key], { status: 'failed', taskId: t.id, message: '生成失败，可重新提交' }); save(db) }; return }
       try {
         const synced = applyMutation(t)
         patch({ status: 'success', synced, result: t.result, message: message(t.type, 'success', synced), finishedAt: now(), finalAfterRevocation: t.finalAfterRevocation })
@@ -302,7 +330,7 @@ function submit(type, payload) {
   const id = nextId('task'), scenario = store.getScenario()
   const task = meta({ id, type, childId: c.childId, deviceId: c.deviceId, parentId: c.parentId, familyId: c.familyId, epoch: c.epoch, payload: p, status: 'submitted', createdAt: now(), outcome: scenario === 'fail' ? 'fail' : scenario === 'timeout' ? 'timeout' : 'success', message: message(type, 'submitted') })
   store.setTask(id, task)
-  if (type === 'report-regen') { const db = database(), key = c.childId + '.' + (p.id || 'w1'); db.reports[key] = { status: 'generating', taskId: id, version: (db.reports[key] || {}).version || 1 }; save(db) }
+  if (type === 'report-regen') { const db = database(), key = c.childId + '.' + (p.id || 'w1'); db.reports[key] = Object.assign({}, db.reports[key], { status: 'generating', taskId: id, version: (db.reports[key] || {}).version || 1 }); save(db) }
   return task
 }
 function callSession(c) {
@@ -363,7 +391,7 @@ const mock = {
     if (store.getInvites().u3 === 'pending' && c.canManage) todos.push({ id: 'invite', title: '家庭邀请待处理', desc: '有 1 位成员等待确认', url: '/pages/my/family', tone: 'butter', action: '去处理' })
     const footprints = list.filter((e) => e.type === 'question').map((e) => Object.assign(evidence(e), { tag: '主动提问', tagTone: 'sky', tone: 'sky', desc: e.summary }))
     const achievements = g.achievements.map((a) => Object.assign({}, a, { type: '探索成果', extra: '来自已保存的探索内容记录', tone: 'sky' }))
-    return meta({ child: c.child, childId: c.childId, greeting: '你好', empty: list.length === 0, hero: { image: '/assets/island/ocean-world.jpg', title: '每一步探索，都有记录', subtitle: c.child.shortName + '已完成 ' + g.progress.completed + ' 门计划探索内容' }, summary: { dynamics: dynamics.length, onlineMinutes: 0, todos: todos.length, deviceOnline: loc.online, completed: g.progress.completed }, dynamics, todos, footprints, achievements, photos: achievements.map((a) => a.image), photoCard: achievements[0] ? { title: achievements[0].title, desc: '查看探索成果记录', time: achievements[0].time } : null, suggestion: list.length ? { title: '今日陪伴建议', text: '和' + c.child.shortName + '聊聊最近一次学习记录中的观察与理由。' } : null, guide: { title: '玩机指南', desc: '了解守护与学习记录', status: '查看指南' }, progress: g.progress })
+    return meta({ child: c.child, childId: c.childId, greeting: '你好', empty: list.length === 0, hero: { image: '/assets/island/ocean-world.jpg', title: '每一步探索，都有记录', subtitle: c.child.shortName + '已完成 ' + g.progress.completed + ' 项探索内容' }, summary: { dynamics: dynamics.length, onlineMinutes: 0, todos: todos.length, deviceOnline: loc.online, completed: g.progress.completed }, dynamics, todos, footprints, achievements, photos: achievements.map((a) => a.image), photoCard: achievements[0] ? { title: achievements[0].title, desc: '查看探索成果记录', time: achievements[0].time } : null, suggestion: list.length ? { title: '今日陪伴建议', text: '和' + c.child.shortName + '聊聊最近一次探索记录中的观察与理由。' } : null, guide: { title: '玩机指南', desc: '了解守护与探索记录', status: '查看指南' }, progress: g.progress })
   }),
   getLocation: () => reply(() => currentLocation(context())),
   refreshLocation: () => reply(() => { const c = context(); requireDevice(c, true); const db = database(); db.locations[c.childId] = { point: POINT, updatedAt: now() }; save(db); return Object.assign(currentLocation(c), { ok: true, message: '位置已更新' }) }),
@@ -436,14 +464,14 @@ const mock = {
     if (p.childId && p.childId !== c.childId) error('EVENT_FORBIDDEN', '只能为当前孩子添加测试记录')
     const type = p.type || 'course-completed', courseId = p.courseId || ((p.webLevelId || '').replace(/^demo-level-/, ''))
     if (!['course-completed', 'course-unlocked', 'question', 'achievement'].includes(type)) error('INVALID_EVENT', '不支持的学习事件')
-    if (!plan(c).some((x) => x.id === courseId)) error('COURSE_NOT_IN_PLAN', '探索内容不属于当前孩子的固定学习计划')
+    if (!plan(c).some((x) => x.id === courseId)) error('COURSE_NOT_IN_PLAN', '探索内容不属于当前孩子的固定探索内容目录')
     const rows = db.events[c.childId] || [], duplicate = rows.find((e) => (p.id && e.id === p.id) || (type === 'course-completed' && e.type === type && e.courseId === courseId))
     if (duplicate) return { event: duplicate, duplicate: true }
     if (type === 'question' && !String(p.title || '').trim()) error('INVALID_EVENT', '请提供问题内容')
     const occurredAt = p.occurredAt == null ? now() : Number(p.occurredAt)
     if (!Number.isFinite(occurredAt) || occurredAt > now()) error('INVALID_EVENT_TIME', '事件时间不正确')
     const id = p.id || 'event-' + now() + '-' + (db.sequence + 1); db.sequence += 1
-    const e = meta({ id, childId: c.childId, type, courseId, occurredAt, source: '本地学习记录', title: String(p.title || '').trim(), summary: String(p.summary || ''), concepts: Array.isArray(p.concepts) ? p.concepts : [], verified: !!p.verified, verificationText: p.verified ? String(p.verificationText || '') : '', followups: Math.max(0, Number(p.followups) || 0), webLevelId: 'demo-level-' + courseId })
+    const e = meta({ id, childId: c.childId, type, courseId, occurredAt, source: '本地探索记录', title: String(p.title || '').trim(), summary: String(p.summary || ''), concepts: Array.isArray(p.concepts) ? p.concepts : [], verified: !!p.verified, verificationText: p.verified ? String(p.verificationText || '') : '', followups: Math.max(0, Number(p.followups) || 0), webLevelId: 'demo-level-' + courseId })
     db.events[c.childId] = rows.concat(e); save(db); return { event: e, duplicate: false }
   })
 }
