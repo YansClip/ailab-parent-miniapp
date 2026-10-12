@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="sim-control" content="__CONTROL_TOKEN__"><title>AILab · 本机模拟定位台</title><link rel="stylesheet" href="/style.css"><script defer src="/view.js"></script><script defer src="/app.js"></script></head>
+<body><main>
+  <header><a class="wordmark" href="/">AILab<span>工程试验台 / 01</span></a><span class="local-tag">● 仅本机 · 不连接云端</span></header>
+  <section class="intro"><div><p class="eyebrow">SYNTHETIC LOCATION LAB</p><h1>先让流程跑通。<br><span>位置，用虚构的。</span></h1></div><p class="intro-note">不连接硬件、不读取手机位置。<br>只验证模拟上报、权限查询与页面变化。<br>停止工具后，本次数据全部清空。</p></section>
+  <div class="pipeline" aria-label="本次测试链路"><span>01 预设报文</span><b>→</b><span>02 签名接收</span><b>→</b><span>03 临时内存</span><b>→</b><span>04 权限查询</span></div>
+  <section class="workbench"><article class="preview panel"><div class="panel-head"><div><p class="eyebrow">当前观察</p><h2>本机模拟设备 S</h2></div><span class="chip">非真实地图</span></div>
+    <div class="board" aria-label="测试坐标示意板，不对应真实地图"><span class="axis north">N ↑</span><span class="axis corner">SCHEMATIC / GCJ02</span><div id="marker" class="marker" hidden><span id="point-name">A</span></div><div id="empty" class="empty">等待模拟上报</div></div>
+    <div class="state-line"><h3 id="status">正在连接本机工具…</h3><span id="ttl">—</span></div><p id="hint" class="muted" role="status">不会回退为成功或显示旧坐标。</p><button id="reconnect" hidden>重新连接工具</button>
+    <dl class="metrics"><div><dt>经度 / 纬度</dt><dd id="coords">— / —</dd></div><div><dt>本机查看权限</dt><dd id="permission">—</dd></div><div><dt>绑定版本</dt><dd id="binding">—</dd></div></dl>
+  </article><aside class="controls panel"><p class="eyebrow">第一步 · 发送场景</p><h2>选一个变化，看一次结果</h2><div class="actions"><button data-action="point-a" class="primary">发送位置 A <span>起点</span></button><button data-action="point-b" class="primary">发送位置 B <span>移动</span></button><button data-action="no-fix">设备无定位</button><button data-action="offline">设备离线</button><button data-action="expire" class="wide">模拟过期 <span>测试时钟 +16 秒</span></button></div>
+    <h3 class="group-title">权限与异常检查 <small>只影响本机</small></h3><div class="actions"><button data-action="revoke">撤回查看权限</button><button data-action="restore">恢复查看权限</button><button data-action="other-parent">另一虚构账号</button><button data-action="bad-signature">错误签名上报</button><button data-action="old-binding" class="wide">不匹配的绑定版本上报</button></div>
+    <p class="notice">正常位置有效期为 15 秒。离线、无定位、撤权或过期时，都不应继续显示旧点。</p><p id="action-result" class="result" role="status">尚未发送测试报文。</p>
+  </aside></section>
+  <section class="bottom"><article class="panel pair-panel"><p class="eyebrow">第二步 · 在小程序开发者工具里看</p><h2>连接独立测试页</h2><p>体验设置 → 本机模拟定位测试 → 输入下方配对码</p><div class="pair-row"><code id="pair-code">—</code><button data-action="pairing">生成新配对码</button></div><p id="pair-hint" class="muted">配对码单次使用，有效 5 分钟；只读会话有效 30 分钟。</p><p class="notice">手机暂不能使用这个本机入口。不会切换主程序模式，不会修改云端测试设备 A。</p></article>
+    <article class="panel history-panel"><p class="eyebrow">验证记录 · 最近 8 次</p><h2>每一步都有回执</h2><ol id="history"><li>等待第一次操作。</li></ol><p class="muted">记录仅在内存中；不保存轨迹，不写入云端数据库。</p></article></section>
+  <footer><span>LOCAL ONLY / VOLATILE MEMORY</span><span>本次不验证真机定位、云端写入或音视频通话。</span></footer>
+</main></body></html>

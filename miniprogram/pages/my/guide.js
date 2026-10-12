@@ -1,5 +1,6 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
+const access = require('../../services/access')
 const instructions = {
   g1: ['先在家庭管理中确认当前孩子。', '在绑定页输入演示码 222222（小满）或 333333（星河）；确认姓名后等待绑定结果。', '设备中心查看所属孩子；重新绑定设备不会创建新的孩子。'],
   g2: ['进入守护页，先确认当前孩子和设备。', '查看更新时间、精度及在线状态；点击刷新获取一条新的模拟位置。', '设备离线或点位失效时不会保留旧坐标。当前不提供历史轨迹。'],
@@ -12,11 +13,12 @@ Page({
   onShow() {
     this.reload()
   },
-  reload() { return util.loadPage(this, () => api.getGuide(), (list) => ({ list: list.map((item) => Object.assign({}, item, { steps: instructions[item.id] || ['进入功能页，根据状态提示继续操作。'] })) })) },
+  reload() { return util.loadPage(this, () => access.familyReady() ? api.getGuide() : api.getPublicGuide(), (list) => ({ list: list.map((item) => Object.assign({}, item, { steps: item.steps || instructions[item.id] || ['进入功能页，根据状态提示继续操作。'] })) })) },
   toggle(e) { const id = e.currentTarget.dataset.id; util.safeSetData(this, { expanded: this.data.expanded === id ? '' : id }) },
   onUnload() { util.disposePage(this) },
   open(e) {
     const url = e.currentTarget.dataset.url
+    if (!access.familyReady() && !['/pages/home/index', '/pages/guard/index', '/pages/growth/index', '/pages/my/index'].includes(url)) { access.requestLogin('my'); return }
     util.navigate(url)
   }
 })

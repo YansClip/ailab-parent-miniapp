@@ -9,7 +9,8 @@
     <view class="art-tag"><text>安心守护</text><text>温柔陪伴每一次成长</text></view>
   </view>
   <view class="actions">
-    <button class="btn btn-primary" hover-class="pressed" bindtap="onStart">开始使用</button>
+    <button class="btn btn-primary" hover-class="pressed" bindtap="onStart">先浏览功能</button>
+    <button class="join" hover-class="pressed" bindtap="onLogin">登录并连接家庭</button>
     <button class="join" hover-class="pressed" bindtap="onJoin">或加入已有家庭</button>
   </view>
 </view>

@@ -106,6 +106,24 @@ test('守护 V3：页面控制器与 API 的完整状态回归', async (t) => {
       assert.equal(page.data.stage, 'ended')
       close(page)
     })
+    await t.test('视频入口不继承旧语音类型，可接通、关闭画面并挂断', async () => {
+      store.setScenario('default')
+      const page = await open('call', { type: 'video' })
+      assert.equal(page.data.mediaType, 'video')
+      assert.equal(page.data.stage, 'ready')
+      await page.startCall()
+      assert.equal(page.data.stage, 'calling')
+      now += 2000
+      page.refreshSession()
+      await flush()
+      assert.equal(page.data.stage, 'connected')
+      assert.equal(page.data.mediaType, 'video')
+      await page.control(event({ control: 'cameraOff' }))
+      assert.equal(page.data.cameraOff, true)
+      await page.hang()
+      assert.equal(page.data.stage, 'ended')
+      close(page)
+    })
     await t.test('通话拒接、忙线、超时、失败和设备离线不会显示已接通', async () => {
       for (const [scenario, stage] of [['call-rejected', 'rejected'], ['call-busy', 'busy'], ['timeout', 'timeout'], ['fail', 'failed']]) {
         store.setScenario(scenario)

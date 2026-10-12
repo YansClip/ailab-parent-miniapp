@@ -1,52 +1,44 @@
-<view class="home">
+<public-preview wx:if="{{guest}}" section="home" signed-in="{{signedIn}}" status-bar-height="{{statusBarHeight}}" />
+<view wx:else class="home">
   <scroll-view class="scroll" scroll-y enhanced show-scrollbar="{{false}}" scroll-into-view="{{scrollTarget}}" scroll-with-animation>
     <view style="height: {{statusBarHeight + 44}}px"></view>
     <view class="pad">
-      <view class="head"><view><text class="caption">AILAB · 家庭陪伴 · 演示数据</text><text class="h1">{{parent.greeting || '你好'}}，{{parent.name || '家长'}}</text></view><button class="switch-button" bindtap="openSwitcher">切换孩子⌄</button></view>
+      <view class="head"><view><text class="caption eyebrow">一起看见，每一次发现</text><text class="h1">{{parent.greeting || '你好'}}，{{parent.name || '家长'}}</text></view><button class="switch-button" bindtap="openSwitcher" aria-label="切换孩子">{{home.child.shortName || '选择孩子'}}<text>⌄</text></button></view>
       <view wx:if="{{loading}}" class="loading"><view class="skeleton sk-hero"></view><view class="skeleton sk-card"></view></view>
       <view wx:elif="{{error}}" class="card state-wrap"><text class="h2">首页暂时无法加载</text><text class="sub">{{error}}</text><button class="btn btn-primary mt-24" bindtap="reload">重新加载</button></view>
       <block wx:else>
         <view class="hero">
           <image class="hero-img" src="{{home.hero.image}}" mode="aspectFill" /><view class="hero-mask"></view>
-          <view class="hero-top"><text class="hero-label">当前陪伴 · {{home.child.age}} 岁</text><text class="hero-status">{{home.summary.deviceOnline ? '设备在线' : '设备离线 / 未绑定'}}</text></view>
-          <view class="hero-copy"><text class="hero-title">{{home.child.shortName || home.child.name}}</text><text class="hero-sub">{{home.hero.subtitle}}</text><button class="hero-device" data-url="/pages/my/device" bindtap="goUrl">{{home.child.deviceName || '设备中心'}} · {{home.child.battery === undefined ? '查看设备' : '电量 ' + home.child.battery + '%'}} ›</button></view>
+          <view class="hero-top"><text class="hero-label">{{home.child.age}} 岁 · 探索中的小世界</text><view class="hero-status"><view class="status-dot {{home.summary.deviceOnline ? 'online' : ''}}"></view><text>{{home.summary.deviceOnline ? '设备在线' : '设备离线 / 未绑定'}}</text></view></view>
+          <view class="hero-copy"><text class="hero-title">好奇心，有了新回声</text><text class="hero-sub">{{home.hero.subtitle}}</text></view>
+          <button class="hero-device" data-url="/pages/my/device" bindtap="goUrl">{{home.child.deviceName || '设备中心'}}<text> {{home.child.battery === undefined ? '查看设备' : home.child.battery + '%'}} ›</text></button>
+          <text class="hero-demo">演示数据</text>
         </view>
-        <view class="summary card">
-          <view class="between"><text class="h3">陪伴概览</text><text class="caption">最近动态 · 累计探索</text></view>
-          <view class="metrics">
-            <button class="metric" bindtap="goFeed"><text class="metric-num">{{home.summary.dynamics}}</text><text class="caption">条动态 ›</text></button>
-            <button class="metric" data-url="/pages/growth/index" bindtap="goUrl"><text class="metric-num">{{home.summary.completed === undefined ? '—' : home.summary.completed}}</text><text class="caption">项探索完成 ›</text></button>
-            <button class="metric" bindtap="showTodos"><text class="metric-num gold">{{home.todos.length}}</text><text class="caption">项待处理 ↓</text></button>
+        <view class="summary">
+          <button class="metric" bindtap="goFeed"><text class="metric-num">{{home.summary.dynamics || 0}}</text><text class="caption">探索记录 ›</text></button>
+          <button class="metric" data-url="/pages/growth/index" bindtap="goUrl"><text class="metric-num">{{home.summary.completed === undefined ? '—' : home.summary.completed}}</text><text class="caption">内容已完成 ›</text></button>
+          <button class="metric" bindtap="showTodos"><text class="metric-num gold">{{home.todos.length}}</text><text class="caption">需要留意 ↓</text></button>
+        </view>
+        <view class="section-block todos" id="home-todos">
+          <button class="todo" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl"><view class="todo-icon"><image src="/assets/icons/lucide/notice.png" mode="aspectFit" /></view><view class="todo-copy"><text class="h3">{{item.title}}</text><text class="sub">{{item.desc}}</text></view><text class="arrow">›</text></button>
+          <view wx:if="{{!home.todos.length}}" class="all-clear"><image src="/assets/icons/lucide/check.png" mode="aspectFit" /><text>一切已安排好，安心陪伴</text></view>
+        </view>
+        <view class="curiosity-section">
+          <view class="section-lead"><view><text class="eyebrow">CURIOSITY NOTES</text><text class="section-title">好奇心推送卡片</text></view><button class="inline-action link" bindtap="goFeed">全部记录 ›</button></view>
+          <text class="section-description">根据{{home.child.shortName || '孩子'}}的使用记录不定期更新，留住值得聊聊的瞬间。</text>
+          <view wx:if="{{!groups.length}}" class="card state-wrap"><image class="empty-art" src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" /><text class="h2">下一次好奇，从这里开始</text><text class="sub">有新的提问、发现或成果时，卡片会出现在这里。</text><button class="btn btn-primary mt-24" data-url="/pages/my/device" bindtap="goUrl">查看设备与绑定</button></view>
+          <view class="curiosity-group" wx:for="{{groups}}" wx:key="date" wx:for-item="group">
+            <view class="date-heading"><view class="date-dot"></view><text>{{group.date}}</text><view class="date-line"></view></view>
+            <button class="curiosity-card kind-{{item.kind}}" wx:for="{{group.items}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl" hover-class="pressed" aria-label="{{item.label}}：{{item.title}}，{{item.action}}">
+              <view class="curiosity-cover"><image class="curiosity-image" src="{{item.image}}" mode="aspectFill" /><view class="cover-shade"></view><view class="card-category"><image src="{{item.icon}}" mode="aspectFit" /><text>{{item.label}}</text></view><text class="image-note">{{item.imageLabel}}</text><text wx:if="{{item.kind === 'question'}}" class="cover-question">一个好问题，<text>打开一个新世界。</text></text></view>
+              <view class="curiosity-copy"><text class="card-title">{{item.title}}</text><text class="card-description">{{item.description}}</text><view class="card-bottom"><view class="card-child"><view class="child-dot">{{home.child.avatarText || '探'}}</view><text>{{home.child.shortName || '孩子'}}的探索记录</text></view><text class="card-link">{{item.action}} ›</text></view></view>
+            </button>
           </view>
+          <button wx:if="{{remainingCards > 0}}" class="more-cards" bindtap="expandCards">再看看 {{remainingCards}} 条发现 <text>↓</text></button>
         </view>
-        <view class="section-block" id="home-todos">
-          <view class="section-lead"><text class="section-title">需要留意</text><text class="caption">{{home.todos.length ? '处理后返回自动更新' : '当前没有待处理事项'}}</text></view>
-          <button class="todo card" wx:for="{{home.todos}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl"><view class="todo-icon">!</view><view class="todo-copy"><text class="h3">{{item.title}}</text><text class="sub">{{item.desc}}</text></view><text class="arrow">›</text></button>
-          <view wx:if="{{!home.todos.length}}" class="all-clear"><text>✓ 一切已安排好，安心陪伴</text></view>
-        </view>
-        <view wx:if="{{home.empty}}" class="card state-wrap"><image class="empty-art" src="/assets/illustrations/empty-companion-v2.png" mode="aspectFit" /><text class="h2">陪伴记录会从这里开始</text><text class="sub">完成设备绑定并开始探索后，动态与成长记录会陆续出现。</text><button class="btn btn-primary mt-24" data-url="/pages/my/device" bindtap="goUrl">前往设备中心</button></view>
-        <view class="section-block" wx:if="{{!home.empty}}">
-          <view class="section-lead"><text class="section-title">最近动态</text><button class="inline-action link" bindtap="goFeed">全部动态 ›</button></view>
-          <view class="timeline card">
-            <block wx:for="{{groups}}" wx:key="date" wx:for-item="group">
-              <text class="date-heading">{{group.date}}</text>
-              <button class="dyn" wx:for="{{group.items}}" wx:key="id" data-url="{{item.url}}" bindtap="goUrl"><view class="dyn-icon-wrap"><image class="dyn-icon" src="{{item.icon}}" mode="aspectFit" /></view><view class="dyn-copy"><text class="dyn-title">{{item.title}}</text><text class="sub">{{item.desc}}</text><text class="caption">{{item.time}} · {{item.typeLabel}}</text></view><text class="arrow">›</text></button>
-            </block>
-            <text wx:if="{{!groups.length}}" class="sub">还没有动态，完成探索后会留下记录。</text>
-          </view>
-        </view>
-        <view wx:if="{{home.footprints.length}}" class="section-block">
-          <view class="section-lead"><view><text class="section-title">兴趣足迹</text><text class="sub">留住那些主动提问的瞬间</text></view></view>
-          <button class="fp card" wx:for="{{home.footprints}}" wx:key="id" data-id="{{item.id}}" bindtap="goFootprint"><view class="between"><text class="pill pill-sky">{{item.tag}}</text><text class="caption">{{item.date}}</text></view><text class="fp-title">{{item.title}}</text><text class="sub">{{item.desc}}</text><text class="fp-link">查看这次发现 ›</text></button>
-        </view>
-        <view wx:if="{{home.achievements.length}}" class="section-block">
-          <view class="section-lead"><view><text class="section-title">探索成果</text><text class="sub">来自已完成探索内容与项目的记录</text></view><button class="inline-action link" data-url="/pages/growth/index" bindtap="goUrl">更多 ›</button></view>
-          <button class="achievement card" wx:for="{{home.achievements}}" wx:key="id" data-id="{{item.id}}" bindtap="goAch"><image src="{{item.image}}" mode="aspectFill" /><view><text class="caption">{{item.type}} · 只读记录</text><text class="h3">{{item.title}}</text><text class="sub">{{item.extra}}</text></view><text class="arrow">›</text></button>
-        </view>
-        <view class="suggest" wx:if="{{home.suggestion}}"><text class="caption">给家长的一句话</text><text class="h3">{{home.suggestion.text}}</text></view>
-        <button class="guide card" data-url="/pages/my/guide" bindtap="goUrl"><view><text class="h3">玩机指南</text><text class="sub">了解设备连接与家庭陪伴</text></view><text class="arrow">›</text></button>
-      </block>
-      <view class="bottom-space"></view>
+        <view class="suggest" wx:if="{{home.suggestion}}"><image src="/assets/icons/lucide/message.png" mode="aspectFit" /><view><text class="caption">今天，可以这样聊聊</text><text class="h3">{{home.suggestion.text}}</text></view></view>
+        <button class="guide" data-url="/pages/my/guide" bindtap="goUrl"><view class="guide-icon"><image src="/assets/icons/lucide/guide.png" mode="aspectFit" /></view><view><text class="h3">让陪伴更轻松</text><text class="sub">玩机指南 · 设备连接与使用</text></view><text class="arrow">›</text></button>
+      </block><view class="bottom-space"></view>
     </view>
   </scroll-view>
   <child-switcher show="{{showSwitcher}}" children="{{children}}" session="{{session}}" current-id="{{home.child.id || ''}}" bind:close="closeSwitcher" bind:change="onChildChange" />

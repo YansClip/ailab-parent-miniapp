@@ -1,14 +1,19 @@
 const api = require('../../services/api')
+const access = require('../../services/access')
 const util = require('../../utils/util')
 const store = require('../../services/store')
 const shared = require('./page-utils')
 const blank = () => ({ child: {}, insight: {}, brief: {}, progress: {}, plan: [], dimensions: [], reports: [], achievements: [] })
 Page({
-  data: { statusBarHeight: 44, loading: true, data: blank(), children: [], session: {}, showSwitcher: false, error: '', planExpanded: false },
+  data: { guest: true, signedIn: false, statusBarHeight: 44, loading: true, data: blank(), children: [], session: {}, showSwitcher: false, error: '', planExpanded: false },
   onShow() {
     this.__disposed = false
     util.setTab(2)
-    if (!util.guardAuth()) return
+    if (!access.familyReady()) {
+      util.safeSetData(this, { guest: true, signedIn: access.signedIn(), statusBarHeight: util.statusBarHeight(), loading: false, data: blank(), children: [], session: {}, showSwitcher: false, planExpanded: false, error: '' })
+      return
+    }
+    util.safeSetData(this, { guest: false, signedIn: true })
     util.safeSetData(this, { statusBarHeight: util.statusBarHeight(), session: store.getSession() })
     this.reload()
   },
@@ -49,7 +54,7 @@ Page({
     // Unknown dimensions have no plotted point, and no filled polygon implies a zero.
     if (dimensions.every(hasValue)) {
       path(dimensions.map((d, i) => point(i, radius * Math.max(0, Math.min(100, d.value)) / 100)))
-      ctx.setFillStyle('rgba(30,156,188,.14)'); ctx.fill(); ctx.setStrokeStyle('#1596b6'); ctx.setLineWidth(2); ctx.stroke()
+      ctx.setFillStyle('rgba(30,156,188,.22)'); ctx.fill(); ctx.setStrokeStyle('#1596b6'); ctx.setLineWidth(2.5); ctx.stroke()
     } else {
       dimensions.forEach((d, i) => {
         const next = (i + 1) % 6
@@ -64,7 +69,7 @@ Page({
         ctx.beginPath(); ctx.arc(p[0], p[1], 4, 0, Math.PI * 2); ctx.setFillStyle('#148db3'); ctx.fill()
       }
       const p = point(i, radius + 25)
-      ctx.setFontSize(11); ctx.setTextAlign('center'); ctx.setFillStyle('#426884'); ctx.fillText(d.name, p[0], p[1])
+      ctx.setFontSize(12); ctx.setTextAlign('center'); ctx.setFillStyle('#426884'); ctx.fillText(d.name, p[0], p[1])
       if (!hasValue(d)) { ctx.setFontSize(9); ctx.setFillStyle('#90a6b5'); ctx.fillText('数据不足', p[0], p[1] + 13) }
     })
     ctx.draw()

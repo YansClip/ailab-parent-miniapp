@@ -1,0 +1,18 @@
+<view class="page"><nav-bar title="模拟定位测试" /><view class="pad">
+  <view class="lab-heading"><text class="lab-tag">本机专用 · 虚构数据</text><text class="h2 mt-16">一条定位，如何到达页面</text><text class="sub mt-12">预设报文 → 签名接收 → 临时内存 → 权限查询</text></view>
+  <view class="lab-boundary mt-16"><text>不连接云端，不读取手机位置，不修改云端设备 A。停止电脑工具后，本次数据清空。</text></view>
+  <view wx:if="{{unavailable}}" class="card card-p mt-20"><text class="h3">请在电脑开发者工具中测试</text><text class="sub mt-12">{{unavailable}}</text><text class="sub mt-12">你手机上的云端后台与数据库连接不受影响。</text></view>
+  <block wx:else>
+    <view wx:if="{{!paired}}" class="card card-p mt-20"><text class="h3">01 · 连接本机模拟定位台</text><text class="sub mt-8">在电脑浏览器的控制台点击「生成新配对码」，将 10 位配对码填到这里。</text><input class="input mt-16 lab-code" value="{{code}}" maxlength="10" placeholder="输入 10 位配对码" bindinput="inputCode" /><button class="btn btn-primary mt-12" bindtap="pair" disabled="{{busy || code.length !== 10}}">{{busy ? '正在配对…' : '配对并只读查看'}}</button></view>
+    <view class="card card-p mt-20"><view class="lab-title-row"><text class="h3">本机模拟设备 S</text><text class="lab-caption">非真实地图</text></view>
+      <view class="lab-board"><text class="lab-north">N ↑</text><text class="lab-grid-label">测试坐标示意板</text><view wx:if="{{view.hasPoint}}" class="lab-marker" style="left:{{view.x}}%;top:{{view.y}}%;"><text>{{view.pointName}}</text></view><text wx:else class="lab-empty">{{view.label}}</text></view>
+      <view class="lab-title-row"><text class="h3 lab-{{view.tone}}">{{view.label}}</text><text class="lab-caption">{{view.hasPoint ? '剩余 ' + view.remainingSeconds + ' 秒' : '旧点不保留'}}</text></view><text class="sub mt-8">{{view.hint}}</text>
+      <view class="lab-metrics mt-16"><view><text class="lab-caption">经度 / 纬度</text><text class="lab-value">{{view.longitude}} / {{view.latitude}}</text></view><view><text class="lab-caption">查看权限</text><text class="lab-value">{{view.permission}}</text></view></view>
+      <text class="sub mt-12">本机绑定版本：{{view.bindingVersion}} · 状态：{{view.online}}</text>
+      <text wx:if="{{checkedAt}}" class="lab-caption mt-8">本机查询：{{checkedAt}} · 每 2 秒更新</text>
+    </view>
+    <text wx:if="{{error}}" class="lab-error mt-16" role="alert">{{error}}</text>
+    <view wx:if="{{paired}}" class="card card-p mt-20"><text class="h3">02 · 在电脑控制台切换场景</text><text class="sub mt-12">位置 A → 位置 B → 无定位 → 离线 → 过期 → 撤回权限。观察上面的点是否及时移动或消失。</text><text class="lab-receipt mt-16" role="status">{{receipt}}</text><button class="btn btn-secondary mt-16" bindtap="refresh">立即重新查询</button><button class="btn btn-secondary mt-12" bindtap="disconnect">断开本机测试</button></view>
+    <text class="sub mt-20">离开此页会清空本机配对与坐标，返回后需重新生成配对码。不代表真实硬件、云端写入或音视频已验收。</text>
+  </block>
+</view></view>

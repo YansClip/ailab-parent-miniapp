@@ -1,7 +1,10 @@
 const api = require('../../services/api')
+const access = require('../../services/access')
 const util = require('../../utils/util')
 Page({
   data: {
+    guest: true,
+    signedIn: false,
     statusBarHeight: 44,
     parent: {},
     child: {},
@@ -39,7 +42,11 @@ Page({
   onShow() {
     this.__disposed = false
     util.setTab(3)
-    if (!util.guardAuth()) return
+    if (!access.familyReady()) {
+      util.safeSetData(this, { guest: true, signedIn: access.signedIn(), statusBarHeight: util.statusBarHeight(), loading: false, parent: {}, child: {}, children: [], family: { members: [] }, device: {}, showSwitcher: false, error: '' })
+      return
+    }
+    util.safeSetData(this, { guest: false, signedIn: true })
     this.setData({ statusBarHeight: util.statusBarHeight() })
     this.reload()
   },

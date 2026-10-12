@@ -1,15 +1,16 @@
 <view class="page">
   <nav-bar title="意见反馈" />
-  <view class="pad">
-    <view wx:if="{{submitted}}" class="feedback-success"><image src="/assets/icons/lucide/check.png" mode="aspectFit" /><text class="h1">问题已提交</text><text class="sub">可在“专属支持”查看处理进度，我们会尽快跟进。</text><button class="btn btn-secondary mt-24" bindtap="again">继续反馈</button></view>
+  <view class="pad feedback-body">
+    <view wx:if="{{submitted}}" class="feedback-success"><image src="/assets/icons/lucide/check.png" mode="aspectFit" /><text class="h1">反馈已保存</text><text class="sub">已保存到本机，可在“专属支持”查看。当前尚未发送给真实客服。</text><button class="btn btn-secondary mt-24" bindtap="again">再写一条反馈</button></view>
     <block wx:else>
-    <view class="edit-hero"><view class="icon-box icon-coral"><image src="/assets/icons/lucide/support.png" mode="aspectFit" /></view><view><text class="h2">告诉我们遇到的问题</text><text class="sub">描述越具体，越容易快速定位</text></view></view>
-    <text class="form-label">问题类型</text>
-    <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategory"><view class="item between"><text>{{categories[categoryIndex]}}</text><text class="link">修改</text></view></picker>
-    <text class="form-label mt-16">问题描述</text>
-    <textarea class="textarea" value="{{text}}" maxlength="500" placeholder="描述问题，可选择是否附带必要日志" bindinput="onInput" />
-    <text class="sub mt-8">{{count}} / 500</text>
-    <button class="btn btn-primary mt-24" loading="{{busy}}" disabled="{{busy}}" bindtap="send">提交</button>
+    <view class="edit-hero"><view class="icon-box"><image src="/assets/icons/lucide/message.png" mode="aspectFit" /></view><text class="feedback-eyebrow">每个想法，都值得被听见</text><text class="h1">说说你的使用感受</text><text class="sub">一个问题、一点建议，或一次不错的体验。<text>让我们一起，把陪伴做得更好。</text></text></view>
+    <view class="feedback-form"><text class="form-label">关于哪一方面？</text>
+    <picker mode="selector" range="{{categories}}" value="{{categoryIndex}}" bindchange="onCategory"><view class="category-field between"><text>{{categories[categoryIndex]}}</text><text class="link">选择 ⌄</text></view></picker>
+    <text class="form-label description-label">你的问题或建议</text>
+    <textarea class="textarea feedback-input" value="{{text}}" maxlength="500" auto-height="{{false}}" cursor-spacing="24" adjust-position placeholder="比如：在哪个页面、进行了什么操作、出现了什么情况？也欢迎告诉我们你希望增加的体验。" bindinput="onInput" />
+    <view class="input-footer"><text>{{count < 5 ? '至少写 5 个字' : '感谢你认真写下的反馈'}}</text><text>{{count}} / 500</text></view></view>
+    <button class="btn btn-primary feedback-submit {{busy || count < 5 ? 'is-disabled' : ''}}" loading="{{busy}}" disabled="{{busy || count < 5}}" bindtap="send">{{busy ? '正在保存…' : '保存我的反馈'}}</button>
+    <text class="feedback-note">反馈先保存在本机。请勿填写密码、孩子精确位置或其他敏感信息。</text>
     </block>
   </view>
 </view>

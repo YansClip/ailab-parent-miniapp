@@ -1,4 +1,5 @@
+const access = require('../../services/access')
 Page({
   retry() { wx.navigateBack() },
-  exit() { wx.exitMiniProgram && wx.exitMiniProgram() }
+  browse() { access.browse() }
 })

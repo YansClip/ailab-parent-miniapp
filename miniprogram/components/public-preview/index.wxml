@@ -1,0 +1,48 @@
+<scroll-view class="public-page" scroll-y enhanced show-scrollbar="{{false}}">
+  <view class="public-content" style="padding-top: {{statusBarHeight + 44}}px;">
+    <text class="eyebrow">AILab 家长端 · 自由浏览</text>
+    <text class="title">{{sections[section].title}}</text>
+    <text class="intro">{{sections[section].intro}}</text>
+    <view class="hero"><image class="hero-image" src="/assets/island/ocean-world.jpg" mode="aspectFill" /><view class="hero-shade"></view><text class="hero-title">陪伴成长，安心守护</text><text class="hero-note">不登录，也可以先了解和浏览</text></view>
+
+    <block wx:if="{{section === 'home'}}">
+      <text class="section-title">好奇心推送卡片</text><text class="small">公开示例 · 点击卡片阅读内容</text>
+      <view class="note" wx:for="{{notes}}" wx:key="id">
+        <button class="note-button" data-id="{{item.id}}" bindtap="toggle" hover-class="pressed" aria-label="{{expanded === item.id ? '收起' : '展开'}}{{item.label}}">
+          <image class="note-image" src="{{item.image}}" mode="aspectFill" />
+          <view class="note-copy"><text class="tag">{{item.label}}</text><text class="note-title">{{item.title}}</text><text class="note-summary">{{item.summary}}</text><text class="link">{{expanded === item.id ? '收起内容 ↑' : '看看这次发现 ↓'}}</text></view>
+        </button>
+        <view wx:if="{{expanded === item.id}}" class="expanded"><text>{{item.detail}}</text></view>
+      </view>
+    </block>
+
+    <block wx:elif="{{section === 'guard'}}">
+      <text class="section-title">守护功能怎么用</text><text class="small">点击查看操作流程，不发起设备请求</text>
+      <button class="feature" data-id="location" bindtap="showTool"><text class="note-title">当前位置</text><text class="note-summary">采集时间、精度、在线状态与电量</text><text class="link">查看说明 ↓</text></button>
+      <view class="expanded" wx:if="{{tool === 'location'}}"><text>正式使用时显示绑定设备当前有效点位。刷新需等待新的设备上报；离线、过期或失败后清除旧坐标。此处不展示实际地图，也不请求手机位置。</text></view>
+      <button class="feature" data-id="call" bindtap="showTool"><text class="note-title">语音与视频通话</text><text class="note-summary">呼叫、等待接听、接通与挂断</text><text class="link">查看说明 ↓</text></button>
+      <view class="expanded" wx:if="{{tool === 'call'}}"><text>主动登录、绑定设备后才能发起呼叫。等待接听不代表已接通；拒接、占线、无人接听会显示明确结果。真实媒体依赖设备和微信平台接入，此处不采集音视频。</text></view>
+      <button class="feature" data-id="tools" bindtap="showTool"><text class="note-title">设备小帮手</text><text class="note-summary">通讯录、查找设备、闹钟、紧急联系人</text><text class="link">查看说明 ↓</text></button>
+      <view class="expanded" wx:if="{{tool === 'tools'}}"><text>监护人按权限配置联系人和闹钟；配置保存与设备同步分别确认。查找时显示响铃过程，找到后手动停止，不把请求受理当作找到设备。</text></view>
+    </block>
+
+    <block wx:elif="{{section === 'growth'}}">
+      <text class="section-title">成长启思简报 · 示例</text>
+      <view class="brief"><text class="note-title">从一次提问，读懂探索过程</text><text class="note-summary">观察了什么、尝试了什么、还有什么想验证？简报整理使用记录，帮助家长开启一次具体的交流，而非给孩子打分。</text></view>
+      <text class="section-title">六维探索覆盖</text><text class="small">点击维度了解统计含义；这里不展示真实分数</text>
+      <view class="dimensions"><button class="dimension" wx:for="{{dimensions}}" wx:key="id" data-id="{{item.id}}" bindtap="showDimension"><text>{{item.name}}</text><text class="dimension-link">了解这一维度 ›</text></button></view>
+      <block wx:for="{{dimensions}}" wx:key="id"><view class="expanded" wx:if="{{dimension === item.id}}"><text>{{item.detail}}</text></view></block>
+      <view class="brief"><text class="note-title">周报、阶段报告与成果</text><text class="note-summary">回看一段时间里的探索记录与成果。登录后仅可查看有权限的孩子数据；数据不足时不会生成虚假的评价。</text></view>
+    </block>
+
+    <block wx:else>
+      <text class="section-title">先了解，再决定</text>
+      <button class="feature" bindtap="guide"><text class="note-title">玩机指南</text><text class="note-summary">直接阅读绑定、守护与通话使用说明</text><text class="link">阅读指南 ›</text></button>
+      <button class="feature" bindtap="about"><text class="note-title">关于 AILab</text><text class="note-summary">产品定位、版本与协议说明</text><text class="link">关于我们 ›</text></button>
+    </block>
+
+    <view class="public-links"><button class="text-link" bindtap="guide">使用指南</button><button class="text-link" data-type="privacy" bindtap="policy">隐私政策</button><button class="text-link" data-type="child" bindtap="policy">儿童信息规则</button></view>
+    <view class="login-panel"><text class="note-title">{{signedIn ? '连接您的家庭' : '想查看自己的家庭？'}}</text><text class="note-summary">{{signedIn ? '当前账号尚未完成家庭设置；浏览不受影响。' : '您可以继续浏览；查看本人孩子与设备数据时，再主动登录。'}}</text><button class="login-button" bindtap="login" hover-class="pressed">{{signedIn ? '创建或绑定家庭' : '登录并连接家庭'}}</button><text class="small">不强制提供手机号、头像或昵称</text></view>
+    <view class="bottom-space"></view>
+  </view>
+</scroll-view>

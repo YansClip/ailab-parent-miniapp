@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/home/index",
     "pages/auth/welcome",
     "pages/auth/privacy",
     "pages/auth/login",
@@ -8,7 +9,6 @@
     "pages/family/bind",
     "pages/family/waiting",
     "pages/family/success",
-    "pages/home/index",
     "pages/home/footprint",
     "pages/home/feed",
     "pages/guard/index",
@@ -45,7 +45,8 @@
     "pages/my/about",
     "pages/my/feedback",
     "pages/my/policy",
-    "pages/my/debug"
+    "pages/my/debug",
+    "pages/my/location-test"
   ],
   "window": {
     "backgroundColor": "#F3F9FD",

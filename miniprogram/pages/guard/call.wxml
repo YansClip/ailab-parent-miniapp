@@ -1,27 +1,38 @@
 <view class="page">
-  <nav-bar title="语音通话" />
+  <nav-bar title="{{pageTitle}}" />
   <view class="call-stage">
-    <text class="demo-label">演示模式 · 无真实音频连接</text>
-    <view class="call-aura {{stage}}">
+    <text class="demo-label">{{isLab ? '本机信令模拟 · 未接 SDK，不传声音和画面' : isCloud ? '设备接入模式 · 微信官方通话组件' : '演示模式 · 不采集声音或摄像头画面'}}</text>
+    <view class="media-heading"><text>{{mediaType === 'video' ? '看见彼此，安心陪伴' : '听见彼此，安心陪伴'}}</text><text class="media-type">{{pageTitle}}</text></view>
+    <view class="video-preview" wx:if="{{mediaType === 'video' && !isCloud && !isLab}}">
+      <image wx:if="{{stage === 'connected'}}" class="remote-illustration" src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" />
+      <view wx:else class="video-wait"><view class="camera-outline"></view><text>{{stage === 'ready' ? '孩子接听后才连接画面' : title}}</text></view>
+      <text class="video-caption">{{stage === 'connected' ? '设备端 · 模拟画面，非实时视频' : '设备摄像头尚未开启'}}</text>
+      <view class="self-preview"><view class="self-avatar" wx:if="{{!cameraOff && stage === 'connected'}}">家长</view><text>{{stage !== 'connected' ? '本机未采集' : cameraOff ? '本机画面已关闭' : '家长端 · 模拟画面'}}</text></view>
+    </view>
+    <view class="call-aura {{stage}}" wx:else>
       <view class="pulse p1" wx:if="{{stage === 'calling'}}"></view>
       <view class="pulse p2" wx:if="{{stage === 'calling'}}"></view>
       <view class="avatar-lg"><image src="/assets/illustrations/mini-device-v2.png" mode="aspectFit" /></view>
     </view>
-    <text class="call-child">{{child}}的 Mini · {{online ? '在线' : '离线'}}</text>
+    <text class="call-child">{{isLab ? '测试会话 · 不代表设备在线' : child + '的 Mini · ' + (online ? '在线' : '离线')}}</text>
+    <text class="caption mt-12" wx:if="{{isLab && callId}}">联调编号：{{callId}}</text>
     <text class="big mt-8">{{loading ? '正在读取通话状态' : title}}</text>
     <text class="sub mt-8">{{desc}}</text>
     <text class="duration" wx:if="{{stage === 'connected' || (terminal && duration !== '00:00')}}">{{duration}}</text>
     <view class="guard-error" wx:if="{{error}}"><text>{{error}}</text><button class="inline-action" bindtap="reload">重新查询状态</button></view>
-    <view class="actions" wx:if="{{stage === 'connected'}}">
+    <view class="unsupported" wx:if="{{!supported && !loading}}">设备暂未提供{{pageTitle}}能力，请联系设备方完成配置。</view>
+    <view class="actions" wx:if="{{stage === 'connected' && !isCloud && !isLab}}">
       <button class="fab {{muted ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="muted" aria-label="{{muted ? '取消静音' : '开启静音'}}"><image src="/assets/icons/lucide/mic.png" mode="aspectFit" /><text>{{muted ? '已静音' : '静音'}}</text></button>
       <button class="fab {{speaker ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="speaker" aria-label="{{speaker ? '关闭扬声器' : '开启扬声器'}}"><image src="/assets/icons/lucide/volume.png" mode="aspectFit" /><text>{{speaker ? '扬声器开' : '扬声器'}}</text></button>
       <button class="fab {{nr ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="nr" aria-label="{{nr ? '关闭降噪' : '开启降噪'}}"><image src="/assets/icons/lucide/magic.png" mode="aspectFit" /><text>{{nr ? '降噪开' : '降噪'}}</text></button>
+      <button wx:if="{{mediaType === 'video'}}" class="fab {{cameraOff ? 'on' : ''}}" disabled="{{busy}}" bindtap="control" data-control="cameraOff"><view class="camera-outline small"></view><text>{{cameraOff ? '画面关闭' : '关闭画面'}}</text></button>
     </view>
-    <view class="privacy-note mt-24"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /><text>不采集麦克风、录音或摄像头。离开页面不会自动挂断，可返回继续操作。</text></view>
+    <button wx:if="{{isCloud && active && hasRoom && stage !== 'ending'}}" class="btn btn-secondary mt-20" bindtap="openOfficial">进入微信通话界面</button>
+    <view class="privacy-note mt-24"><image src="/assets/icons/lucide/privacy.png" mode="aspectFit" /><text>{{isCloud ? '孩子明确接听后才开启设备音视频。不开启远程监听，不录音录像；媒体控制以微信通话界面为准。' : '此页面只模拟通话过程，不采集声音与画面。不会远程开启孩子摄像头，也不录音录像。'}}</text></view>
   </view>
   <view class="page-fixed-footer">
-    <button class="btn btn-primary" wx:if="{{stage === 'ready' || terminal}}" loading="{{busy}}" disabled="{{busy || loading}}" bindtap="startCall">{{terminal ? '重新呼叫 Mini' : '呼叫 Mini'}}</button>
-    <button class="btn btn-danger" wx:if="{{stage === 'calling' || stage === 'connected'}}" loading="{{busy}}" disabled="{{busy}}" bindtap="hang">结束通话</button>
-    <text class="sub mt-8 note">所有通话结果均为演示会话状态</text>
+    <button class="btn btn-primary" wx:if="{{stage === 'ready' || terminal}}" loading="{{busy}}" disabled="{{busy || loading || !supported}}" bindtap="startCall">{{isLab ? '发起本机信令模拟' : terminal ? '重新呼叫 Mini' : mediaType === 'video' ? '发起视频通话' : '发起语音通话'}}</button>
+    <button class="btn btn-danger" wx:if="{{active}}" loading="{{busy && stage !== 'preparing'}}" disabled="{{busy && stage !== 'preparing'}}" bindtap="hang">{{stage === 'preparing' ? '取消呼叫准备' : stage === 'ending' ? '再次确认结束' : '结束通话'}}</button>
+    <text class="sub mt-8 note">{{isCloud ? '以设备确认及实际媒体连接状态为准' : '所有通话结果均为演示会话状态'}}</text>
   </view>
 </view>

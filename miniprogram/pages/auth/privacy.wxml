@@ -18,6 +18,6 @@
   <view class="footer">
     <button class="btn btn-primary" bindtap="onAgree" disabled="{{busy}}" loading="{{busy}}">同意并继续</button>
     <button class="btn btn-secondary mt-12" bindtap="openPolicy" data-type="privacy">查看完整隐私政策</button>
-    <button class="decline" bindtap="onDecline">暂不同意</button>
+    <button class="decline" bindtap="onDecline">暂不同意，继续浏览</button>
   </view>
 </view>

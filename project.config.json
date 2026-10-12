@@ -1,5 +1,6 @@
 {
   "miniprogramRoot": "miniprogram/",
+  "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "urlCheck": true,
     "es6": true,
@@ -80,6 +81,10 @@
         {
           "name": "我的",
           "pathName": "pages/my/index"
+        },
+        {
+          "name": "本机联调设置",
+          "pathName": "pages/my/debug"
         }
       ]
     }

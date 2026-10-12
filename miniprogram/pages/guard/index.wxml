@@ -1,39 +1,46 @@
-<view class="page page-tab guard" style="padding-top: {{statusBarHeight}}px;">
+<public-preview wx:if="{{guest}}" section="guard" signed-in="{{signedIn}}" status-bar-height="{{statusBarHeight}}" />
+<view wx:else class="page page-tab guard" style="padding-top: {{statusBarHeight}}px;">
   <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
     <view class="pad head">
-      <view><text class="eyebrow">FAMILY GUARD</text><text class="h1">安心守护</text><text class="sub">当前点位，一眼安心</text></view>
-      <button class="pill device-pill {{loc.online ? 'pill-sky' : 'pill-butter'}}" bindtap="openSwitcher" aria-label="切换孩子与设备">{{loc.child.shortName || '选择孩子'}} · {{loc.online ? '在线' : '离线'}} · {{batteryText}}<text class="switch-hint">切换⌄</text></button>
+      <view><text class="eyebrow">安心，来自每一次连接</text><text class="h1">安心守护</text></view>
+      <button class="pill device-pill {{loc.online ? 'pill-sky' : 'pill-butter'}}" bindtap="openSwitcher" aria-label="切换孩子与设备">{{loc.child.shortName || '选择孩子'}} · {{loading || error ? '状态待查询' : isLab ? loc.online ? 'TCP 已连接' : 'TCP 未连接' : loc.online ? '在线' : '离线'}} · {{batteryText}}<text class="switch-hint">切换⌄</text></button>
     </view>
-    <view class="pad"><text class="demo-label">演示数据 · 未采集孩子或手机的真实位置</text></view>
+    <view class="pad"><text class="demo-label">{{isLab ? '本机联调 · 测试来源未认证，不绑定真实孩子' : isCloud ? '设备接入模式 · 仅定位与音视频对接设备云' : '演示数据 · 未采集孩子或手机的真实位置'}}</text></view>
+    <view class="pad location-heading"><text class="h3">当前位置</text><text class="caption">只看当下，不记录轨迹</text></view>
     <view class="pad mt-12" wx:if="{{loading}}" role="status"><view class="map-wrap skeleton"></view></view>
     <view class="pad mt-12" wx:elif="{{error}}"><view class="map-wrap empty-map"><empty-state title="守护数据暂时不可用" desc="{{error}}" action="重新加载" bind:action="reload" /></view></view>
     <view class="pad mt-12" wx:else>
       <view class="map-panel" wx:if="{{loc.point}}">
         <view class="map-wrap">
-          <map wx:if="{{!mapError}}" id="guard-map" class="live-map" latitude="{{loc.point.latitude}}" longitude="{{loc.point.longitude}}" markers="{{markers}}" scale="16" show-location="{{false}}" enable-3D="{{false}}" enable-overlooking="{{false}}" binderror="onMapError" aria-label="演示点位地图" />
+          <map wx:if="{{!mapError}}" id="guard-map" class="live-map" latitude="{{loc.point.latitude}}" longitude="{{loc.point.longitude}}" markers="{{markers}}" scale="16" show-location="{{false}}" enable-3D="{{false}}" enable-overlooking="{{false}}" binderror="onMapError" aria-label="设备当前点位地图" />
           <view wx:else class="map-fallback"><text class="h3">地图暂未加载</text><text class="sub">网络或地图服务不可用，地址信息仍可查看。</text><button class="inline-action" bindtap="retryMap">重试加载地图</button></view>
         </view>
         <view class="loc-card">
-          <view class="between"><text class="loc-title">{{loc.label}}</text><text class="location-badge">模拟点位</text></view>
-          <text class="sub">精度约 {{loc.accuracy}} 米 · {{relative}}</text>
-          <text class="caption">更新时间 {{updatedText}}</text>
-          <text class="caption">坐标 {{loc.point.latitude}}, {{loc.point.longitude}}</text>
-          <button class="refresh" loading="{{refreshing}}" disabled="{{refreshing}}" bindtap="onRefresh">{{refreshing ? '正在刷新点位…' : '刷新位置'}}</button>
+          <view class="between"><text class="loc-title">{{loc.label}}</text><text class="location-badge">{{isLab ? '联调点位' : isCloud ? '设备点位' : '模拟点位'}}</text></view>
+          <text class="sub">{{loc.accuracy === null ? '精度未知' : '精度约 ' + loc.accuracy + ' 米'}} · {{relative}}</text>
+          <text class="caption">{{isLab ? '本机接收时间' : isCloud ? '设备采集时间' : '更新时间'}} {{updatedText}}</text>
+          <text wx:if="{{isLab}}" class="caption">设备采集时间、精度及电量未知；30 秒无新上报即清除联调点位。</text>
+          <button class="refresh" loading="{{refreshing}}" disabled="{{refreshing}}" bindtap="onRefresh">{{isLab || loc.refreshMode === 'wait-next-report' ? '等待下一次上报' : refreshing ? '正在刷新点位…' : '刷新位置'}}</button>
         </view>
       </view>
-      <view class="map-wrap empty-map" wx:else><empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置已失效，坐标已清除。'}}" action="刷新位置" busy="{{refreshing}}" bind:action="onRefresh" /></view>
+      <view class="map-wrap empty-map" wx:else><empty-state title="{{loc.label || '暂无有效位置'}}" desc="{{loc.hint || '位置已失效，坐标已清除。'}}" action="{{isLab || loc.refreshMode === 'wait-next-report' ? '等待下一次上报' : '刷新位置'}}" busy="{{refreshing}}" bind:action="onRefresh" /></view>
       <view class="guard-error" wx:if="{{refreshError}}">{{refreshError}}</view>
-      <text class="caption location-policy">只显示当前有效点位，不提供历史轨迹；失效后不展示坐标。</text>
+      <view class="refresh-state" wx:if="{{refreshState}}" role="status">{{refreshState}}<button wx:if="{{integrated}}" class="inline-action" bindtap="onRefresh" disabled="{{refreshing}}">{{isLab ? '查询 / 等待上报' : '查询 / 刷新位置'}}</button></view>
+      <text class="caption location-policy">{{isLab ? '仅供联调检查，不能证明设备正在随身佩戴或点位刚刚采集；不保存轨迹。' : '只显示当前有效点位，不提供历史轨迹；失效后不展示坐标。'}}</text>
     </view>
-    <view class="pad tool-head"><text class="section-title">设备工具</text><text class="caption">为每一次安心</text></view>
+    <view class="pad tool-head"><text class="section-title">听听声音，见见孩子</text><text class="caption">随时保持联系</text></view>
+    <view class="pad call-tools">
+      <button class="call-entry voice-entry" bindtap="go" data-url="/pages/guard/call" hover-class="pressed"><view class="call-icon"><image src="/assets/icons/lucide/phone.png" mode="aspectFit" /></view><text class="call-title">语音通话</text><text class="call-desc">听听今天的新发现</text><text class="call-link">拨打语音 ›</text></button>
+      <button class="call-entry video-entry" bindtap="go" data-url="/pages/guard/call?type=video" hover-class="pressed"><view class="call-icon"><view class="video-symbol"><view class="video-lens"></view></view></view><text class="call-title">视频通话</text><text class="call-desc">面对面，聊一会儿</text><text class="call-link">发起视频 ›</text></button>
+    </view>
+    <view class="pad tool-head secondary-heading"><text class="section-title">设备小帮手</text></view>
     <view class="pad tools">
-      <button class="tool" bindtap="go" data-url="/pages/guard/call"><view class="ticon t-gold"><image src="/assets/icons/lucide/phone.png" mode="aspectFit" /></view><text>语音通话</text></button>
-      <button class="tool" bindtap="go" data-url="/pages/guard/contacts"><view class="ticon"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><text>通讯录</text></button>
-      <button class="tool" bindtap="go" data-url="/pages/guard/find"><view class="ticon"><image src="/assets/icons/lucide/search.png" mode="aspectFit" /></view><text>查找设备</text></button>
-      <button class="tool" bindtap="go" data-url="/pages/guard/alarm"><view class="ticon"><image src="/assets/icons/lucide/alarm.png" mode="aspectFit" /></view><text>闹钟</text></button>
-      <button class="tool" bindtap="go" data-url="/pages/guard/sos"><view class="ticon t-navy"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view><text>紧急联系人</text></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/contacts"><view class="ticon"><image src="/assets/icons/lucide/contact.png" mode="aspectFit" /></view><view class="tool-copy"><text>通讯录</text><text class="tool-desc">管理可联系的人</text></view></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/find"><view class="ticon t-mint"><image src="/assets/icons/lucide/search.png" mode="aspectFit" /></view><view class="tool-copy"><text>查找设备</text><text class="tool-desc">让 Mini 响铃</text></view></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/alarm"><view class="ticon t-gold"><image src="/assets/icons/lucide/alarm.png" mode="aspectFit" /></view><view class="tool-copy"><text>闹钟</text><text class="tool-desc">安排日常小提醒</text></view></button>
+      <button class="tool" bindtap="go" data-url="/pages/guard/sos"><view class="ticon t-navy"><image src="/assets/icons/lucide/sos.png" mode="aspectFit" /></view><view class="tool-copy"><text>紧急联系人</text><text class="tool-desc">需要时及时联系</text></view></button>
     </view>
-    <view class="pad mt-16 pb" wx:if="{{!loading && !error}}">
+    <view class="pad mt-16 pb" wx:if="{{!loading && !error && !integrated}}">
       <view class="card safety">
         <view class="between"><text class="h3">守护状态</text><text class="pill pill-sky">{{loc.status === 'valid' ? '点位有效' : '暂无有效点位'}}</text></view>
         <view class="s-row">
@@ -43,6 +50,7 @@
         </view>
       </view>
     </view>
+    <view class="bottom-space"></view>
   </scroll-view>
-  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{loc.child.id || ''}}" bind:close="closeSwitcher" bind:change="onChildChange" />
+  <child-switcher show="{{showSwitcher}}" children="{{children}}" current-id="{{selectedId || ''}}" external="{{integrated}}" bind:close="closeSwitcher" bind:change="onChildChange" />
 </view>

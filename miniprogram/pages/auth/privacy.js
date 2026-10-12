@@ -1,10 +1,11 @@
 const api = require('../../services/api')
 const util = require('../../utils/util')
+const access = require('../../services/access')
 
 Page({
   data: { next: '', busy: false },
   onLoad(q) {
-    this.setData({ next: q.next || '' })
+    this.setData({ next: access.normaliseNext(q.next) })
   },
   openPolicy(e) {
     const type = e.currentTarget.dataset.type
@@ -19,7 +20,7 @@ Page({
     }).catch((e) => util.failToast(e)).finally(() => util.safeSetData(this, { busy: false }))
   },
   onDecline() {
-    wx.navigateTo({ url: '/pages/auth/declined' })
+    access.browse(this.data.next)
   },
   onUnload() { util.disposePage(this) }
 })

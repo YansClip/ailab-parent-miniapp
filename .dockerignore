@@ -1,0 +1,15 @@
+**
+!server/
+!server/mini-device-cloudrun/
+!server/mini-device-cloudrun/*.js
+!server/mini-device-cloudrun/package.json
+!server/mini-device-cloudrun/package-lock.json
+!cloudfunctions/
+!cloudfunctions/miniDeviceGateway/
+!cloudfunctions/miniDeviceGateway/lib/
+!cloudfunctions/miniDeviceGateway/lib/*.js
+!cloudfunctions/miniDeviceGateway/providers/
+!cloudfunctions/miniDeviceGateway/providers/*.js
+!tools/
+!tools/mini-location-tcp/
+!tools/mini-location-tcp/protocol.js

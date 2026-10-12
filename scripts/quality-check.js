@@ -26,7 +26,7 @@ function existsMini(target) {
 
 const pages = app.pages || []
 const pageSet = new Set(pages)
-if (pages.length !== 46) errors.push(`页面注册数量应为 46，当前为 ${pages.length}`)
+if (pages.length !== 47) errors.push(`页面注册数量应为 47，当前为 ${pages.length}`)
 
 pages.forEach((page) => {
   ;['.js', '.json', '.wxml', '.wxss'].forEach((ext) => {
@@ -36,7 +36,13 @@ pages.forEach((page) => {
 })
 
 const files = walk(mini)
-const jsFiles = files.filter((file) => file.endsWith('.js'))
+const backend = walk(path.join(root, 'cloudfunctions', 'miniDeviceGateway')).filter(file => !file.includes(`${path.sep}node_modules${path.sep}`))
+const cloudrun = walk(path.join(root, 'server', 'mini-device-cloudrun')).filter(file => !file.includes(`${path.sep}node_modules${path.sep}`))
+const testFiles = walk(path.join(root, 'tests')).filter(file => file.endsWith('.js'))
+const tcpTools = walk(path.join(root, 'tools', 'mini-location-tcp')).filter(file => file.endsWith('.js'))
+const syntheticTools = walk(path.join(root, 'tools', 'synthetic-location-lab')).filter(file => file.endsWith('.js'))
+const voipTools = walk(path.join(root, 'tools', 'voip-rehearsal')).filter(file => file.endsWith('.js'))
+const jsFiles = files.concat(backend, cloudrun, testFiles, tcpTools, syntheticTools, voipTools, [path.join(root, 'scripts', 'voip-preflight.js')]).filter((file) => file.endsWith('.js'))
 jsFiles.forEach((file) => {
   try {
     childProcess.execFileSync(process.execPath, ['--check', file], { stdio: 'pipe' })
@@ -65,7 +71,7 @@ files.filter((file) => file.endsWith('.wxml')).forEach((file) => {
   const usingComponents = fs.existsSync(pageJson)
     ? Object.keys((JSON.parse(fs.readFileSync(pageJson, 'utf8')).usingComponents || {}))
     : []
-  ;['nav-bar', 'empty-state', 'child-switcher'].forEach((tag) => {
+  ;['nav-bar', 'empty-state', 'child-switcher', 'public-preview'].forEach((tag) => {
     if (wxml.includes('<' + tag) && usingComponents.indexOf(tag) < 0) {
       errors.push(`页面使用组件但未注册：${rel(file)} -> ${tag}`)
     }

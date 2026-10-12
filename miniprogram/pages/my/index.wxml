@@ -1,9 +1,7 @@
-<view class="page page-tab me" style="padding-top: {{statusBarHeight}}px;">
+<public-preview wx:if="{{guest}}" section="my" signed-in="{{signedIn}}" status-bar-height="{{statusBarHeight}}" />
+<view wx:else class="page page-tab me" style="padding-top: {{statusBarHeight}}px;">
   <scroll-view scroll-y class="scroll" enhanced show-scrollbar="{{false}}">
-    <view class="pad title-row">
-      <text class="h1">我的</text>
-      <view class="notice-pill">演示数据</view>
-    </view>
+    <view class="pad title-row"><view><text class="eyebrow">陪伴，也照顾到你</text><text class="h1">我的家庭</text></view><view class="notice-pill">演示数据</view></view>
 
     <view class="pad" wx:if="{{loading}}" role="status" aria-label="正在加载账号与家庭信息">
       <view class="sk-profile skeleton"></view>
@@ -46,6 +44,15 @@
           </view>
           </view>
         </view>
+      </view>
+
+      <view class="pad feedback-section">
+        <button class="feedback-feature" data-url="/pages/my/feedback" bindtap="go" hover-class="pressed" aria-label="意见反馈，告诉我们你的想法">
+          <view class="feedback-top"><view class="feedback-kicker"><image src="/assets/icons/lucide/message.png" mode="aspectFit" /><text>我们想听听你的声音</text></view><text class="feedback-arrow">↗</text></view>
+          <text class="feedback-title">好的陪伴，<text>一起变得更好。</text></text>
+          <text class="feedback-desc">遇到问题，或有一个新想法？<text>你的反馈，是下一次改进的起点。</text></text>
+          <view class="feedback-cta"><text>意见反馈</text><text>写下我的想法 ›</text></view>
+        </button>
       </view>
 
       <view class="pad menu-group" wx:for="{{groups}}" wx:key="title" wx:for-item="group">

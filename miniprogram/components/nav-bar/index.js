@@ -39,7 +39,7 @@ Component({
   methods: {
     onBack() {
       const pages = getCurrentPages()
-      if (pages.length > 1) wx.navigateBack()
+      if (pages.length > 1) wx.navigateBack({ delta: 1, fail: () => wx.showToast({ title: '暂时无法返回，请重试', icon: 'none' }) })
       else wx.switchTab({ url: '/pages/home/index' })
     },
     onAction() {

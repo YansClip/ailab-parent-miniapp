@@ -6,6 +6,21 @@
   "scripts": {
     "check": "node scripts/quality-check.js",
     "test": "node --test tests/*.test.js",
-    "verify": "npm run check && npm test"
+    "verify": "npm run check && npm test",
+    "device:tcp": "node tools/mini-location-tcp/cli.js --monitor",
+    "device:tcp:probe": "node tools/mini-location-tcp/cli.js --framing idle-probe --monitor",
+    "device:tcp:send": "node tools/mini-location-tcp/send.js",
+    "device:tcp:test": "node --test tests/tcp-location.test.js tests/tcp-fixed17.test.js",
+    "device:tcp:tunnel": "node tools/mini-location-tcp/tunnel.js",
+    "device:voip:check": "node scripts/voip-preflight.js",
+    "device:voip:rehearse": "node tools/voip-rehearsal/index.js",
+    "device:voip:test": "node --test tests/voip-*.test.js",
+    "device:cloudrun:start": "node server/mini-device-cloudrun/server.js",
+    "device:cloudrun:test": "node --test tests/cloudrun.test.js",
+    "device:cloudrun:check": "node scripts/cloudrun-preflight.js",
+    "device:cloudrun:package": "node scripts/package-cloudrun.js",
+    "device:location:test": "node --test tests/location-backend.test.js",
+    "device:location:relay": "node server/mini-device-cloudrun/location-tcp-relay.js",
+    "device:location:lab": "node tools/synthetic-location-lab/server.js"
   }
 }

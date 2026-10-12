@@ -3,3 +3,18 @@ project.private.config.json
 node_modules/
 coverage/
 *.log
+.env
+.env.*
+!.env.example
+!.env.relay.example
+tools/mini-location-tcp/private/
+
+# 本机证据、云端联调数据与临时部署产物不进入远程仓库。
+# 已在历史提交中的早期纯演示截图仍保留；新增产物全部忽略。
+output/
+docs/monitor-evidence/
+*.sql.gz
+*.dump
+*.p12
+*.pfx
+*.key

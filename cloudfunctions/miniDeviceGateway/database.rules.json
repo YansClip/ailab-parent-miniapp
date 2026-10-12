@@ -1,0 +1,12 @@
+{
+  "mini_memberships": { "read": false, "write": false },
+  "mini_bindings": { "read": false, "write": false },
+  "mini_current_locations": { "read": false, "write": false },
+  "mini_location_watches": { "read": false, "write": false },
+  "mini_operations": { "read": false, "write": false },
+  "mini_calls": { "read": false, "write": false },
+  "mini_call_locks": { "read": false, "write": false },
+  "mini_event_receipts": { "read": false, "write": false },
+  "mini_voip_accounts": { "read": false, "write": false },
+  "mini_voip_authorizations": { "read": false, "write": false }
+}

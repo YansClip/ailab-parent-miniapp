@@ -2,12 +2,12 @@
   <view class="sheet" catchtap="noop">
     <view class="handle"></view>
     <text class="title">切换孩子与设备</text>
-    <text class="hint">切换后首页、守护、成长会一起刷新，不会短暂显示上一个孩子的数据。</text>
+    <text class="hint">{{external ? '此处只列出后台已授权的设备；切换前请先结束当前通话。' : '切换后首页、守护、成长会一起刷新，不会短暂显示上一个孩子的数据。'}}</text>
     <button class="item {{item.id === currentId ? 'on' : ''}}" wx:for="{{children}}" wx:key="id" data-id="{{item.id}}" hover-class="pressed" bindtap="onPick" aria-label="切换到{{item.name}}，设备{{item.online ? '在线' : '离线'}}">
       <view class="avatar" style="background: {{item.avatarColor}}">{{item.shortName}}</view>
       <view class="meta">
         <text class="name">{{item.name}}</text>
-        <text class="dev">{{item.deviceName}} · {{item.online ? '在线' : '离线'}}</text>
+        <text class="dev">{{item.deviceName}} · {{item.online === null ? '选中后查询状态' : item.online ? '在线' : '离线'}}</text>
       </view>
       <text class="check" wx:if="{{item.id === currentId}}">当前</text>
     </button>

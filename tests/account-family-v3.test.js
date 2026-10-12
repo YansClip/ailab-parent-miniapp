@@ -98,12 +98,12 @@ function harness(t, authenticated = true) {
   return { store, mock, api, state, routes, toasts, modals, open, close, flush, advance, act, lastRoute }
 }
 
-test('首次进入经隐私、登录到创建家庭，创建必须等待任务完成', async (t) => {
+test('欢迎旧入口返回浏览；主动登录经隐私到创建家庭，创建等待任务完成', async (t) => {
   const h = harness(t, false)
   const welcome = await h.open('auth/welcome')
-  assert.equal(h.routes.length, 0)
-  welcome.onStart()
-  assert.equal(h.lastRoute().url, '/pages/auth/privacy')
+  assert.equal(h.lastRoute().url, '/pages/home/index')
+  welcome.onLogin()
+  assert.equal(h.lastRoute().url, '/pages/auth/privacy?next=')
   const privacy = await h.open('auth/privacy')
   privacy.onAgree()
   await h.flush()
@@ -133,7 +133,7 @@ test('隐私拒绝不会登录；登录失败与家庭创建失败不推进流�
   const h = harness(t, false)
   const privacy = await h.open('auth/privacy')
   privacy.onDecline()
-  assert.equal(h.lastRoute().url, '/pages/auth/declined')
+  assert.equal(h.lastRoute().url, '/pages/home/index')
   assert.equal(h.store.getSession().privacyAccepted, false)
   const declined = await h.open('auth/declined')
   declined.retry()

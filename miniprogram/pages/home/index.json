@@ -1,6 +1,7 @@
 {
   "usingComponents": {
     "empty-state": "/components/empty-state/index",
-    "child-switcher": "/components/child-switcher/index"
+    "child-switcher": "/components/child-switcher/index",
+    "public-preview": "/components/public-preview/index"
   }
 }

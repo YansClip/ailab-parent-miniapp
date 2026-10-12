@@ -14,9 +14,9 @@ function error(page, err) {
   if (err && err.code === 'CANCELLED') return
   set(page, { error: (err && err.message) || '网络不可用，请检查后重试', busy: false, loading: false })
 }
-function read(page, key, request, apply) {
+function read(page, key, request, apply, options = {}) {
   const version = util.beginRequest(page, key)
-  set(page, { loading: true, error: '', loadError: false })
+  set(page, { loading: !options.quiet, error: '', loadError: false })
   return request().then((value) => {
     if (page.__hidden || !util.isRequestCurrent(page, key, version)) return
     apply(value)

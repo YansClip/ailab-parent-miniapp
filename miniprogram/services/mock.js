@@ -24,7 +24,7 @@ const DEFAULT_ALARMS = [
   { id: 'al2', time: '21:00', label: '晚安', repeat: '每天', enabled: true, synced: true }
 ]
 const POINT = { latitude: 23.0597, longitude: 113.3640, name: '广州市番禺区 · 广东科学中心附近', accuracy: 18 }
-const SCENARIOS = ['default', 'empty', 'loading', 'offline', 'stale', 'fail', 'timeout', 'generating', 'call-rejected', 'call-busy', 'call-interrupted', 'device-offline', 'device-online']
+const SCENARIOS = ['default', 'empty', 'loading', 'offline', 'stale', 'fail', 'timeout', 'generating', 'call-rejected', 'call-busy', 'call-interrupted', 'call-permission', 'device-offline', 'device-online']
 const ADMIN_TASKS = ['family-create', 'child-bind', 'child-unbind', 'device-unbind', 'device-bind', 'admin-transfer', 'invite-accept', 'invite-reject', 'contact-sync', 'contact-delete', 'alarm-save', 'alarm-delete', 'sos-update', 'data-delete', 'child-data-request', 'consent-withdraw']
 const TASK_TYPES = ADMIN_TASKS.concat(['account-cancel', 'voice-call', 'find-device', 'find-stop', 'report-regen', 'subscription-update', 'feedback'])
 function seedEvents(childId) {
@@ -336,8 +336,13 @@ function submit(type, payload) {
 function callSession(c) {
   const db = database(), session = db.calls[c.childId]
   if (!session || session.epoch !== c.epoch) return null
-  if (['calling', 'connected'].includes(session.stage) && (!c.child.online || !c.child.deviceBound)) { session.stage = 'interrupted'; session.endedAt = now(); session.reason = '设备连接已中断' }
-  if (session.stage === 'calling' && now() >= session.resolveAt) {
+  const waiting = ['calling', 'ringing', 'connecting']
+  if (waiting.concat('connected').includes(session.stage) && (!c.child.online || !c.child.deviceBound)) { session.stage = 'interrupted'; session.endedAt = now(); session.reason = '设备连接已中断' }
+  if (waiting.includes(session.stage) && now() < session.resolveAt) {
+    const elapsed = now() - session.startedAt
+    session.stage = elapsed >= 1200 && session.outcome === 'connected' ? 'connecting' : elapsed >= 600 ? 'ringing' : 'calling'
+  }
+  if (waiting.includes(session.stage) && now() >= session.resolveAt) {
     session.stage = session.outcome
     if (session.stage === 'connected') session.connectedAt = session.resolveAt
     else { session.endedAt = session.resolveAt; session.reason = { rejected: '设备端拒绝了通话', busy: '设备正忙，请稍后重试', timeout: '等待接听超时', failed: '连接失败，请重试' }[session.stage] }
@@ -352,13 +357,18 @@ function findSession(c) {
   if (session.stage === 'ringing' && (!c.child.deviceBound || !c.child.online)) { session.stage = 'stopped'; session.endedAt = now(); session.reason = '设备连接中断，响铃状态已结束' }
   db.finds[c.childId] = session; save(db); return session
 }
-function startCall() {
+function startCall(mediaType = 'voice') {
   const c = context(); requireDevice(c, true)
+  if (!['voice', 'video'].includes(mediaType)) error('INVALID_ARGUMENT', '请选择语音或视频')
+  if (store.getScenario() === 'call-permission') error('MEDIA_PERMISSION_DENIED', '未允许麦克风或摄像头权限，可允许后重试（模拟）')
   const old = callSession(c)
-  if (old && ['calling', 'connected'].includes(old.stage)) return old
+  if (old && ['calling', 'ringing', 'connecting', 'connected'].includes(old.stage)) {
+    if ((old.mediaType || 'voice') !== mediaType) error('CALL_ACTIVE', '请先结束当前通话，再更换通话类型')
+    return old
+  }
   const scenario = store.getScenario(), created = now()
   const outcome = { 'call-rejected': 'rejected', 'call-busy': 'busy', timeout: 'timeout', fail: 'failed' }[scenario] || 'connected'
-  const item = meta({ id: nextId('call'), childId: c.childId, deviceId: c.deviceId, epoch: c.epoch, stage: 'calling', startedAt: created, connectedAt: null, endedAt: null, reason: '', muted: false, speaker: false, nr: false, resolveAt: created + (outcome === 'timeout' ? 8000 : 1800), outcome, interruptAt: scenario === 'call-interrupted' ? created + 7000 : null })
+  const item = meta({ id: nextId('call'), childId: c.childId, deviceId: c.deviceId, epoch: c.epoch, isDemo: true, mediaType, cameraOff: false, stage: 'calling', startedAt: created, connectedAt: null, endedAt: null, reason: '', muted: false, speaker: false, nr: false, resolveAt: created + (outcome === 'timeout' ? 8000 : 1800), outcome, interruptAt: scenario === 'call-interrupted' ? created + 7000 : null })
   const db = database(); db.calls[c.childId] = item; save(db); return item
 }
 function startFinding() {
@@ -393,7 +403,7 @@ const mock = {
     const achievements = g.achievements.map((a) => Object.assign({}, a, { type: '探索成果', extra: '来自已保存的探索内容记录', tone: 'sky' }))
     return meta({ child: c.child, childId: c.childId, greeting: '你好', empty: list.length === 0, hero: { image: '/assets/island/ocean-world.jpg', title: '每一步探索，都有记录', subtitle: c.child.shortName + '已完成 ' + g.progress.completed + ' 项探索内容' }, summary: { dynamics: dynamics.length, onlineMinutes: 0, todos: todos.length, deviceOnline: loc.online, completed: g.progress.completed }, dynamics, todos, footprints, achievements, photos: achievements.map((a) => a.image), photoCard: achievements[0] ? { title: achievements[0].title, desc: '查看探索成果记录', time: achievements[0].time } : null, suggestion: list.length ? { title: '今日陪伴建议', text: '和' + c.child.shortName + '聊聊最近一次探索记录中的观察与理由。' } : null, guide: { title: '玩机指南', desc: '了解守护与探索记录', status: '查看指南' }, progress: g.progress })
   }),
-  getLocation: () => reply(() => currentLocation(context())),
+  getLocation: () => reply(() => { const loc = currentLocation(context()); return Object.assign(loc, { isDemo: true, expiresAt: loc.updatedAt + 5 * 60000, capabilities: { location: true, voice: true, video: true } }) }),
   refreshLocation: () => reply(() => { const c = context(); requireDevice(c, true); const db = database(); db.locations[c.childId] = { point: POINT, updatedAt: now() }; save(db); return Object.assign(currentLocation(c), { ok: true, message: '位置已更新' }) }),
   getContacts: () => reply(() => { const c = context(), ids = store.getSosIds(c.childId); return contacts(c).map((x) => Object.assign({}, x, { sos: ids.includes(x.id) })) }),
   getContact: (id) => reply(() => contacts(context()).find((x) => x.id === id) || null),
@@ -451,9 +461,9 @@ const mock = {
     return meta({ id, targetId: id, targetType: type, childId: c.childId, title: redact(item.title) + '（脱敏）', childAlias: alias, range: item.range || item.date, body: redact(type === 'achievement' ? item.process : item.sections.map((s) => s.title + '：' + s.body).join('\n')), hidden: ['全名', '位置', '设备 ID', '家庭信息', '精确时刻'], generating: item.status === 'generating', canShare, status: item.status || 'ready' })
   }),
   getCallSession: () => reply(() => callSession(context())),
-  startCall: () => reply(startCall),
-  updateCallControl: (control, value) => reply(() => { const c = context(), session = callSession(c); if (!['muted', 'speaker', 'nr'].includes(control)) error('INVALID_CONTROL', '不支持的通话控制'); if (!session || session.stage !== 'connected') error('CALL_NOT_CONNECTED', '通话尚未接通'); session[control] = !!value; const db = database(); db.calls[c.childId] = session; save(db); return session }),
-  endCall: (reason) => reply(() => { const c = context(), session = callSession(c); if (!session || !['calling', 'connected'].includes(session.stage)) return session; session.stage = 'ended'; session.endedAt = now(); session.reason = reason || '已主动挂断'; const db = database(); db.calls[c.childId] = session; save(db); return session }),
+  startCall: (mediaType) => reply(() => startCall(mediaType)),
+  updateCallControl: (control, value) => reply(() => { const c = context(), session = callSession(c); if (!['muted', 'speaker', 'nr', 'cameraOff'].includes(control)) error('INVALID_CONTROL', '不支持的通话控制'); if (!session || session.stage !== 'connected') error('CALL_NOT_CONNECTED', '通话尚未接通'); if (control === 'cameraOff' && session.mediaType !== 'video') error('INVALID_CONTROL', '语音通话不使用摄像头'); session[control] = !!value; const db = database(); db.calls[c.childId] = session; save(db); return session }),
+  endCall: (reason) => reply(() => { const c = context(), session = callSession(c); if (!session || !['calling', 'ringing', 'connecting', 'connected'].includes(session.stage)) return session; session.stage = 'ended'; session.endedAt = now(); session.reason = reason || '已主动挂断'; const db = database(); db.calls[c.childId] = session; save(db); return session }),
   getFindSession: () => reply(() => findSession(context())),
   startFinding: () => reply(startFinding),
   stopFinding: (reason) => reply(() => { const c = context(), session = findSession(c); if (!session || session.stage !== 'ringing') return session; session.stage = 'stopped'; session.endedAt = now(); session.reason = reason || '已手动停止'; const db = database(); db.finds[c.childId] = session; save(db); return session }),
