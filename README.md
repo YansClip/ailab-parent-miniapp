@@ -6,7 +6,7 @@
 
 ## 仓库与需求基线（2026-10-12）
 
-- 私有远程仓库：`YansClip/ailab-parent-miniapp`。每批修改测试通过并完成敏感信息检查后提交、推送；不会因此自动部署云端或发布小程序，具体约定见 [AGENTS.md](AGENTS.md)。
+- 公开远程仓库：[YansClip/ailab-parent-miniapp](https://github.com/YansClip/ailab-parent-miniapp)，用户于 2026-10-12 授权公开。任何人可查看、下载代码及历史，但不会因此获得向本仓库推送修改的权限。每批修改测试通过并完成敏感信息检查后提交、推送；不会因此自动部署云端或发布小程序，具体约定见 [AGENTS.md](AGENTS.md)。
 - 正式需求：[飞书 PRD-MiniApp 端](https://k1qq9hin8un.feishu.cn/wiki/KEjiwXHmoikImwk4wzdc2fhjn8U)。最新确认：同一台随身设备在家庭 Wi-Fi 和移动网络下均需支持定位、语音及视频；家长和设备都能主动呼叫，支持双向视频；不保存录音录像，不提供历史轨迹。上述是交付目标，不代表硬件能力已验证。
 - 2026-10-12 上传前检查：`npm run verify` 通过 323 项测试，47 页静态检查 0 错误、0 警告。本次没有重新验收云端 MySQL 或真实音视频。
 - 新增 `output/`、云端联调截图、本机私有配置、运行日志和临时部署包不上传。历史提交中的早期演示截图是历史界面证据，不代表当前功能；部分审计文档引用的本机证据链接在 GitHub 上不可访问。
