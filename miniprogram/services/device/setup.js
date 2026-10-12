@@ -134,6 +134,7 @@ function createDeviceSetup({ config, store, wxApi }) {
       })
     },
     locationSnapshot: scope => rpc('device.snapshot', { scope: scopeOf(scope) }),
+    testLocationSnapshot: scope => rpc('test.location.snapshot', { scope: scopeOf(scope) }),
     readiness: () => rpc('voip.readiness'),
     targets: () => rpc('voip.targets'),
     async ensureCall(scope) {

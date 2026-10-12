@@ -1,0 +1,7 @@
+@import '../../styles/detail.wxss';
+.test-tag{display:inline-block;padding:10rpx 18rpx;border-radius:8rpx;background:#e0f0f4;color:#25647a;font-size:22rpx;font-weight:600}
+.receipt-state{display:block;font-size:32rpx;line-height:1.5;color:#17465d;font-weight:600}
+.coordinates{display:flex;justify-content:space-between;gap:20rpx;padding:24rpx 0;border-top:1rpx solid #dce9ef;border-bottom:1rpx solid #dce9ef}
+.coordinate-value{display:block;margin-top:12rpx;color:#117f9a;font-size:32rpx;font-weight:600;font-variant-numeric:tabular-nums}
+.boundary{display:block;padding:20rpx 24rpx;border-left:4rpx solid #147f9b;background:#edf5f8;color:#4d6878;font-size:24rpx;line-height:1.7}
+.test-error{display:block;padding:24rpx;background:#fff1e5;border-radius:14rpx;color:#8d4f29;font-size:26rpx;line-height:1.7}

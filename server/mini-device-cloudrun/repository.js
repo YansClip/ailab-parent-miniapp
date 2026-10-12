@@ -1,5 +1,6 @@
 const { fail, id } = require('../../cloudfunctions/miniDeviceGateway/lib/contracts')
 const COLLECTIONS = new Set(['mini_memberships', 'mini_bindings', 'mini_current_locations', 'mini_location_watches', 'mini_operations', 'mini_calls', 'mini_call_locks', 'mini_event_receipts', 'mini_voip_accounts', 'mini_voip_authorizations', 'mini_location_channels'])
+COLLECTIONS.add('mini_test_location_channels')
 function unavailableRepository() {
   const blocked = async () => fail('STORAGE_NOT_CONFIGURED', '私有数据库尚未配置，不能读取或写入真实家庭与设备')
   return { get: blocked, put: blocked, list: blocked, remove: blocked, transaction: blocked, health: async () => false, close: async () => {} }

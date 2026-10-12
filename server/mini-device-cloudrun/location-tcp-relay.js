@@ -28,29 +28,34 @@ function validateConfig(config) {
   }
   return devices
 }
-function createForwarder(config) {
+function createForwarder(config, path = PATH) {
   let url
   try { url = new URL(config.ingressUrl) } catch (_) { fail('CONFIG_REQUIRED', '请配置独立定位接收 URL') }
-  if (url.pathname !== PATH || url.search || url.hash || url.username || url.password || !['https:', 'http:'].includes(url.protocol) || url.protocol === 'http:' && url.hostname !== '127.0.0.1') fail('CONFIG_REQUIRED', '定位转发只能走 HTTPS；HTTP 仅允许本机合成测试')
+  if (url.pathname !== path || url.search || url.hash || url.username || url.password || !['https:', 'http:'].includes(url.protocol) || url.protocol === 'http:' && url.hostname !== '127.0.0.1') fail('CONFIG_REQUIRED', '定位转发只能走 HTTPS；HTTP 仅允许本机合成测试')
   id(config.keyId)
   if (!/^[A-Za-z0-9_-]{43,128}$/.test(config.secret || '')) fail('CONFIG_REQUIRED', '请配置独立定位转发签名密钥')
-  return report => new Promise((resolve, reject) => {
-    const bytes = Buffer.from(JSON.stringify(report))
-    const req = (url.protocol === 'https:' ? https : http).request(url, { method: 'POST', headers: { ...signHeaders(config.keyId, config.secret, bytes), 'content-length': bytes.length } }, res => {
-      let size = 0, chunks = []
-      res.on('data', chunk => { size += chunk.length; if (size > 16384) res.destroy(); else chunks.push(chunk) })
-      res.on('error', () => reject({ code: 'INGRESS_UNAVAILABLE' }))
-      res.on('end', () => {
-        let body
-        try { body = JSON.parse(Buffer.concat(chunks).toString('utf8')) } catch (_) { return reject({ code: 'INGRESS_RESPONSE_INVALID' }) }
-        if (res.statusCode !== 200 || !body || body.ok !== true || !body.data || typeof body.data.accepted !== 'boolean') return reject({ code: 'INGRESS_REJECTED' })
-        resolve(body.data)
+  return report => {
+    let deadline
+    return new Promise((resolve, reject) => {
+      const bytes = Buffer.from(JSON.stringify(report))
+      const req = (url.protocol === 'https:' ? https : http).request(url, { method: 'POST', headers: { ...signHeaders(config.keyId, config.secret, bytes, Date.now(), path), 'content-length': bytes.length } }, res => {
+        let size = 0, chunks = []
+        res.on('data', chunk => { size += chunk.length; if (size > 16384) res.destroy(); else chunks.push(chunk) })
+        res.on('error', () => reject({ code: 'INGRESS_UNAVAILABLE' }))
+        res.on('end', () => {
+          let body
+          try { body = JSON.parse(Buffer.concat(chunks).toString('utf8')) } catch (_) { return reject({ code: 'INGRESS_RESPONSE_INVALID' }) }
+          if (res.statusCode !== 200 || !body || body.ok !== true || !body.data || typeof body.data.accepted !== 'boolean') return reject({ code: 'INGRESS_REJECTED' })
+          resolve(body.data)
+        })
       })
-    })
-    req.setTimeout(5000, () => req.destroy())
-    req.on('error', () => reject({ code: 'INGRESS_UNAVAILABLE' }))
-    req.end(bytes)
-  })
+      req.setTimeout(5000, () => req.destroy())
+      // Bound total duration too: a slow trickle must not pin the per-device queue.
+      deadline = setTimeout(() => req.destroy(), 7000)
+      req.on('error', () => reject({ code: 'INGRESS_UNAVAILABLE' }))
+      req.end(bytes)
+    }).finally(() => clearTimeout(deadline))
+  }
 }
 function createTcpRelay({ config, forward = createForwarder(config), now = Date.now, log = () => {} }) {
   const devices = validateConfig(config)

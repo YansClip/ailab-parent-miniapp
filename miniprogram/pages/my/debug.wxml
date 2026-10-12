@@ -32,7 +32,12 @@
     <text class="sub mt-12" role="status">{{realResult}}</text>
   </view>
   <view class="card card-p mt-20">
-    <text class="h3">云端定位检查 · 手机可用</text>
+    <text class="h3">硬件定位测试 · 云端收包</text>
+    <text class="sub mt-8">工程师本人已同意的位置测试。不限制 A/B 点，不取手机位置，不修改绑定或授权。需后台部署并明确开启；旧报文没有 GPS 采集时间，不作为正式定位。</text>
+    <button class="btn btn-primary mt-16" bindtap="openHardwareLocationTest">打开硬件定位测试页</button>
+  </view>
+  <view class="card card-p mt-20">
+    <text class="h3">正式定位接口检查 · 手机可用</text>
     <text class="sub mt-8">用当前微信身份检查虚构测试设备 A。读取云端状态，不取手机位置，不修改设备绑定或权限。每次点击查询一次。</text>
     <button class="btn btn-primary mt-16" bindtap="checkCloudTestLocation" disabled="{{busy}}" loading="{{busy && activeRealAction === 'location'}}">{{busy && activeRealAction === 'location' ? '正在检查云端定位…' : '检查手机云端定位'}}</button>
     <view wx:if="{{cloudLocation}}" class="mt-12">

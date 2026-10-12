@@ -78,8 +78,11 @@ module.exports = { createServer, readBody, statusFor }
 if (require.main === module) {
   try {
     const config = readConfig()
-    const runtime = config.serviceRole === 'location-ingress' ? require('./location-ingress').createIngressRuntime(config) : createRuntime(config)
-    const server = config.serviceRole === 'location-ingress' ? require('./location-ingress').createIngressServer({ config, runtime, log: item => console.info(JSON.stringify(item)) }) : createServer({ config, runtime, log: item => console.info(JSON.stringify(item)) })
+    const testRole = config.serviceRole === 'test-location-ingress'
+    const ingress = require(testRole ? './test-location-ingress' : './location-ingress')
+    const runtime = testRole ? ingress.createTestIngressRuntime(config) : config.serviceRole === 'location-ingress' ? ingress.createIngressRuntime(config) : createRuntime(config)
+    const options = { config, runtime, log: item => console.info(JSON.stringify(item)) }
+    const server = testRole ? ingress.createTestIngressServer(options) : config.serviceRole === 'location-ingress' ? ingress.createIngressServer(options) : createServer(options)
     let sweeping = false
     const sweepTimer = setInterval(async () => {
       if (sweeping) return

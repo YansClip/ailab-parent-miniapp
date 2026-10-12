@@ -26,7 +26,7 @@ function existsMini(target) {
 
 const pages = app.pages || []
 const pageSet = new Set(pages)
-if (pages.length !== 47) errors.push(`页面注册数量应为 47，当前为 ${pages.length}`)
+if (pages.length !== 48) errors.push(`页面注册数量应为 48，当前为 ${pages.length}`)
 
 pages.forEach((page) => {
   ;['.js', '.json', '.wxml', '.wxss'].forEach((ext) => {

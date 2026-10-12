@@ -8,6 +8,11 @@ function readConfig(env = process.env) {
     serviceRole: env.SERVICE_ROLE || 'business',
     locationProvider: env.LOCATION_PROVIDER || 'disabled',
     locationRelayKeys: env.LOCATION_RELAY_KEYS_JSON || '',
+    testLocationEnabled: env.TEST_LOCATION_ENABLED === 'true',
+    testLocationTests: env.TEST_LOCATION_TESTS_JSON || '',
+    testLocationReaders: env.TEST_LOCATION_READERS_JSON || '',
+    testLocationExpiresAt: env.TEST_LOCATION_EXPIRES_AT || '',
+    testLocationRelayKeys: env.TEST_LOCATION_RELAY_KEYS_JSON || '',
     port: Number(env.PORT || 8080), host: env.HOST || '127.0.0.1',
     voipProvider: env.VOIP_PROVIDER || 'disabled',
     thingconnectUserUrl: env.THINGCONNECT_USER_URL, thingconnectVoipUrl: env.THINGCONNECT_VOIP_URL,
@@ -24,7 +29,7 @@ function readConfig(env = process.env) {
   for (const [name, variable] of Object.entries({ locationTtlMs: 'LOCATION_TTL_MS', statusTtlMs: 'STATUS_TTL_MS', watchLeaseMs: 'WATCH_LEASE_MS', pollMs: 'LOCATION_POLL_MS', refreshTimeoutMs: 'LOCATION_REFRESH_TIMEOUT_MS', callInviteTimeoutMs: 'CALL_INVITE_TIMEOUT_MS', maxCallMs: 'MAX_CALL_MS' })) config[name] = Number(env[variable])
   if (!Number.isInteger(config.port) || config.port < 0 || config.port > 65535) fail('CONFIG_REQUIRED', '服务监听端口配置无效')
   if (!['disabled', 'mysql'].includes(config.storageDriver)) fail('CONFIG_REQUIRED', '请选择支持的私有持久化存储')
-  if (!['business', 'location-ingress'].includes(config.serviceRole) || !['disabled', 'push'].includes(config.locationProvider)) fail('CONFIG_REQUIRED', '设备后台职责或定位接入配置无效')
+  if (!['business', 'location-ingress', 'test-location-ingress'].includes(config.serviceRole) || !['disabled', 'push'].includes(config.locationProvider)) fail('CONFIG_REQUIRED', '设备后台职责或定位接入配置无效')
   return config
 }
 module.exports = { readConfig }

@@ -7,6 +7,7 @@ const { mysqlRepository } = require('../server/mini-device-cloudrun/repository')
 const { createService } = require('../cloudfunctions/miniDeviceGateway/lib/service')
 const { fixture } = require('./fixtures/device-integration')
 const { createLocationStore, createLocationProvider } = require('../server/mini-device-cloudrun/location-store')
+const { createTestLocationStore, COLLECTION: TEST_LOCATION_COLLECTION } = require('../server/mini-device-cloudrun/test-location-store')
 const port = Number(process.env.TEST_MYSQL_PORT)
 if (!Number.isInteger(port) || port < 1024 || port > 65535 || process.env.TEST_DISPOSABLE_MYSQL !== 'synthetic-only') throw Error('需要隔离本机端口 TEST_MYSQL_PORT 和 TEST_DISPOSABLE_MYSQL=synthetic-only；禁止连接现有业务库')
 const options = { host: '127.0.0.1', port, user: 'root', password: 'local-synthetic-test-only', database: 'ailab_gateway_test', connectionLimit: 4 }
@@ -48,6 +49,8 @@ test('真实 MySQL + 业务核心：跨家庭拒绝，同设备并发呼叫只�
 })
 test('真实 MySQL 定位：跨实例重复/乱序不续命、第二实例可读有效位置、无定位及时清除', async () => {
   const f = await fixture()
+  await repo.remove('mini_location_channels', f.scope.deviceId)
+  await repo.remove('mini_current_locations', f.scope.deviceId)
   for (const [k, v] of f.repo.dump()) { const i = k.indexOf(':'); await repo.put(k.slice(0, i), k.slice(i + 1), v) }
   const a = createLocationStore({ repo, config: f.config, now: f.now }), b = createLocationStore({ repo: second, config: f.config, now: f.now })
   const actor = { keyId: 'sql-relay', deviceIds: new Set([f.scope.deviceId]) }
@@ -76,4 +79,43 @@ test('真实 MySQL：锁等待超时后不产生迟到写入，连接池可以�
     await limited.transaction(tx => tx.put('mini_operations', 'after-timeout', { recovered: true }))
     assert.equal((await limited.get('mini_operations', 'after-timeout')).recovered, true)
   } finally { await holder.rollback(); holder.release(); await limited.close() }
+})
+test('真实 MySQL 硬件收包诊断：任意样例坐标跨实例可读，单记录覆盖且按权限/过期清点', async () => {
+  const f = await fixture()
+  await repo.remove(TEST_LOCATION_COLLECTION, f.scope.deviceId)
+  for (const [k, v] of f.repo.dump()) { const i = k.indexOf(':'); await repo.put(k.slice(0, i), k.slice(i + 1), v) }
+  Object.assign(f.config, { testLocationEnabled: true, testLocationTests: JSON.stringify([f.scope]), testLocationReaders: JSON.stringify([f.user.openid]), testLocationExpiresAt: new Date(f.now() + 60000).toISOString() })
+  const service = createService({ repo: second, provider: f.provider, config: f.config, now: f.now })
+  const writer = createTestLocationStore({ repo, config: f.config, now: f.now })
+  const reader = createTestLocationStore({ repo: second, config: f.config, now: f.now, authorize: service.authorize })
+  const actor = { deviceIds: new Set([f.scope.deviceId]) }
+  const report = { version: 1, purpose: 'engineer-location-test', eventId: 'sql-receipt-1', deviceId: f.scope.deviceId, bindingVersion: 1, observedAt: f.now(), status: 'received', longitude: 121.4567, latitude: 31.23456, coordinateSystem: 'UNKNOWN' }
+  await writer.ingest(report, actor)
+  assert.equal((await reader.snapshot(f.user, f.scope)).point.longitude, 121.4567)
+  f.advance(1); await writer.ingest({ ...report, eventId: 'sql-receipt-2', observedAt: f.now(), longitude: 110.9876 }, actor)
+  assert.equal((await reader.snapshot(f.user, f.scope)).point.longitude, 110.9876)
+  assert.equal((await repo.list(TEST_LOCATION_COLLECTION, { deviceId: f.scope.deviceId })).length, 1)
+  await repo.put('mini_memberships', 'member-a', { ...f.member, permissions: { viewDevice: true, locateDevice: false } })
+  await assert.rejects(reader.snapshot(f.user, f.scope), { code: 'FORBIDDEN' })
+  f.advance(30000); await reader.sweep()
+  assert.equal((await repo.get(TEST_LOCATION_COLLECTION, f.scope.deviceId)).point, null)
+})
+test('隔离 MySQL 应用账号：仅 CRUD 权限可写读测试收包，不能建表', async () => {
+  // This account exists ONLY in the disposable loopback container, not the cloud.
+  await pool.query("CREATE USER IF NOT EXISTS 'test_receipt_app'@'%' IDENTIFIED BY 'local-receipt-fixture-only'")
+  await pool.query("GRANT SELECT, INSERT, UPDATE, DELETE ON ailab_gateway_test.* TO 'test_receipt_app'@'%'")
+  const appPool = mysql.createPool({ ...options, user: 'test_receipt_app', password: 'local-receipt-fixture-only' })
+  const appRepo = mysqlRepository(appPool)
+  try {
+    const f = await fixture()
+    for (const [k, v] of f.repo.dump()) { const i = k.indexOf(':'); await repo.put(k.slice(0, i), k.slice(i + 1), v) }
+    await repo.remove(TEST_LOCATION_COLLECTION, f.scope.deviceId)
+    Object.assign(f.config, { testLocationEnabled: true, testLocationTests: JSON.stringify([f.scope]), testLocationReaders: JSON.stringify([f.user.openid]), testLocationExpiresAt: new Date(f.now() + 60000).toISOString() })
+    const service = createService({ repo: appRepo, provider: f.provider, config: f.config, now: f.now })
+    const receipts = createTestLocationStore({ repo: appRepo, config: f.config, now: f.now, authorize: service.authorize })
+    await receipts.ingest({ version: 1, purpose: 'engineer-location-test', eventId: 'app-receipt', deviceId: f.scope.deviceId, bindingVersion: 1, observedAt: f.now(), status: 'received', longitude: 111.4321, latitude: 28.76543, coordinateSystem: 'UNKNOWN' }, { deviceIds: new Set([f.scope.deviceId]) })
+    assert.equal((await receipts.snapshot(f.user, f.scope)).point.longitude, 111.4321)
+    assert.equal(await appRepo.health(), true)
+    await assert.rejects(appPool.query('CREATE TABLE denied_test_table (id INT)'), { code: 'ER_TABLEACCESS_DENIED_ERROR' })
+  } finally { await appRepo.close() }
 })

@@ -15,20 +15,20 @@ function credentials(value) {
   }
   return keys
 }
-function signature(secret, timestamp, bytes) {
-  return crypto.createHmac('sha256', secret).update('POST\n' + PATH + '\n' + timestamp + '\n').update(bytes).digest('hex')
+function signature(secret, timestamp, bytes, path = PATH) {
+  return crypto.createHmac('sha256', secret).update('POST\n' + path + '\n' + timestamp + '\n').update(bytes).digest('hex')
 }
-function signHeaders(keyId, secret, bytes, now = Date.now()) {
+function signHeaders(keyId, secret, bytes, now = Date.now(), path = PATH) {
   const timestamp = String(now)
-  return { 'content-type': 'application/json', 'x-location-key': keyId, 'x-location-time': timestamp, 'x-location-signature': signature(secret, timestamp, bytes) }
+  return { 'content-type': 'application/json', 'x-location-key': keyId, 'x-location-time': timestamp, 'x-location-signature': signature(secret, timestamp, bytes, path) }
 }
-function verify(headers, bytes, keys, now = Date.now()) {
+function verify(headers, bytes, keys, now = Date.now(), path = PATH) {
   if (!keys.size) fail('AUTH_NOT_CONFIGURED', '定位转发验签尚未配置')
   const keyId = headers['x-location-key'], timestamp = headers['x-location-time'], sig = headers['x-location-signature']
   if (typeof keyId !== 'string' || typeof timestamp !== 'string' || !/^\d{13}$/.test(timestamp) || typeof sig !== 'string' || !/^[a-f0-9]{64}$/.test(sig)) fail('AUTH_REQUIRED', '定位转发签名缺失或格式错误')
   const key = keys.get(keyId)
   if (!key || Math.abs(now - Number(timestamp)) > 60000) fail('AUTH_REQUIRED', '定位转发凭证无效或请求已过期')
-  if (!crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(signature(key.secret, timestamp, bytes), 'hex'))) fail('AUTH_REQUIRED', '定位转发签名不匹配')
+  if (!crypto.timingSafeEqual(Buffer.from(sig, 'hex'), Buffer.from(signature(key.secret, timestamp, bytes, path), 'hex'))) fail('AUTH_REQUIRED', '定位转发签名不匹配')
   return { keyId, deviceIds: key.deviceIds }
 }
 module.exports = { PATH, credentials, signature, signHeaders, verify }

@@ -1,0 +1,27 @@
+<view class="page"><nav-bar title="硬件定位测试" /><view class="pad">
+  <text class="test-tag">云端收包诊断 / 非正式定位</text>
+  <text class="h2 mt-16">看硬件传来了什么</text>
+  <text class="sub mt-12">仅测试工程师本人已同意的位置，不使用儿童数据。不限定 A/B 点，不取手机 GPS，不显示轨迹。</text>
+  <view class="card card-p mt-24">
+    <text class="h3">01 · 选择已授权设备</text>
+    <button class="btn btn-secondary mt-16" bindtap="load" loading="{{busy && !watching}}" disabled="{{busy || watching}}">读取本人云端设备</button>
+    <picker wx:if="{{devices.length}}" range="{{devices}}" range-key="deviceName" value="{{selectedIndex}}" bindchange="select" disabled="{{busy || watching}}">
+      <view class="input mt-16">{{devices[selectedIndex].deviceName}} · 选择设备 ▾</view>
+    </picker>
+    <text wx:if="{{devices.length}}" class="sub mt-12">绑定版本 {{devices[selectedIndex].bindingVersion}} · 定位{{devices[selectedIndex].permissions.locateDevice ? '已授权' : '未授权'}}</text>
+    <button wx:if="{{!watching}}" class="btn btn-primary mt-16" bindtap="start" disabled="{{busy || !devices.length}}">开始检查收包</button>
+    <button wx:else class="btn btn-secondary mt-16" bindtap="stop">停止检查并清除坐标</button>
+    <text class="sub mt-12">开启后每 5 秒查询；离开页面即停止。不会自动改变绑定、权限或首页模式。</text>
+  </view>
+  <view class="card card-p mt-20">
+    <text class="h3">02 · 最新收包</text>
+    <text class="receipt-state mt-16" role="status">{{view.label}}</text>
+    <view class="coordinates mt-20"><view><text class="sub">经度</text><text class="coordinate-value">{{view.longitude}}</text></view><view><text class="sub">纬度</text><text class="coordinate-value">{{view.latitude}}</text></view></view>
+    <text wx:if="{{view.hasPoint}}" class="sub mt-16">服务器收到于：{{view.receivedAt}}</text>
+    <text wx:if="{{view.hasPoint}}" class="sub mt-8">坐标系：{{view.coordinateSystem}}</text>
+    <text class="boundary mt-20">旧报文未提供 GPS 采集时间，不能证明是实时位置。收包超过 30 秒、连接断开被确认、查询失败或离页后不保留旧坐标。</text>
+    <text wx:if="{{busy && watching}}" class="sub mt-12">正在查询云端…</text>
+  </view>
+  <text wx:if="{{error}}" class="test-error mt-20" role="alert">{{error}}</text>
+  <text class="sub mt-20">收到坐标不等于完成定位验收。真实设备身份、GPS 采集时间、坐标系及移动网络仍需后续联调。</text>
+</view></view>

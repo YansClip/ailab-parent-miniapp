@@ -41,7 +41,7 @@ test('所有页面、组件和 App 脚本均可完成注册', () => {
   require(path.join(mini, 'custom-tab-bar/index.js'))
   require(path.join(mini, 'app.js'))
 
-  assert.equal(pageCount, 47)
+  assert.equal(pageCount, 48)
   assert.equal(componentCount, 5)
   assert.equal(appCount, 1)
 })

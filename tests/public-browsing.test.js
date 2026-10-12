@@ -54,7 +54,7 @@ test('默认启动页为首页，不是欢迎、隐私或登录页；旧欢迎�
   const h = environment(t)
   const config = JSON.parse(fs.readFileSync(path.join(mini, 'app.json'), 'utf8'))
   assert.equal(config.pages[0], 'pages/home/index')
-  assert.equal(config.pages.length, 47)
+  assert.equal(config.pages.length, 48)
   h.page('auth/welcome')
   assert.deepEqual(h.routes, [{ method: 'switchTab', url: '/pages/home/index' }])
   assert.equal(h.logins, 0)

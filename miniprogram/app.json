@@ -46,7 +46,8 @@
     "pages/my/feedback",
     "pages/my/policy",
     "pages/my/debug",
-    "pages/my/location-test"
+    "pages/my/location-test",
+    "pages/my/hardware-location-test"
   ],
   "window": {
     "backgroundColor": "#F3F9FD",

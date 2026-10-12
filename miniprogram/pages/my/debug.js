@@ -34,6 +34,7 @@ Page({
     }
   },
   openLocationTest() { wx.navigateTo({ url: '/pages/my/location-test' }) },
+  openHardwareLocationTest() { wx.navigateTo({ url: '/pages/my/hardware-location-test' }) },
   demoReady() { return access.familyReady() && api.getDeviceMode() === 'demo' },
   reload() {
     this.clearCloudLocation()

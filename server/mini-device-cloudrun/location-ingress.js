@@ -13,21 +13,21 @@ function createIngressRuntime(config, dependencies = {}) {
   const store = createLocationStore({ repo, config, now: dependencies.now })
   return { keys, ingest: store.ingest, sweep: store.sweep, close: () => repo.close() }
 }
-function createIngressServer({ config, runtime = createIngressRuntime(config), log = () => {}, now = Date.now }) {
+function createIngressServer({ config, runtime = createIngressRuntime(config), log = () => {}, now = Date.now, path = PATH, serviceName = 'ailab-location-ingress' }) {
   // Separate service, not an extra public route on the private WeChat gateway.
   const { readBody, statusFor } = require('./server')
-  const codes = new Set(['AUTH_REQUIRED', 'AUTH_NOT_CONFIGURED', 'FORBIDDEN', 'BINDING_CHANGED', 'INVALID_LOCATION', 'REQUEST_CONFLICT', 'CONFIG_REQUIRED', 'STORAGE_NOT_CONFIGURED', 'STORAGE_UNAVAILABLE', 'PAYLOAD_TOO_LARGE', 'INVALID_JSON', 'INVALID_ARGUMENT', 'REQUEST_TIMEOUT'])
+  const codes = new Set(['AUTH_REQUIRED', 'AUTH_NOT_CONFIGURED', 'FORBIDDEN', 'BINDING_CHANGED', 'INVALID_LOCATION', 'REQUEST_CONFLICT', 'CONFIG_REQUIRED', 'PROVIDER_NOT_CONFIGURED', 'STORAGE_NOT_CONFIGURED', 'STORAGE_UNAVAILABLE', 'PAYLOAD_TOO_LARGE', 'INVALID_JSON', 'INVALID_ARGUMENT', 'REQUEST_TIMEOUT'])
   const server = http.createServer(async (req, res) => {
     const requestId = crypto.randomUUID()
     let status = 500, code = 'INTERNAL_ERROR'
     const send = (s, body) => { status = s; res.writeHead(s, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff' }); res.end(JSON.stringify({ ...body, requestId, serverTime: now() })) }
     try {
-      if (req.url === '/healthz' && req.method === 'GET') { code = 'OK'; send(200, { ok: true, data: { service: 'ailab-location-ingress', processAlive: true, businessVerified: false } }); return }
-      if (req.url !== PATH) { code = 'NOT_FOUND'; send(404, { ok: false, error: { code, message: '没有这个定位接口' } }); return }
+      if (req.url === '/healthz' && req.method === 'GET') { code = 'OK'; send(200, { ok: true, data: { service: serviceName, processAlive: true, businessVerified: false } }); return }
+      if (req.url !== path) { code = 'NOT_FOUND'; send(404, { ok: false, error: { code, message: '没有这个定位接口' } }); return }
       if (req.method !== 'POST') { code = 'METHOD_NOT_ALLOWED'; send(405, { ok: false, error: { code, message: '定位上报仅支持 POST' } }); return }
       if (!/^application\/json(?:\s*;|$)/i.test(req.headers['content-type'] || '')) fail('INVALID_JSON', '定位上报须为 JSON')
       const bytes = await readBody(req, true)
-      const actor = verify(req.headers, bytes, runtime.keys, now())
+      const actor = verify(req.headers, bytes, runtime.keys, now(), path)
       let body
       try { body = JSON.parse(bytes.toString('utf8')) } catch (_) { fail('INVALID_JSON', '定位上报 JSON 无效') }
       const data = await runtime.ingest(body, actor)

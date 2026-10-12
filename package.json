@@ -21,6 +21,8 @@
     "device:cloudrun:package": "node scripts/package-cloudrun.js",
     "device:location:test": "node --test tests/location-backend.test.js",
     "device:location:relay": "node server/mini-device-cloudrun/location-tcp-relay.js",
-    "device:location:lab": "node tools/synthetic-location-lab/server.js"
+    "device:location:lab": "node tools/synthetic-location-lab/server.js",
+    "device:location:receipt:test": "node --test tests/test-location.test.js",
+    "device:location:receipt:relay": "node server/mini-device-cloudrun/test-location-tcp-relay.js"
   }
 }
