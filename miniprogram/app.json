@@ -47,7 +47,8 @@
     "pages/my/policy",
     "pages/my/debug",
     "pages/my/location-test",
-    "pages/my/hardware-location-test"
+    "pages/my/hardware-location-test",
+    "pages/my/official-voip-test"
   ],
   "window": {
     "backgroundColor": "#F3F9FD",

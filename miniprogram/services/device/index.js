@@ -46,8 +46,8 @@ module.exports = { isCloud: () => config.mode === 'cloud', isLab: () => Boolean(
     const checks = [
       { label: config.transport === 'cloudrun' ? '微信云托管设备后台' : 'CloudBase 测试环境', ready: configured, detail: configured ? '调用参数已配置；仍需验证部署、可信身份和权限' : '已备接入代码，设备业务服务尚未部署启用；Django 模板不是设备后台' },
       { label: '微信通话插件开关', ready: config.voip.enabled === true, detail: config.voip.enabled ? '已启用；不代表平台授权通过' : '未启用，不发起真实呼叫' },
-      { label: '厂家系统 / SDK / 型号许可', ready: false, detail: '待硬件方提供并完成样机验证' },
-      { label: '探鸽接口与设备状态回执', ready: false, detail: '已备接入代码；待测试地址、账号凭证及设备回执联调' }
+      { label: '微信官方 RTOS 云对云方案', ready: false, detail: 'P4+C5 已确认；SDK 编译、平台型号及音视频许可仍待验证' },
+      { label: '官方信令与媒体通道', ready: false, detail: '当前仅可本地演练；可信回调、服务端 SDK 运行及真实双向音画尚未接通' }
     ]
     return checks
   }

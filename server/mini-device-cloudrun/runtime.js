@@ -6,6 +6,7 @@ const { createRepository } = require('./repository')
 const { fail } = require('../../cloudfunctions/miniDeviceGateway/lib/contracts')
 const { createLocationStore, createLocationProvider } = require('./location-store')
 const { createTestLocationStore } = require('./test-location-store')
+const { createOfficialVoip } = require('./official-voip')
 const ACTIONS = new Set(['identity.get', 'system.health', 'context.list', 'device.snapshot', 'device.status', 'location.watch', 'location.unwatch', 'location.refresh', 'operation.get', 'call.prepare', 'call.attach', 'call.get', 'call.current', 'call.end', 'call.event', 'voip.readiness', 'voip.login', 'voip.targets', 'voip.ticket', 'voip.report', 'voip.status', 'voip.revoke'])
 function createRuntime(config, dependencies = {}) {
   const repo = dependencies.repo || createRepository(config)
@@ -15,10 +16,12 @@ function createRuntime(config, dependencies = {}) {
   const service = createService({ repo, provider, config, now: dependencies.now })
   const testLocation = createTestLocationStore({ repo, config, authorize: service.authorize, now: dependencies.now })
   const access = createVoipAccess({ repo, service, config, now: dependencies.now })
+  const official = createOfficialVoip({ service })
   return {
     async dispatch(action, payload, user) {
       if (!user || user.appid !== config.appid || !user.openid || user.source !== 'wx-cloudrun-gateway') fail('AUTH_REQUIRED', '请求身份未经微信网关核验')
       if (action === 'test.location.snapshot') return testLocation.snapshot(user, payload && payload.scope)
+      if (official.handles(action)) return official.dispatch(action, payload || {}, user)
       if (!ACTIONS.has(action)) fail('INVALID_ACTION', '不支持的设备操作')
       if (action === 'system.health') return {
         contract: 'ailab-mini-device/v1', appid: config.appid, source: user.source, isDemo: false,

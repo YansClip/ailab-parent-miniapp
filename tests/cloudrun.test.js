@@ -32,6 +32,18 @@ async function httpFixture(t, options = {}) {
   }
   return { request, logs }
 }
+test('官方准备 HTTP：返回未就绪 503，模拟器不打包、不暴露 HTTP 接口', async t => {
+  const f = await fixture(), repo = {...f.repo,health:async()=>true,close:async()=>{}}
+  const runtime = createRuntime({...config(),...f.config},{repo,provider:f.provider,now:f.now})
+  const h = await httpFixture(t,{runtime})
+  const result = await h.request({action:'official.voip.outbound',payload:{scope:f.scope,liveCallEnabled:true}})
+  assert.equal(result.status,503); assert.equal(result.body.error.code,'OFFICIAL_VOIP_NOT_READY')
+  assert.equal((await h.request({action:'official.voip.readiness'},{})).status,401)
+  assert.equal((await h.request({action:'official.voip.simulate'})).body.error.code,'INVALID_ACTION')
+  const files = require('../scripts/package-cloudrun').sources()
+  assert(files.includes('server/mini-device-cloudrun/official-voip.js'))
+  assert(!files.some(x=>x.includes('official-call-machine') || x.includes('wechat-official-voip') || x.includes('official-voip-simulation')))
+})
 test('HTTP：健康检查只证明进程存活；无数据库也能查本人，设备读取不能回退示例', async t => {
   const f = await httpFixture(t)
   const h = await f.request(null, {}, '/healthz', 'GET'); assert.equal(h.status, 200); assert.equal(h.body.data.businessVerified, false)

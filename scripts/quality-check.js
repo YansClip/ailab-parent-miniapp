@@ -26,7 +26,7 @@ function existsMini(target) {
 
 const pages = app.pages || []
 const pageSet = new Set(pages)
-if (pages.length !== 48) errors.push(`页面注册数量应为 48，当前为 ${pages.length}`)
+if (pages.length !== 49) errors.push(`页面注册数量应为 49，当前为 ${pages.length}`)
 
 pages.forEach((page) => {
   ;['.js', '.json', '.wxml', '.wxss'].forEach((ext) => {
@@ -41,8 +41,8 @@ const cloudrun = walk(path.join(root, 'server', 'mini-device-cloudrun')).filter(
 const testFiles = walk(path.join(root, 'tests')).filter(file => file.endsWith('.js'))
 const tcpTools = walk(path.join(root, 'tools', 'mini-location-tcp')).filter(file => file.endsWith('.js'))
 const syntheticTools = walk(path.join(root, 'tools', 'synthetic-location-lab')).filter(file => file.endsWith('.js'))
-const voipTools = walk(path.join(root, 'tools', 'voip-rehearsal')).filter(file => file.endsWith('.js'))
-const jsFiles = files.concat(backend, cloudrun, testFiles, tcpTools, syntheticTools, voipTools, [path.join(root, 'scripts', 'voip-preflight.js')]).filter((file) => file.endsWith('.js'))
+const voipTools = ['voip-rehearsal','wechat-official-voip'].flatMap(dir => walk(path.join(root, 'tools', dir))).filter(file => file.endsWith('.js'))
+const jsFiles = files.concat(backend, cloudrun, testFiles, tcpTools, syntheticTools, voipTools, [path.join(root, 'scripts', 'voip-preflight.js'), path.join(root, 'scripts', 'wechat-official-sdk-check.js')]).filter((file) => file.endsWith('.js'))
 jsFiles.forEach((file) => {
   try {
     childProcess.execFileSync(process.execPath, ['--check', file], { stdio: 'pipe' })

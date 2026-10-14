@@ -20,7 +20,7 @@ function inspect({ config, project, app }) {
     label: '当前云托管代码未开放可信通话回执接入；仅改环境变量不能启用真实呼叫' })
   checks.push(...[
     ['platform', '本 AppID 的硬件 VoIP 许可、ModelID 和插件授权'],
-    ['supplier', '供应商测试服务、实际 API 契约、设备上线和媒体连接'],
+    ['official-sdk', '微信官方 RTOS / 云对云 SDK、可信回调、设备上线和媒体连接'],
     ['hardware', '鱼鹰 P4+C5 固件、双向声音和双向画面真机验证'],
     ['hangup', '接听后挂断接口及媒体停止回执（cancel 不能直接等同挂断）']
   ].map(([id, label]) => ({ id, label, status: 'unverified' })))

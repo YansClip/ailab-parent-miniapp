@@ -1,0 +1,45 @@
+<view class="page"><nav-bar title="官方通话 · 本地演练" /><view class="pad" wx:if="{{view}}">
+  <text class="rehearsal-tag">仅模拟 · 不联网 · 不采集音画</text>
+  <text class="h2 mt-16">先把通话流程跑顺</text>
+  <text class="sub mt-8">虚构家庭与测试设备，与云端绑定、权限及真实设备完全分开。离开此页后清空本次演练。</text>
+  <view class="boundary mt-20">微信平台许可、官方 SDK 实机适配、可信回调和媒体通道仍待验证。这里显示“模拟连接”不代表真实声音或画面已经接通。</view>
+  <view class="card card-p mt-20">
+    <text class="h3">01 · 选择演练方向</text>
+    <radio-group bindchange="chooseDirection" class="options mt-12">
+      <label><radio value="phone-to-device" checked="{{direction === 'phone-to-device'}}" disabled="{{view.active}}" color="#157eaf" />手机 → 设备</label>
+      <label><radio value="device-to-phone" checked="{{direction === 'device-to-phone'}}" disabled="{{view.active}}" color="#157eaf" />设备 → 手机</label>
+    </radio-group>
+    <radio-group bindchange="chooseMedia" class="options mt-12">
+      <label><radio value="voice" checked="{{mediaType === 'voice'}}" disabled="{{view.active}}" color="#157eaf" />语音流程</label>
+      <label><radio value="video" checked="{{mediaType === 'video'}}" disabled="{{view.active}}" color="#157eaf" />视频流程</label>
+    </radio-group>
+  </view>
+  <view class="card card-p mt-20">
+    <text class="h3">02 · 模拟条件（不修改真实授权）</text>
+    <view class="condition"><text>设备绑定有效</text><switch checked="{{view.policy.bound}}" data-name="bound" bindchange="changePolicy" color="#157eaf" aria-label="模拟设备绑定" /></view>
+    <view class="condition"><text>家庭成员有通话权限</text><switch checked="{{view.policy.callAllowed}}" data-name="callAllowed" bindchange="changePolicy" color="#157eaf" aria-label="模拟业务通话权限" /></view>
+    <view class="condition"><text>设备在线</text><switch checked="{{view.policy.online}}" data-name="online" bindchange="changePolicy" color="#157eaf" aria-label="模拟设备在线" /></view>
+    <view class="condition"><text>设备呼入提醒已授权</text><switch checked="{{view.policy.incomingReminder === 'authorized'}}" bindchange="changeReminder" color="#157eaf" aria-label="模拟微信呼入提醒" /></view>
+    <text class="sub mt-8">微信呼入提醒与家庭通话权限是两回事。手机主动呼叫设备不以呼入提醒授权为前提；本页开关不会弹出微信授权。</text>
+    <button class="btn btn-primary mt-16" bindtap="start" disabled="{{view.active}}">发起一次模拟{{mediaType === 'voice' ? '语音' : '视频'}}呼叫</button>
+  </view>
+  <view class="call-state card card-p mt-20" role="status">
+    <text class="sub">03 · 流程状态 · 模拟时钟 {{view.clockSeconds}} 秒</text>
+    <text class="h2 mt-12">{{view.stateLabel}}</text>
+    <text class="sub mt-8" wx:if="{{view.call}}">{{view.call.direction === 'phone-to-device' ? '手机 → 设备' : '设备 → 手机'}} · {{view.call.mediaType === 'voice' ? '语音' : '视频'}} · {{view.reasonLabel}}</text>
+    <text wx:if="{{view.call.state === 'connected'}}" class="boundary mt-12">此状态只有业务事件，没有采集、播放、传输或保存任何音视频。</text>
+    <button wx:if="{{view.call.state === 'preparing'}}" class="btn btn-primary mt-16" data-type="notify" bindtap="step">模拟呼叫通知送达</button>
+    <view wx:if="{{view.call.state === 'ringing'}}" class="mt-16">
+      <button class="btn btn-primary" data-type="accept" bindtap="step">模拟{{view.receiver === 'device' ? '设备' : '手机'}}主动接听</button>
+      <view class="button-row mt-12"><button class="btn btn-secondary" data-type="reject" bindtap="step">模拟拒接</button><button class="btn btn-secondary" data-type="busy" bindtap="step">模拟忙线</button></view>
+    </view>
+    <button wx:if="{{view.call.state === 'joining'}}" class="btn btn-primary mt-16" data-type="joined" bindtap="step">模拟媒体加入事件（无音画）</button>
+    <button wx:if="{{view.call.state === 'joining' || view.call.state === 'connected'}}" class="btn btn-danger mt-12" data-type="hangup" bindtap="step">模拟挂断</button>
+    <button wx:if="{{view.call.state === 'preparing' || view.call.state === 'ringing'}}" class="btn btn-secondary mt-12" data-type="cancel" bindtap="step">模拟主叫取消</button>
+    <button wx:if="{{view.active}}" class="btn btn-secondary mt-12" bindtap="advance">模拟时间前进 31 秒</button>
+  </view>
+  <text wx:if="{{error}}" class="boundary error mt-16" role="alert">{{error}}</text>
+  <view class="card card-p mt-20" wx:if="{{view.history.length}}"><text class="h3">本次模拟记录</text><text class="event" wx:for="{{view.history}}" wx:key="id">{{item.text}}</text></view>
+  <button class="btn btn-secondary mt-20" bindtap="reset">清空并恢复模拟条件</button>
+  <text class="sub mt-16">下一阶段：成人单设备 Wi-Fi 语音 → 反向呼叫 → 双向视频 → 移动网络。平台登记和硬件适配通过后再做真实联调。</text>
+</view></view>

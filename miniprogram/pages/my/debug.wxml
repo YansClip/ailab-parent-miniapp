@@ -51,8 +51,9 @@
     <text wx:if="{{activeRealAction === 'location'}}" class="sub mt-12" role="status">{{realResult}}</text>
   </view>
   <view class="card card-p mt-20">
-    <text class="h3">真实音视频接入准备</text>
-    <text class="sub mt-8">按顺序检查身份、测试服务、设备绑定和微信授权。这里不生成设备号或密钥，不采集手机号、头像或昵称。</text>
+    <text class="h3">微信官方音视频接入准备</text>
+    <text class="sub mt-8">先在独立页面演练双向呼叫、接听、拒接和超时。不启用旧供应商方案，不生成真实设备号或密钥，不采集音视频。</text>
+    <button class="btn btn-primary mt-16" bindtap="openOfficialVoip">打开官方通话本地演练</button>
     <view class="mt-12" wx:for="{{lab.checks}}" wx:key="label"><text class="h3">{{item.label}}</text><text class="sub">{{item.detail}}</text></view>
     <button class="btn btn-secondary mt-16" bindtap="checkCloudConnection" disabled="{{busy}}" loading="{{busy && activeRealAction === 'connection'}}">{{busy && activeRealAction === 'connection' ? '正在检查云端连接…' : '检查云托管业务连接'}}</button>
     <text wx:if="{{busy && activeRealAction === 'connection'}}" class="sub mt-12" role="status">正在等待云端响应，请等待约 12 秒。检查期间不会上传位置、声音或画面。</text>
@@ -60,18 +61,7 @@
     <view wx:if="{{cloudConnection}}" class="mt-12"><text class="sub">业务后台：已响应</text><text class="sub">私有数据库：{{cloudConnection.storageReady ? '已响应' : '待配置或不可用'}}</text><text class="sub">定位、声音、画面：仍需各自联调验证</text></view>
     <button class="btn btn-primary mt-16" bindtap="fetchIdentity" disabled="{{busy}}">1. 获取本人真实 OpenID</button>
     <view wx:if="{{realIdentity}}" class="mt-12"><text class="sub">AppID：{{realIdentity.appid}}</text><text class="sub">OpenID：{{realIdentity.openid}}</text><button class="btn btn-secondary mt-8" bindtap="copyIdentity">复制 OpenID 给联调人员</button></view>
-    <button class="btn btn-secondary mt-12" bindtap="checkReadiness" disabled="{{busy}}">2. 检查测试后台准备情况</button>
-    <view wx:if="{{realChecks}}" class="mt-12"><text class="sub">服务地址：{{realChecks.endpointsConfigured ? '已配置，待联通验证' : '未配置'}}</text><text class="sub">本人探鸽账号：{{realChecks.accountConfigured ? '已关联，接口可用性待验证' : '未关联或凭证无效'}}</text><text class="sub">后台授权设备：{{realChecks.targetCount}} 台</text><text class="sub">微信平台通话权限：需人工核实，不能由开关证明</text></view>
-    <button class="btn btn-secondary mt-12" bindtap="loadRealTargets" disabled="{{busy}}">3. 读取真实测试设备</button>
-    <button class="item list-button mt-8" wx:for="{{realTargets}}" wx:key="deviceId" data-id="{{item.deviceId}}" bindtap="selectRealTarget" disabled="{{busy}}"><view class="between"><text class="h3">{{item.deviceName}}</text><text class="pill pill-sky">{{item.deviceId === realSelectedId ? '已选中' : '选择'}}</text></view><text class="sub">{{item.online ? '设备在线' : '设备离线'}} · {{item.configured ? '型号已配置' : '型号或线路待配置'}}</text><text class="sub">声音{{item.audioVerified ? '已标记验证' : '未验证'}} / 双向画面{{item.videoVerified ? '已标记验证' : '未验证'}}</text><text class="sub">设备上行：{{item.codecs.upVideo}}；设备下行：{{item.codecs.downVideo}}</text></button>
-    <input class="input mt-12" value="{{remark}}" maxlength="64" placeholder="可选：设备上显示的联系人名称" bindinput="inputRemark" />
-    <button class="btn btn-primary mt-12" bindtap="authorizeReal" disabled="{{busy || !realSelectedId}}">4. 主动授权此设备通话</button>
-    <button class="btn btn-secondary mt-12" bindtap="retryRealSync" disabled="{{busy || !realSelectedId}}">仅重试后台授权同步</button>
-    <button class="btn btn-secondary mt-12" bindtap="queryRealAuth" disabled="{{busy || !realSelectedId}}">查询微信与后台授权状态</button>
-    <view wx:if="{{realStatus}}" class="mt-12"><text class="sub">微信：{{realStatus.wechatState === 'authorized' ? '已授权' : realStatus.wechatState === 'disabled' ? '已关闭' : realStatus.wechatState === 'missing' ? '无授权记录' : '查询未确认'}}</text><text class="sub">后台：{{realStatus.serverAuthorized ? '已同步' : '未同步'}}；这里只确认授权，不确认通话接通</text></view>
-    <button class="btn btn-secondary mt-12" data-type="voice" bindtap="testRealCall" disabled="{{busy || !realSelectedId}}">进入真实语音测试</button>
-    <button class="btn btn-secondary mt-12" data-type="video" bindtap="testRealCall" disabled="{{busy || !realSelectedId}}">进入真实视频测试</button>
-    <text class="sub mt-12" role="status">{{realResult}}</text><text class="sub mt-12">原生微信回调由探鸽通话服务处理。设备接听与媒体回执未联通前，后台会阻止正式呼叫；本机模拟不会代替它。</text>
+    <text class="sub mt-12" role="status">{{realResult}}</text><text class="sub mt-12">业务后台和数据库连通，不代表官方媒体服务已经接通。真实通话保持关闭，平台许可、SDK 和硬件适配完成后另行联调。</text>
   </view>
   <view wx:if="{{demoReady}}" class="card card-p mt-20"><text class="h3">注入一条 Web 完成事件</text><text class="sub mt-8">可试用 B04 观察新增覆盖。B02 默认已完成，重复提交不重复增加；解锁不计完成。</text><input class="input mt-12" value="{{courseId}}" maxlength="3" bindinput="input" /><button class="btn btn-primary mt-12" bindtap="inject" disabled="{{busy}}">模拟完成</button><text class="sub mt-12">{{lastResult}}</text></view>
   <button wx:if="{{demoReady}}" class="item list-button" wx:for="{{list}}" wx:key="id" data-id="{{item.id}}" bindtap="pick" disabled="{{busy}}"><view class="between"><text class="h3">{{item.name}}</text><text class="pill pill-sky" wx:if="{{item.id===current}}">当前</text></view></button>

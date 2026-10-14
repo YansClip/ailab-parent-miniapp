@@ -13,6 +13,8 @@
     "device:tcp:test": "node --test tests/tcp-location.test.js tests/tcp-fixed17.test.js",
     "device:tcp:tunnel": "node tools/mini-location-tcp/tunnel.js",
     "device:voip:check": "node scripts/voip-preflight.js",
+    "device:voip:official:test": "node --test tests/voip-official.test.js tests/voip-official-sdk.test.js",
+    "device:voip:sdk-check": "node scripts/wechat-official-sdk-check.js",
     "device:voip:rehearse": "node tools/voip-rehearsal/index.js",
     "device:voip:test": "node --test tests/voip-*.test.js",
     "device:cloudrun:start": "node server/mini-device-cloudrun/server.js",

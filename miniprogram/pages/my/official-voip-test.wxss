@@ -1,0 +1,7 @@
+@import '../../styles/detail.wxss';
+.rehearsal-tag{display:inline-block;padding:10rpx 18rpx;border-radius:8rpx;background:#fff0d5;color:#805222;font-size:23rpx;font-weight:600}
+.boundary{display:block;padding:22rpx 24rpx;background:#fff6e7;border-left:5rpx solid #d6a254;border-radius:4rpx 14rpx 14rpx 4rpx;font-size:25rpx;line-height:1.7;color:#75512a}
+.options{display:flex;flex-wrap:wrap;gap:18rpx;font-size:27rpx;color:#31556b}.options label{display:flex;align-items:center;min-height:70rpx}
+.condition{display:flex;align-items:center;justify-content:space-between;gap:16rpx;padding:20rpx 0;border-bottom:1rpx solid #e5eef3;font-size:26rpx;color:#31556b}
+.call-state{border:2rpx solid #cfe4ef}.button-row{display:flex;gap:16rpx}.button-row .btn{flex:1;margin:0}.error{color:#8c3a2c;background:#fff0e9;border-color:#c77c68}
+.event{display:block;font-size:25rpx;line-height:1.6;color:#46677b;padding:14rpx 0;border-bottom:1rpx solid #e5eef3}
